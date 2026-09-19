@@ -395,9 +395,9 @@ export default function InviteViewPage() {
           font-weight: 500;
         }
         .gate h1 {
-          font: 400 clamp(3rem, 10vw, 7rem)/.83 var(--serif);
-          letter-spacing: -.03em;
-          margin: 28px 0 20px;
+          font: 400 clamp(2.2rem, 5.5vw, 4rem)/1.15 var(--serif);
+          letter-spacing: -.02em;
+          margin: 20px 0 16px;
         }
         .gate h1 em {
           font-weight: 400;
@@ -470,11 +470,11 @@ export default function InviteViewPage() {
           text-align: center;
           padding: 0 22px 13vh;
         }
-        .hero-copy h1 {
-          font: 500 clamp(4.2rem, 14vw, 10rem)/.72 var(--serif);
-          letter-spacing: -.05em;
-          margin: 20px 0 34px;
-          text-shadow: 0 2px 18px rgba(0, 0, 0, .35);
+       .hero-copy h1 {
+          font: 500 clamp(2.8rem, 6.5vw, 5.2rem)/1.1 var(--serif);
+          letter-spacing: -.02em;
+          margin: 16px 0 24px;
+          text-shadow: 0 2px 18px rgba(0, 0, 0, .45);
         }
         .hero-copy h1 span {
           font-size: .55em;
@@ -525,11 +525,11 @@ export default function InviteViewPage() {
           text-transform: uppercase;
           margin-bottom: 17px;
         }
-        .story-frame figcaption strong {
+      .story-frame figcaption strong {
           display: block;
           color: #fff8ed;
-          font: 400 clamp(2.8rem, 7vw, 6.5rem)/.9 var(--serif);
-          letter-spacing: -.025em;
+          font: 400 clamp(2rem, 4.5vw, 3.4rem)/1.2 var(--serif);
+          letter-spacing: -.01em;
         }
 
         .section {
@@ -542,10 +542,10 @@ export default function InviteViewPage() {
           background: var(--ivory);
           overflow: hidden;
         }
-        .welcome blockquote {
-          font: 400 clamp(2.5rem, 6.8vw, 5.6rem)/.95 var(--serif);
-          margin: 30px auto 22px;
-          max-width: 1050px;
+       .welcome blockquote {
+          font: 400 clamp(1.8rem, 3.8vw, 2.9rem)/1.25 var(--serif);
+          margin: 24px auto 18px;
+          max-width: 900px;
         }
         .verse {
           color: var(--wine);
@@ -638,7 +638,7 @@ export default function InviteViewPage() {
           margin: 22px 0;
         }
         .date-lockup strong {
-          font: 500 clamp(7rem, 20vw, 13rem)/.8 var(--serif);
+          font: 500 clamp(4rem, 9vw, 6.8rem)/.9 var(--serif);
           color: var(--wine);
         }
         .date-lockup span {
@@ -686,9 +686,9 @@ export default function InviteViewPage() {
           align-items: center;
           text-align: left;
         }
-        .venue-copy h2 {
-          font: 500 clamp(4rem, 9vw, 8rem)/.75 var(--serif);
-          margin: 30px 0 45px;
+       .venue-copy h2 {
+          font: 500 clamp(2.4rem, 5vw, 4.2rem)/1.1 var(--serif);
+          margin: 20px 0 25px;
           color: var(--ivory);
         }
         .venue-copy > p:not(.eyebrow) {
@@ -751,9 +751,9 @@ export default function InviteViewPage() {
           display: grid;
           place-content: center;
         }
-        .closing h2 {
-          font: 400 clamp(3.4rem, 9vw, 7.5rem)/.82 var(--serif);
-          margin: 38px 0 45px;
+       .closing h2 {
+          font: 400 clamp(2.4rem, 5.5vw, 4.5rem)/1.15 var(--serif);
+          margin: 25px 0 35px;
         }
         .closing-monogram { margin-top: 65px; }
         .closing-date {
