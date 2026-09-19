@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "../lib/supabaseClient";
 import { 
@@ -40,7 +40,7 @@ const TEMPLATES = [
 
 const MUSIC_TRACKS = [
   { id: "shehnai", title: "Traditional Shehnai & Mangalyam", url: "https://cdn.pixabay.com/download/audio/2022/05/16/audio_db6591201e.mp3?filename=indian-flute-and-tabla-110903.mp3" },
-  { id: "flute", title: "Romantic Bansuri Flute Serenade", url: "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8b918f8e8.mp3?filename=peaceful-garden-healing-light-10656.mp3" },
+  { id: "flute", title: "Romantic Bansuri Flute Serenade", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3" },
   { id: "piano", title: "Acoustic Piano & Strings Wedding", url: "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=romantic-wedding-love-story-10332.mp3" },
   { id: "symphony", title: "Royal Orchestral Celebration", url: "https://cdn.pixabay.com/download/audio/2022/10/14/audio_9939f792cb.mp3?filename=wedding-celebration-12345.mp3" }
 ];
@@ -72,6 +72,15 @@ export default function BuilderPage() {
   const [selectedMusic, setSelectedMusic] = useState(MUSIC_TRACKS[0].url);
   const [customAudioFile, setCustomAudioFile] = useState(null);
   const [selectedEffect, setSelectedEffect] = useState("petals");
+
+  useEffect(() => {
+    return () => {
+      if (audioPlayerRef.current) {
+        audioPlayerRef.current.pause();
+        audioPlayerRef.current.currentTime = 0;
+      }
+    };
+  }, []);
 
   // Files
   const [coverFile, setCoverFile] = useState(null);
@@ -120,18 +129,27 @@ export default function BuilderPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleTogglePreviewAudio = (url) => {
+ const handleTogglePreviewAudio = (url) => {
+    // നിലവിൽ പ്ലേ ആകുന്ന പാട്ട് പൂർണ്ണമായി നിർത്തി റീസെറ്റ് ചെയ്യുക
+    if (audioPlayerRef.current) {
+      audioPlayerRef.current.pause();
+      audioPlayerRef.current.currentTime = 0;
+    }
+
     if (playingTrack === url) {
-      if (audioPlayerRef.current) audioPlayerRef.current.pause();
       setPlayingTrack(null);
     } else {
-      if (audioPlayerRef.current) audioPlayerRef.current.pause();
       const newAudio = new Audio(url);
-      newAudio.play().then(() => {
-        audioPlayerRef.current = newAudio;
-        setPlayingTrack(url);
-        setSelectedMusic(url);
-      }).catch(() => {});
+      audioPlayerRef.current = newAudio;
+      setPlayingTrack(url);
+      setSelectedMusic(url);
+
+      newAudio.play().catch((e) => console.warn("Audio error:", e));
+
+      // പാട്ട് തീർന്നു കഴിഞ്ഞാൽ ഐക്കൺ തനിയെ പ്ലേ ചിഹ്നത്തിലേക്ക് മാറാൻ
+      newAudio.onended = () => {
+        setPlayingTrack(null);
+      };
     }
   };
 
@@ -230,7 +248,13 @@ export default function BuilderPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // പേജ് മാറുന്നതിന് മുൻപ് പാട്ട് നിർത്തുക
+    if (audioPlayerRef.current) {
+      audioPlayerRef.current.pause();
+      audioPlayerRef.current.currentTime = 0;
+    }
     setLoading(true);
+    // ബാക്കി കോഡ്...
 
     try {
       let finalMusicUrl = selectedMusic;
