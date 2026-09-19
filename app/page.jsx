@@ -36,51 +36,34 @@ export default function BuilderPage() {
     try {
       let uploadedCoverUrl = "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=1200&q=80";
 
-      // Upload cover photo to Supabase bucket
-     /* if (coverFile) {
-        const fileExt = coverFile.name.split('.').pop();
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      // 1. ഫോട്ടോ സേഫ് ആയ ഫയൽ നെയിം വെച്ച് Supabase ബക്കറ്റിലേക്ക് അപ്‌ലോഡ് ചെയ്യുന്നു
+      if (coverFile) {
+        const fileExt = coverFile.name.split('.').pop().toLowerCase();
+        const safeFileName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
+
         const { error: uploadError } = await supabase.storage
           .from("wedding-photos")
-          .upload(fileName, coverFile);*/
-
-      if (coverFile) {
-  // ഫയൽ എക്സ്റ്റൻഷൻ മാത്രം എടുത്ത് സേഫ് ആയ പേര് നൽകുന്നു
-  const fileExt = coverFile.name.split('.').pop().toLowerCase();
-  const safeFileName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
-
-  const { error: uploadError } = await supabase.storage
-    .from("wedding-photos")
-    .upload(safeFileName, coverFile, {
-      cacheControl: '3600',
-      upsert: false
-    });
-
-  if (uploadError) throw uploadError;
-
-  const { data: publicUrlData } = supabase.storage
-    .from("wedding-photos")
-    .getPublicUrl(safeFileName);
-
-  uploadedCoverUrl = publicUrlData.publicUrl;
-}
+          .upload(safeFileName, coverFile, {
+            cacheControl: '3600',
+            upsert: false
+          });
 
         if (uploadError) throw uploadError;
 
         const { data: publicUrlData } = supabase.storage
           .from("wedding-photos")
-          .getPublicUrl(fileName);
+          .getPublicUrl(safeFileName);
 
         uploadedCoverUrl = publicUrlData.publicUrl;
       }
 
-      // Generate clean unique ID (e.g. anushree-vishnu-k8w2)
-      const cleanBride = formData.brideName.trim().toLowerCase().replace(/\s+/g, "");
-      const cleanGroom = formData.groomName.trim().toLowerCase().replace(/\s+/g, "");
+      // 2. യൂണീക് ഐഡി ജനറേറ്റ് ചെയ്യുന്നു
+      const cleanBride = (formData.brideName || "bride").trim().toLowerCase().replace(/[^a-z0-9]/g, "");
+      const cleanGroom = (formData.groomName || "groom").trim().toLowerCase().replace(/[^a-z0-9]/g, "");
       const randomSuffix = Math.random().toString(36).substring(2, 7);
       const uniqueId = `${cleanBride}-${cleanGroom}-${randomSuffix}`;
 
-      // Insert into Supabase database
+      // 3. Supabase ടേബിളിലേക്ക് ഇൻസേർട്ട് ചെയ്യുന്നു
       const { error: insertError } = await supabase.from("invitations").insert([
         {
           id: uniqueId,
