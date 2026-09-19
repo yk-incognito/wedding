@@ -1,14 +1,15 @@
 "use client";
-import React, { useEffect, useState, use } from "react";
+import React, { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
 import { supabase } from "../../../lib/supabaseClient";
 import { 
-  Heart, Calendar, MapPin, Music, Volume2, VolumeX, Share2, 
-  Send, Gift, Video, Phone, Mail, FileText, Image as ImageIcon, X, Sparkles
+  Heart, Calendar, MapPin, Volume2, VolumeX, Share2, 
+  Send, FileText, X
 } from "lucide-react";
 
-export default function InviteViewPage({ params }) {
-  const unwrappedParams = use(params);
-  const id = unwrappedParams.id;
+export default function InviteViewPage() {
+  const params = useParams();
+  const id = params?.id;
 
   const [invitation, setInvitation] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -31,36 +32,48 @@ export default function InviteViewPage({ params }) {
   const [wishLoading, setWishLoading] = useState(false);
 
   useEffect(() => {
+    if (!id) return;
+
+    let soundInstance = null;
+
     async function loadData() {
-      const { data, error } = await supabase
-        .from("invitations")
-        .select("*")
-        .eq("id", id)
-        .single();
+      try {
+        const { data, error } = await supabase
+          .from("invitations")
+          .select("*")
+          .eq("id", id)
+          .single();
 
-      if (!error && data) {
-        setInvitation(data);
-        if (data.music_url) {
-          const snd = new Audio(data.music_url);
-          snd.loop = true;
-          setAudio(snd);
+        if (error) throw error;
+
+        if (data) {
+          setInvitation(data);
+          if (data.music_url) {
+            soundInstance = new Audio(data.music_url);
+            soundInstance.loop = true;
+            setAudio(soundInstance);
+          }
         }
+
+        // Load Wishes
+        const { data: wishesData } = await supabase
+          .from("guest_wishes")
+          .select("*")
+          .eq("invitation_id", id)
+          .order("created_at", { ascending: false });
+
+        if (wishesData) setWishes(wishesData);
+      } catch (err) {
+        console.error("Fetch error:", err);
+      } finally {
+        setLoading(false);
       }
-
-      // Load Wishes
-      const { data: wishesData } = await supabase
-        .from("guest_wishes")
-        .select("*")
-        .eq("invitation_id", id)
-        .order("created_at", { ascending: false });
-
-      if (wishesData) setWishes(wishesData);
-      setLoading(false);
     }
+
     loadData();
 
     return () => {
-      if (audio) audio.pause();
+      if (soundInstance) soundInstance.pause();
     };
   }, [id]);
 
@@ -76,14 +89,16 @@ export default function InviteViewPage({ params }) {
   };
 
   const copyShareLink = () => {
-    navigator.clipboard.writeText(window.location.href);
-    alert("Wedding invitation link copied to clipboard!");
+    if (typeof window !== "undefined") {
+      navigator.clipboard.writeText(window.location.href);
+      alert("Wedding invitation link copied to clipboard!");
+    }
   };
 
   const handleRsvpSubmit = async (e) => {
     e.preventDefault();
     const { error } = await supabase.from("rsvps").insert([
-      { invitation_id: id, guest_name: rsvpName, guest_count: parseInt(rsvpGuests), attending: true }
+      { invitation_id: id, guest_name: rsvpName, guest_count: parseInt(rsvpGuests, 10), attending: true }
     ]);
     if (!error) {
       setRsvpSubmitted(true);
@@ -127,13 +142,13 @@ export default function InviteViewPage({ params }) {
     );
   }
 
-  const weddingDateObj = new Date(invitation.wedding_date);
-  const formattedDate = weddingDateObj.toLocaleDateString("en-US", {
-    weekday: "long", year: "numeric", month: "long", day: "numeric"
-  });
-  const formattedTime = weddingDateObj.toLocaleTimeString("en-US", {
-    hour: "2-digit", minute: "2-digit"
-  });
+  const weddingDateObj = invitation.wedding_date ? new Date(invitation.wedding_date) : null;
+  const formattedDate = weddingDateObj
+    ? weddingDateObj.toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" })
+    : "";
+  const formattedTime = weddingDateObj
+    ? weddingDateObj.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" })
+    : "";
 
   const contacts = Array.isArray(invitation.contact_numbers) ? invitation.contact_numbers : [];
   const gallery = Array.isArray(invitation.gallery_photos) ? invitation.gallery_photos : [];
@@ -141,8 +156,7 @@ export default function InviteViewPage({ params }) {
 
   return (
     <main className="min-h-screen bg-stone-950 text-slate-100 font-sans selection:bg-amber-400 selection:text-black relative pb-28">
-
-      {/* FLOATING AUDIO & SHARE BAR */}
+      {/* FLOATING AUDIO & SHARE */}
       <div className="fixed top-5 right-5 z-40 flex items-center gap-3">
         {invitation.music_url && (
           <button
@@ -166,7 +180,7 @@ export default function InviteViewPage({ params }) {
       <section className="relative h-[85vh] w-full flex items-center justify-center overflow-hidden">
         <div 
           className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 scale-105"
-          style={{ backgroundImage: `url(${invitation.cover_photo})` }}
+          style={{ backgroundImage: `url(${invitation.cover_photo || "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=1200&q=80"})` }}
         >
           <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/60 to-black/40" />
         </div>
@@ -183,9 +197,11 @@ export default function InviteViewPage({ params }) {
           </p>
 
           <div className="pt-4 flex flex-wrap justify-center gap-4">
-            <span className="px-5 py-2 rounded-full bg-black/50 border border-amber-400/30 text-amber-200 text-xs sm:text-sm font-serif">
-              {formattedDate}
-            </span>
+            {formattedDate && (
+              <span className="px-5 py-2 rounded-full bg-black/50 border border-amber-400/30 text-amber-200 text-xs sm:text-sm font-serif">
+                {formattedDate}
+              </span>
+            )}
             {invitation.wedding_card_photo && (
               <button
                 onClick={() => setShowCardModal(true)}
@@ -212,7 +228,7 @@ export default function InviteViewPage({ params }) {
               <img src={invitation.bride_photo} alt={invitation.bride_name} className="w-32 h-32 rounded-full object-cover mx-auto border-2 border-rose-400/60 shadow-lg" />
             ) : (
               <div className="w-24 h-24 rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center mx-auto text-rose-300 font-serif text-2xl font-bold">
-                {invitation.bride_name[0]}
+                {invitation.bride_name ? invitation.bride_name[0] : "B"}
               </div>
             )}
             <h3 className="text-2xl font-serif font-bold text-rose-300">{invitation.bride_name}</h3>
@@ -236,7 +252,7 @@ export default function InviteViewPage({ params }) {
               <img src={invitation.groom_photo} alt={invitation.groom_name} className="w-32 h-32 rounded-full object-cover mx-auto border-2 border-amber-400/60 shadow-lg" />
             ) : (
               <div className="w-24 h-24 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto text-amber-300 font-serif text-2xl font-bold">
-                {invitation.groom_name[0]}
+                {invitation.groom_name ? invitation.groom_name[0] : "G"}
               </div>
             )}
             <h3 className="text-2xl font-serif font-bold text-amber-300">{invitation.groom_name}</h3>
@@ -265,7 +281,7 @@ export default function InviteViewPage({ params }) {
               <Calendar className="w-6 h-6 text-amber-400" />
               <div className="text-left">
                 <p className="font-semibold text-stone-200">{formattedDate}</p>
-                <p className="text-xs text-stone-400">Muhurtham: {formattedTime}</p>
+                {formattedTime && <p className="text-xs text-stone-400">Muhurtham: {formattedTime}</p>}
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -290,7 +306,7 @@ export default function InviteViewPage({ params }) {
             )}
             {invitation.whatsapp_number && (
               <a
-                href={`https://wa.me/${invitation.whatsapp_number.replace(/[^0-9]/g, "")}?text=Congratulations%20${encodeURIComponent(invitation.bride_name)}%20and%20${encodeURIComponent(invitation.groom_name)}!`}
+                href={`https://wa.me/${invitation.whatsapp_number.replace(/[^0-9]/g, "")}?text=Congratulations%20${encodeURIComponent(invitation.bride_name || "")}%20and%20${encodeURIComponent(invitation.groom_name || "")}!`}
                 target="_blank"
                 rel="noreferrer"
                 className="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-2"
@@ -303,7 +319,7 @@ export default function InviteViewPage({ params }) {
                 href={`mailto:${invitation.email}`}
                 className="px-6 py-3 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 font-semibold text-xs flex items-center gap-2 border border-stone-700"
               >
-                <Mail className="w-4 h-4" /> Contact via Email
+                Contact via Email
               </a>
             )}
           </div>
@@ -353,7 +369,7 @@ export default function InviteViewPage({ params }) {
                 <div key={i} className="text-center">
                   <p className="text-xs text-stone-400">{c.name || "Coordinator"}</p>
                   <a href={`tel:${c.phone}`} className="text-sm font-semibold text-amber-300 hover:underline flex items-center gap-1 justify-center mt-1">
-                    <Phone className="w-3.5 h-3.5 text-emerald-400" /> {c.phone}
+                    {c.phone}
                   </a>
                 </div>
               ))}
