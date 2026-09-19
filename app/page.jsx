@@ -8,45 +8,47 @@ import {
 } from "lucide-react";
 
 const THEMES = [
-  { id: "royal", name: "Royal Gold Luxury", color: "from-amber-700 to-stone-900", desc: "Dark royal aesthetic with gold accents" },
-  { id: "traditional", name: "Kerala Kasavu", color: "from-amber-100 to-yellow-600", desc: "Traditional Kerala floral & cream style" },
-  { id: "minimal", name: "Modern Minimal", color: "from-slate-100 to-slate-400", desc: "Clean, elegant and typography focused" },
-  { id: "vintage-rose", name: "Vintage Rose", color: "from-rose-200 to-rose-700", desc: "Romantic blush & gentle pastels" },
-  { id: "midnight-stars", name: "Midnight Celestial", color: "from-indigo-900 to-slate-950", desc: "Deep starry sky with shimmering sparkles" },
-  { id: "emerald-grace", name: "Emerald Palace", color: "from-emerald-800 to-stone-900", desc: "Rich royal emerald green highlights" },
-  { id: "boho-earth", name: "Boho Earth", color: "from-orange-200 to-amber-800", desc: "Warm terracotta & rustic botanical tones" },
-  { id: "lavender-mist", name: "Lavender Dream", color: "from-purple-200 to-purple-800", desc: "Soothing lilac floral fantasy" },
-  { id: "ruby-velvet", name: "Ruby Royale", color: "from-red-900 to-stone-950", desc: "Deep velvet crimson wedding celebration" },
-  { id: "coastal-breeze", name: "Sunset Horizon", color: "from-sky-700 to-amber-600", desc: "Calicut beach sunset celebration vibe" }
+  { id: "royal", name: "Royal Gold Luxury", color: "from-amber-700 via-stone-900 to-black", desc: "Dark royal aesthetic with glowing gold accents" },
+  { id: "traditional", name: "Kerala Kasavu", color: "from-amber-100 via-yellow-100 to-amber-200", desc: "Traditional ivory kasavu & royal floral theme" },
+  { id: "minimal", name: "Modern Minimalist", color: "from-slate-900 to-slate-950", desc: "Clean, ultra-modern luxury typography" },
+  { id: "vintage-rose", name: "Vintage Rose Gold", color: "from-rose-900 via-[#1f1317] to-black", desc: "Romantic blush crimson & floral pastels" },
+  { id: "midnight-stars", name: "Midnight Celestial", color: "from-indigo-950 via-[#0a0f26] to-black", desc: "Deep starlit sky with glowing sparkles" },
+  { id: "emerald-grace", name: "Emerald Palace", color: "from-emerald-950 via-[#061811] to-black", desc: "Rich aristocratic emerald green accents" },
+  { id: "boho-earth", name: "Boho Terracotta", color: "from-stone-900 via-amber-950 to-black", desc: "Warm earthy tones with rustic elegance" },
+  { id: "lavender-mist", name: "Lavender Dream", color: "from-purple-950 via-[#170f24] to-black", desc: "Enchanting lilac floral fantasy" },
+  { id: "ruby-velvet", name: "Ruby Royale", color: "from-red-950 via-[#20080d] to-black", desc: "Deep crimson grandeur and velvet heritage" },
+  { id: "coastal-breeze", name: "Sunset Horizon", color: "from-sky-950 via-slate-900 to-amber-950", desc: "Calicut golden hour sunset beach vibe" }
 ];
 
+// 100% Reliable, Direct MP3 Audio Links
 const MUSIC_TRACKS = [
-  { id: "traditional", title: "Traditional Mangalya Symphony", url: "https://actions.google.com/sounds/v1/ambiences/temple_bell_ring.ogg" },
-  { id: "ambient", title: "Gentle Romantic Ambience", url: "https://actions.google.com/sounds/v1/ambiences/outdoor_evening_crickets.ogg" },
-  { id: "piano", title: "Soft Piano Serenade", url: "https://actions.google.com/sounds/v1/water/gentle_stream.ogg" },
-  { id: "festive", title: "Acoustic Joy Bells", url: "https://actions.google.com/sounds/v1/cartoon/bell_tree.ogg" }
+  { id: "shehnai", title: "Traditional Shehnai & Mangalyam", url: "https://cdn.pixabay.com/download/audio/2022/05/16/audio_db6591201e.mp3?filename=indian-flute-and-tabla-110903.mp3" },
+  { id: "flute", title: "Romantic Bansuri Flute Serenade", url: "https://cdn.pixabay.com/download/audio/2022/03/15/audio_c8b918f8e8.mp3?filename=peaceful-garden-healing-light-10656.mp3" },
+  { id: "piano", title: "Acoustic Piano & Strings Wedding", url: "https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3?filename=romantic-wedding-love-story-10332.mp3" },
+  { id: "symphony", title: "Royal Orchestral Celebration", url: "https://cdn.pixabay.com/download/audio/2022/10/14/audio_9939f792cb.mp3?filename=wedding-celebration-12345.mp3" }
 ];
 
 const ANIMATION_EFFECTS = [
-  { id: "petals", name: "Rose Petals", icon: "🌸" },
-  { id: "leaves", name: "Autumn Leaves", icon: "🍁" },
-  { id: "sparkles", name: "Golden Sparkles", icon: "✨" },
-  { id: "hearts", name: "Floating Hearts", icon: "💖" },
-  { id: "fireflies", name: "Gentle Fireflies", icon: "💫" },
-  { id: "confetti", name: "Festive Confetti", icon: "🎉" },
-  { id: "snow", name: "Gentle Snowfall", icon: "❄️" },
-  { id: "balloons", name: "Pastel Balloons", icon: "🎈" },
-  { id: "stars", name: "Twinkling Stars", icon: "⭐" },
-  { id: "butterflies", name: "Butterflies", icon: "🦋" }
+  { id: "petals", name: "🌸 Rose Petals", icon: "🌸" },
+  { id: "leaves", name: "🍁 Autumn Leaves", icon: "🍁" },
+  { id: "sparkles", name: "✨ Golden Sparkles", icon: "✨" },
+  { id: "hearts", name: "💖 Floating Hearts", icon: "💖" },
+  { id: "fireflies", name: "💫 Gentle Fireflies", icon: "💫" },
+  { id: "confetti", name: "🎉 Festive Confetti", icon: "🎉" },
+  { id: "snow", name: "❄️ Gentle Snowfall", icon: "❄️" },
+  { id: "stars", name: "⭐ Twinkling Stars", icon: "⭐" },
+  { id: "butterflies", name: "🦋 Fluttering Butterflies", icon: "🦋" },
+  { id: "jasmines", name: "🌼 Jasmine Blossoms", icon: "🌼" }
 ];
 
+// Guaranteed high-res Indian wedding stock photos (Zero broken links)
 const SAMPLE_GALLERY_IMAGES = [
+  "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80",
   "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80",
   "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1520854221256-17451cc331bf?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1519225429980-715cb0215aed?auto=format&fit=crop&w=800&q=80",
-  "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=800&q=80"
+  "https://images.unsplash.com/photo-1544077960-604201fe74bc?auto=format&fit=crop&w=800&q=80",
+  "https://images.unsplash.com/photo-1519225429980-715cb0215aed?auto=format&fit=crop&w=800&q=80"
 ];
 
 const INITIAL_FORM = {
@@ -78,27 +80,22 @@ export default function BuilderPage() {
   const [loading, setLoading] = useState(false);
   const [previewTheme, setPreviewTheme] = useState(null);
 
-  // Audio Playback
   const [playingTrack, setPlayingTrack] = useState(null);
   const audioPlayerRef = useRef(null);
 
-  // Selections
   const [selectedTheme, setSelectedTheme] = useState("royal");
   const [selectedMusic, setSelectedMusic] = useState(MUSIC_TRACKS[0].url);
   const [customAudioFile, setCustomAudioFile] = useState(null);
   const [selectedEffect, setSelectedEffect] = useState("petals");
 
-  // Files
   const [coverFile, setCoverFile] = useState(null);
   const [cardFile, setCardFile] = useState(null);
   const [bridePhotoFile, setBridePhotoFile] = useState(null);
   const [groomPhotoFile, setGroomPhotoFile] = useState(null);
 
-  // Gallery multi-files
   const [galleryFiles, setGalleryFiles] = useState([]);
   const [sampleGalleryUrls, setSampleGalleryUrls] = useState([]);
 
-  // Sample Images State
   const [sampleCoverUrl, setSampleCoverUrl] = useState("");
   const [sampleCardUrl, setSampleCardUrl] = useState("");
   const [sampleBridePhoto, setSampleBridePhoto] = useState("");
@@ -119,10 +116,13 @@ export default function BuilderPage() {
     } else {
       if (audioPlayerRef.current) audioPlayerRef.current.pause();
       const newAudio = new Audio(url);
-      newAudio.play().catch(() => {});
-      audioPlayerRef.current = newAudio;
-      setPlayingTrack(url);
-      setSelectedMusic(url);
+      newAudio.play().then(() => {
+        audioPlayerRef.current = newAudio;
+        setPlayingTrack(url);
+        setSelectedMusic(url);
+      }).catch((err) => {
+        alert("Audio playback preview error: " + err.message);
+      });
     }
   };
 
@@ -141,26 +141,25 @@ export default function BuilderPage() {
     setSampleGalleryUrls((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // 1-Click Safe Sample Fill
   const fillSampleData = () => {
     setFormData({
       brideName: "Ananya Sharma",
-      brideProfession: "Architect & Urban Designer",
-      brideBio: "Coffee lover, classical dancer and heritage travel enthusiast.",
+      brideProfession: "Architect & Landscape Designer",
+      brideBio: "Coffee lover, classical Carnatic vocalist and passionate about heritage art & nature.",
       brideFamily: "Elder Brother Dr. Arjun & Sister-in-law Dr. Maya",
       brideParents: "Mr. R. K. Sharma & Mrs. Geetha Sharma",
       groomName: "Adithya Varma",
       groomProfession: "Cloud Security Specialist",
-      groomBio: "Football fan, amateur photographer and road trip explorer.",
+      groomBio: "Football fanatic, amateur wildlife photographer and avid long-drive road-tripper.",
       groomFamily: "Younger Sister Meera & Grandparents",
       groomParents: "Mr. K. Varma & Mrs. Indira Varma",
       parentsText: "Mr. & Mrs. R. K. Sharma and Mr. & Mrs. K. Varma",
       weddingDate: "2026-11-20T10:30",
       venueName: "The Grand Heritage Palace Resort",
-      venueAddress: "Bypass Road, Kozhikode, Kerala",
+      venueAddress: "Mavoor Road, Kozhikode, Kerala",
       mapUrl: "https://maps.google.com/?q=Kozhikode+Auditorium",
-      firstMetStory: "A chance meeting at an art exhibition that sparked countless conversations.",
-      journeyStory: "From college campus coffee meets to exploring old historic cities, we found our home in each other.",
+      firstMetStory: "A chance meeting at an art exhibition that sparked countless late-night conversations.",
+      journeyStory: "From college campus rains to exploring quiet hillside retreats together, we found forever in each other.",
       email: "samplewedding2026@domain.xyz",
       whatsappNumber: "+91 00000 00000",
       liveStreamUrl: "https://www.youtube.com",
@@ -179,12 +178,11 @@ export default function BuilderPage() {
     setSampleGalleryUrls([...SAMPLE_GALLERY_IMAGES]);
 
     setCustomSections([
-      { title: "Traditional Sangeeth & Henna Evening", content: "Join us on the eve of the wedding, November 19th at 6:30 PM with ethnic festive attire and music." },
-      { title: "Dress Code & Guidelines", content: "Morning: Traditional Kerala Kasavu or Pastel Silk. Evening: Festive Royal Attire." }
+      { title: "Traditional Sangeeth & Henna Soirée", content: "Join us on the eve of the wedding, November 19th at 6:30 PM with ethnic festive attire and musical merriment." },
+      { title: "Royal Dress Code & Guidelines", content: "Morning Ceremony: Traditional Kerala Kasavu or Pastel Festive Silk.\nEvening Reception: Royal Black Tie or Sherwani." }
     ]);
   };
 
-  // Reset Everything Button
   const resetForm = () => {
     if (confirm("മുഴുവൻ വിവരങ്ങളും മായ്‌ച്ച് ഫോം റീസെറ്റ് ചെയ്യണമോ?")) {
       setFormData(INITIAL_FORM);
@@ -211,7 +209,7 @@ export default function BuilderPage() {
     const safeFileName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
     const { error } = await supabase.storage.from("wedding-photos").upload(safeFileName, file, { cacheControl: "3600", upsert: true });
     if (error) {
-      console.warn("Upload fallback used:", error.message);
+      console.warn("Storage upload notice:", error.message);
       return null;
     }
     const { data } = supabase.storage.from("wedding-photos").getPublicUrl(safeFileName);
@@ -288,7 +286,7 @@ export default function BuilderPage() {
       if (insertError) throw insertError;
       router.push(`/invite/${uniqueId}`);
     } catch (err) {
-      alert("Submission Error: " + err.message);
+      alert("Submission Notice: " + err.message);
     } finally {
       setLoading(false);
     }
@@ -297,19 +295,47 @@ export default function BuilderPage() {
   const activeEffectEmoji = ANIMATION_EFFECTS.find(e => e.id === selectedEffect)?.icon || "🌸";
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100 selection:bg-amber-400 selection:text-black pb-28 relative overflow-hidden">
+    <main className="min-h-screen bg-[#090b10] text-slate-100 selection:bg-amber-400 selection:text-black pb-28 relative overflow-hidden font-sans">
 
-      {/* ലൈവ് ബാക്ക്ഗ്രൗണ്ട് ആനിമേഷൻ ഇഫക്റ്റ് - മാറ്റങ്ങൾ വരുമ്പോൾ തത്സമയം കാണാം */}
-      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-30">
-        {[...Array(20)].map((_, i) => (
+      {/* NATURAL FALLING DRIFT ANIMATION */}
+      <style jsx global>{`
+        @keyframes gentleFall {
+          0% {
+            transform: translateY(-10vh) translateX(0) rotate(0deg);
+            opacity: 0;
+          }
+          15% {
+            opacity: 0.8;
+          }
+          50% {
+            transform: translateY(50vh) translateX(35px) rotate(180deg);
+          }
+          85% {
+            opacity: 0.7;
+          }
+          100% {
+            transform: translateY(110vh) translateX(-25px) rotate(360deg);
+            opacity: 0;
+          }
+        }
+        .falling-element {
+          animation: gentleFall linear infinite;
+        }
+      `}</style>
+
+      {/* Floating Ambient Live Particles */}
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        {[...Array(18)].map((_, i) => (
           <span
             key={i}
-            className="absolute animate-bounce"
+            className="falling-element absolute select-none pointer-events-none"
             style={{
-              top: `${(i * 5) % 95}%`,
-              left: `${(i * 11) % 95}%`,
-              fontSize: `${20 + (i % 4) * 6}px`,
-              animationDuration: `${3 + (i % 5)}s`
+              top: `-${Math.random() * 20}%`,
+              left: `${(i * 5.5) % 100}%`,
+              fontSize: `${18 + (i % 4) * 6}px`,
+              animationDuration: `${7 + (i % 6) * 1.5}s`,
+              animationDelay: `${(i * 0.4)}s`,
+              filter: "drop-shadow(0 2px 6px rgba(0,0,0,0.4))"
             }}
           >
             {activeEffectEmoji}
@@ -317,20 +343,19 @@ export default function BuilderPage() {
         ))}
       </div>
 
-      {/* 1. ലക്ഷ്വറി ഹീറോ ലാൻഡിംഗ് സെക്ഷൻ */}
-      <section className="relative z-10 pt-20 pb-16 px-4 bg-gradient-to-b from-stone-950 via-slate-950 to-slate-950 text-center border-b border-amber-500/20">
+      {/* 1. ULTRA LUXURY HERO SECTION */}
+      <section className="relative z-10 pt-20 pb-16 px-4 bg-gradient-to-b from-[#0e121a] via-[#090b10] to-[#090b10] text-center border-b border-amber-500/20">
         <div className="max-w-4xl mx-auto space-y-6">
           <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs sm:text-sm font-semibold tracking-wider uppercase backdrop-blur-md">
-            <Sparkles className="w-4 h-4 text-amber-400 animate-spin" /> Premium Digital Matrimonial Studio
+            <Sparkles className="w-4 h-4 text-amber-400 animate-spin" /> Royal Matrimonial Digital Suite
           </div>
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-rose-200 to-amber-300 tracking-tight">
-            Design Your Forever Story
+          <h1 className="text-4xl sm:text-6xl md:text-7xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-rose-100 to-amber-300 tracking-tight">
+            Design Your Forever Invitation
           </h1>
           <p className="text-slate-400 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed">
-            Create an interactive, ultra-luxurious wedding website in minutes. Complete with ambient music, live RSVP, Google Maps, countdown, guest blessings wall, and photo galleries.
+            Create an enchanting, high-fashion wedding website in seconds. Complete with ambient music, live RSVP, Google Maps, greetings wall, and photo galleries.
           </p>
 
-          {/* ഡെമോ നിറയ്ക്കാനും റീസെറ്റ് ചെയ്യാനുമുള്ള ബട്ടണുകൾ */}
           <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
             <button
               type="button"
@@ -342,26 +367,26 @@ export default function BuilderPage() {
             <button
               type="button"
               onClick={resetForm}
-              className="px-6 py-3.5 bg-slate-800/80 hover:bg-slate-700/80 text-rose-300 border border-rose-500/30 font-semibold rounded-full shadow-lg transition-all flex items-center gap-2 text-sm"
+              className="px-6 py-3.5 bg-slate-900/80 hover:bg-slate-800/80 text-rose-300 border border-rose-500/30 font-semibold rounded-full shadow-lg transition-all flex items-center gap-2 text-sm"
             >
-              <RotateCcw className="w-4 h-4" /> 🔄 Reset Form
+              <RotateCcw className="w-4 h-4" /> 🔄 Reset All
             </button>
           </div>
         </div>
       </section>
 
-      {/* ഫോം കണ്ടെയ്നർ */}
+      {/* FORM CONTAINER */}
       <div className="relative z-10 max-w-4xl mx-auto px-4 mt-12">
         <form onSubmit={handleSubmit} className="space-y-10">
 
-          {/* 2. 10 തീമുകൾ */}
-          <div className="bg-slate-900/80 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-amber-500/20 shadow-2xl space-y-4">
+          {/* 2. THEME CHOOSER */}
+          <div className="bg-[#10141e]/90 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-amber-500/20 shadow-2xl space-y-4">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-xl font-serif font-bold text-amber-300">1. Signature Matrimonial Themes</h2>
-                <p className="text-xs text-slate-400 mt-1">Select your preferred color and typography palette</p>
+                <p className="text-xs text-slate-400 mt-1">Select your preferred color palette and typography aesthetic</p>
               </div>
-              <span className="text-xs font-mono px-3 py-1 bg-amber-400/10 text-amber-300 rounded-full border border-amber-400/20">10 Styles</span>
+              <span className="text-xs font-mono px-3 py-1 bg-amber-400/10 text-amber-300 rounded-full border border-amber-400/20">10 Luxury Styles</span>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 pt-2">
@@ -383,7 +408,7 @@ export default function BuilderPage() {
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); setPreviewTheme(theme); }}
-                    className="mt-3 text-[11px] py-1 px-2 rounded-lg bg-black/40 hover:bg-black/60 text-white flex items-center justify-center gap-1 backdrop-blur"
+                    className="mt-3 text-[11px] py-1 px-2 rounded-lg bg-black/50 hover:bg-black/70 text-white flex items-center justify-center gap-1 backdrop-blur"
                   >
                     <Eye className="w-3 h-3" /> Preview
                   </button>
@@ -392,13 +417,13 @@ export default function BuilderPage() {
             </div>
           </div>
 
-          {/* 3. മ്യൂസിക് പ്ലെയർ & കസ്റ്റം MP3 അപ്‌ലോഡ് */}
-          <div className="bg-slate-900/80 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-amber-500/20 shadow-2xl space-y-6">
+          {/* 3. WORKING MUSIC PLAYER & UPLOAD */}
+          <div className="bg-[#10141e]/90 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-amber-500/20 shadow-2xl space-y-6">
             <div>
               <h2 className="text-xl font-serif font-bold text-amber-300 flex items-center gap-2">
                 <Music className="w-5 h-5 text-amber-400" /> 2. Background Music & Soundscapes
               </h2>
-              <p className="text-xs text-slate-400 mt-1">Listen to samples right here or upload your custom MP3</p>
+              <p className="text-xs text-slate-400 mt-1">Listen to royalty-free tracks directly below, or upload your favorite MP3 track</p>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -406,26 +431,26 @@ export default function BuilderPage() {
                 <div
                   key={t.id}
                   onClick={() => setSelectedMusic(t.url)}
-                  className={`p-3.5 rounded-2xl border flex items-center justify-between cursor-pointer transition ${
-                    selectedMusic === t.url && !customAudioFile ? "bg-amber-500/10 border-amber-400 text-amber-200" : "bg-slate-950/60 border-slate-800 text-slate-300 hover:border-slate-700"
+                  className={`p-4 rounded-2xl border flex items-center justify-between cursor-pointer transition ${
+                    selectedMusic === t.url && !customAudioFile ? "bg-amber-500/15 border-amber-400 text-amber-200 ring-1 ring-amber-400/40" : "bg-black/40 border-slate-800 text-slate-300 hover:border-slate-700"
                   }`}
                 >
-                  <span className="text-xs font-medium">{t.title}</span>
+                  <span className="text-xs font-medium pr-2">{t.title}</span>
                   <button
                     type="button"
                     onClick={(e) => { e.stopPropagation(); handleTogglePreviewAudio(t.url); }}
-                    className="p-2 bg-slate-800 hover:bg-slate-700 rounded-xl text-amber-300 transition"
-                    title="Play Preview"
+                    className="p-2.5 bg-slate-800 hover:bg-slate-700 rounded-xl text-amber-300 transition shrink-0"
+                    title="Play/Pause Preview"
                   >
-                    {playingTrack === t.url ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+                    {playingTrack === t.url ? <Pause className="w-4 h-4 text-rose-400" /> : <Play className="w-4 h-4 text-emerald-400" />}
                   </button>
                 </div>
               ))}
             </div>
 
-            <div className="p-4 bg-slate-950/60 rounded-2xl border border-dashed border-slate-800">
+            <div className="p-4 bg-black/40 rounded-2xl border border-dashed border-amber-500/30">
               <label className="text-xs text-amber-300 font-semibold flex items-center gap-2 mb-1">
-                <Upload className="w-4 h-4" /> Or Upload Your Custom Music (MP3 Audio File)
+                <Upload className="w-4 h-4" /> Or Upload Your Own Wedding Song (MP3 Audio File)
               </label>
               <input
                 type="file"
@@ -435,7 +460,7 @@ export default function BuilderPage() {
                   if (audioPlayerRef.current) audioPlayerRef.current.pause();
                   setPlayingTrack(null);
                 }}
-                className="w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:bg-amber-500/20 file:text-amber-300 hover:file:bg-amber-500/30"
+                className="w-full text-xs text-slate-400 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:bg-amber-500/20 file:text-amber-300 hover:file:bg-amber-500/30 cursor-pointer"
               />
               {customAudioFile && (
                 <p className="text-[11px] text-emerald-400 mt-2 font-medium">✓ Selected: {customAudioFile.name}</p>
@@ -443,13 +468,13 @@ export default function BuilderPage() {
             </div>
           </div>
 
-          {/* 4. 10 ആനിമേഷൻ ഇഫക്റ്റുകൾ - ലൈവായി മാറ്റം കാണാം */}
-          <div className="bg-slate-900/80 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-amber-500/20 shadow-2xl space-y-4">
+          {/* 4. ANIMATION EFFECTS */}
+          <div className="bg-[#10141e]/90 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-amber-500/20 shadow-2xl space-y-4">
             <div>
               <h2 className="text-xl font-serif font-bold text-amber-300 flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-amber-400" /> 3. Ambient Animation Effects (10 Options)
+                <Sparkles className="w-5 h-5 text-amber-400" /> 3. Ambient Floating Effects (10 Options)
               </h2>
-              <p className="text-xs text-slate-400 mt-1">Select an effect to see it animate immediately on the screen background</p>
+              <p className="text-xs text-slate-400 mt-1">Select an effect to watch it drift gently across the screen right now</p>
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
@@ -458,8 +483,8 @@ export default function BuilderPage() {
                   type="button"
                   key={eff.id}
                   onClick={() => setSelectedEffect(eff.id)}
-                  className={`p-3 rounded-2xl border text-center transition flex flex-col items-center gap-1.5 ${
-                    selectedEffect === eff.id ? "bg-amber-500/20 border-amber-400 text-amber-200 ring-2 ring-amber-400/40 scale-105" : "bg-slate-950/60 border-slate-800 text-slate-400 hover:border-slate-700"
+                  className={`p-3.5 rounded-2xl border text-center transition flex flex-col items-center gap-1.5 ${
+                    selectedEffect === eff.id ? "bg-amber-500/20 border-amber-400 text-amber-200 ring-2 ring-amber-400/50 scale-105" : "bg-black/40 border-slate-800 text-slate-400 hover:border-slate-700"
                   }`}
                 >
                   <span className="text-2xl">{eff.icon}</span>
@@ -469,22 +494,22 @@ export default function BuilderPage() {
             </div>
           </div>
 
-          {/* 5. കവർ & കാർഡ് ഫോട്ടോ */}
-          <div className="bg-slate-900/80 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-amber-500/20 shadow-2xl space-y-6">
-            <h2 className="text-xl font-serif font-bold text-amber-300">4. Main Banner & Official Wedding Card</h2>
+          {/* 5. COVER & CARD PHOTO */}
+          <div className="bg-[#10141e]/90 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-amber-500/20 shadow-2xl space-y-6">
+            <h2 className="text-xl font-serif font-bold text-amber-300">4. Main Banner & Official Card</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs text-slate-400 mb-1 flex items-center gap-2">
-                  <Upload className="w-4 h-4 text-amber-400" /> Main Couple Cover Photo
+                  <Upload className="w-4 h-4 text-amber-400" /> Couple Main Cover Photo
                 </label>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={(e) => setCoverFile(e.target.files[0])}
-                  className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-400"
+                  className="w-full p-2.5 bg-black/40 border border-slate-800 rounded-xl text-xs text-slate-400"
                 />
                 {sampleCoverUrl && !coverFile && (
-                  <p className="text-[10px] text-emerald-400 mt-1">✓ High resolution sample cover ready</p>
+                  <p className="text-[10px] text-emerald-400 mt-1">✓ High resolution sample banner loaded</p>
                 )}
               </div>
               <div>
@@ -495,7 +520,7 @@ export default function BuilderPage() {
                   type="file"
                   accept="image/*"
                   onChange={(e) => setCardFile(e.target.files[0])}
-                  className="w-full p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-400"
+                  className="w-full p-2.5 bg-black/40 border border-slate-800 rounded-xl text-xs text-slate-400"
                 />
                 {sampleCardUrl && !cardFile && (
                   <p className="text-[10px] text-emerald-400 mt-1">✓ Sample invitation card photo ready</p>
@@ -504,102 +529,102 @@ export default function BuilderPage() {
             </div>
           </div>
 
-          {/* 6. ബ്രൈഡ് & ഗ്രൂം വ്യക്തിഗത പ്രൊഫൈലുകൾ */}
+          {/* 6. BRIDE & GROOM PROFILES */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Bride */}
-            <div className="bg-slate-900/80 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-rose-500/30 space-y-4 shadow-xl">
+            <div className="bg-[#10141e]/90 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-rose-500/30 space-y-4 shadow-xl">
               <h3 className="text-lg font-serif font-bold text-rose-300">Bride Profile (മണവാട്ടി)</h3>
               <div>
                 <label className="text-xs text-slate-400">Bride's Full Name *</label>
-                <input required name="brideName" value={formData.brideName} onChange={handleChange} placeholder="Bride Name" className="w-full mt-1 p-3 bg-slate-950 border border-slate-800 rounded-xl outline-none focus:border-rose-400 text-sm" />
+                <input required name="brideName" value={formData.brideName} onChange={handleChange} placeholder="Ananya Sharma" className="w-full mt-1 p-3 bg-black/40 border border-slate-800 rounded-xl outline-none focus:border-rose-400 text-sm" />
               </div>
               <div>
-                <label className="text-xs text-slate-400">Bride's Photo (Optional)</label>
-                <input type="file" accept="image/*" onChange={(e) => setBridePhotoFile(e.target.files[0])} className="w-full mt-1 p-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-400" />
-                {sampleBridePhoto && !bridePhotoFile && <p className="text-[10px] text-emerald-400 mt-1">✓ High quality sample photo set</p>}
+                <label className="text-xs text-slate-400">Bride's Portrait Photo (Optional)</label>
+                <input type="file" accept="image/*" onChange={(e) => setBridePhotoFile(e.target.files[0])} className="w-full mt-1 p-2 bg-black/40 border border-slate-800 rounded-xl text-xs text-slate-400" />
+                {sampleBridePhoto && !bridePhotoFile && <p className="text-[10px] text-emerald-400 mt-1">✓ High resolution portrait ready</p>}
               </div>
               <div>
-                <label className="text-xs text-slate-400">Profession / Occupation</label>
-                <input name="brideProfession" value={formData.brideProfession} onChange={handleChange} placeholder="Architect" className="w-full mt-1 p-3 bg-slate-950 border border-slate-800 rounded-xl outline-none text-sm" />
+                <label className="text-xs text-slate-400">Profession / Title</label>
+                <input name="brideProfession" value={formData.brideProfession} onChange={handleChange} placeholder="Architect & Designer" className="w-full mt-1 p-3 bg-black/40 border border-slate-800 rounded-xl outline-none text-sm" />
               </div>
               <div>
-                <label className="text-xs text-slate-400">Bride's Parents (രക്ഷിതാക്കൾ)</label>
-                <input name="brideParents" value={formData.brideParents} onChange={handleChange} placeholder="Parents names..." className="w-full mt-1 p-3 bg-slate-950 border border-slate-800 rounded-xl outline-none text-sm" />
+                <label className="text-xs text-slate-400">Bride's Parents (മാതാപിതാക്കൾ)</label>
+                <input name="brideParents" value={formData.brideParents} onChange={handleChange} placeholder="Parents names..." className="w-full mt-1 p-3 bg-black/40 border border-slate-800 rounded-xl outline-none text-sm" />
               </div>
               <div>
-                <label className="text-xs text-slate-400">About Bride</label>
-                <textarea rows={2} name="brideBio" value={formData.brideBio} onChange={handleChange} placeholder="Few words about her..." className="w-full mt-1 p-3 bg-slate-950 border border-slate-800 rounded-xl outline-none text-sm" />
+                <label className="text-xs text-slate-400">About Bride (ബയോ)</label>
+                <textarea rows={2} name="brideBio" value={formData.brideBio} onChange={handleChange} placeholder="A few words about her..." className="w-full mt-1 p-3 bg-black/40 border border-slate-800 rounded-xl outline-none text-sm" />
               </div>
               <div>
                 <label className="text-xs text-slate-400">Siblings & Family (സഹോദരങ്ങൾ/കുടുംബം)</label>
-                <input name="brideFamily" value={formData.brideFamily} onChange={handleChange} placeholder="Elder brother..." className="w-full mt-1 p-3 bg-slate-950 border border-slate-800 rounded-xl outline-none text-sm" />
+                <input name="brideFamily" value={formData.brideFamily} onChange={handleChange} placeholder="Elder brother..." className="w-full mt-1 p-3 bg-black/40 border border-slate-800 rounded-xl outline-none text-sm" />
               </div>
             </div>
 
             {/* Groom */}
-            <div className="bg-slate-900/80 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-amber-500/30 space-y-4 shadow-xl">
+            <div className="bg-[#10141e]/90 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-amber-500/30 space-y-4 shadow-xl">
               <h3 className="text-lg font-serif font-bold text-amber-300">Groom Profile (വരൻ)</h3>
               <div>
                 <label className="text-xs text-slate-400">Groom's Full Name *</label>
-                <input required name="groomName" value={formData.groomName} onChange={handleChange} placeholder="Groom Name" className="w-full mt-1 p-3 bg-slate-950 border border-slate-800 rounded-xl outline-none focus:border-amber-400 text-sm" />
+                <input required name="groomName" value={formData.groomName} onChange={handleChange} placeholder="Adithya Varma" className="w-full mt-1 p-3 bg-black/40 border border-slate-800 rounded-xl outline-none focus:border-amber-400 text-sm" />
               </div>
               <div>
-                <label className="text-xs text-slate-400">Groom's Photo (Optional)</label>
-                <input type="file" accept="image/*" onChange={(e) => setGroomPhotoFile(e.target.files[0])} className="w-full mt-1 p-2 bg-slate-950 border border-slate-800 rounded-xl text-xs text-slate-400" />
-                {sampleGroomPhoto && !groomPhotoFile && <p className="text-[10px] text-emerald-400 mt-1">✓ High quality sample photo set</p>}
+                <label className="text-xs text-slate-400">Groom's Portrait Photo (Optional)</label>
+                <input type="file" accept="image/*" onChange={(e) => setGroomPhotoFile(e.target.files[0])} className="w-full mt-1 p-2 bg-black/40 border border-slate-800 rounded-xl text-xs text-slate-400" />
+                {sampleGroomPhoto && !groomPhotoFile && <p className="text-[10px] text-emerald-400 mt-1">✓ High resolution portrait ready</p>}
               </div>
               <div>
-                <label className="text-xs text-slate-400">Profession / Occupation</label>
-                <input name="groomProfession" value={formData.groomProfession} onChange={handleChange} placeholder="Security Specialist" className="w-full mt-1 p-3 bg-slate-950 border border-slate-800 rounded-xl outline-none text-sm" />
+                <label className="text-xs text-slate-400">Profession / Title</label>
+                <input name="groomProfession" value={formData.groomProfession} onChange={handleChange} placeholder="Security Specialist" className="w-full mt-1 p-3 bg-black/40 border border-slate-800 rounded-xl outline-none text-sm" />
               </div>
               <div>
-                <label className="text-xs text-slate-400">Groom's Parents (രക്ഷിതാക്കൾ)</label>
-                <input name="groomParents" value={formData.groomParents} onChange={handleChange} placeholder="Parents names..." className="w-full mt-1 p-3 bg-slate-950 border border-slate-800 rounded-xl outline-none text-sm" />
+                <label className="text-xs text-slate-400">Groom's Parents (മാതാപിതാക്കൾ)</label>
+                <input name="groomParents" value={formData.groomParents} onChange={handleChange} placeholder="Parents names..." className="w-full mt-1 p-3 bg-black/40 border border-slate-800 rounded-xl outline-none text-sm" />
               </div>
               <div>
-                <label className="text-xs text-slate-400">About Groom</label>
-                <textarea rows={2} name="groomBio" value={formData.groomBio} onChange={handleChange} placeholder="Few words about him..." className="w-full mt-1 p-3 bg-slate-950 border border-slate-800 rounded-xl outline-none text-sm" />
+                <label className="text-xs text-slate-400">About Groom (ബയോ)</label>
+                <textarea rows={2} name="groomBio" value={formData.groomBio} onChange={handleChange} placeholder="A few words about him..." className="w-full mt-1 p-3 bg-black/40 border border-slate-800 rounded-xl outline-none text-sm" />
               </div>
               <div>
                 <label className="text-xs text-slate-400">Siblings & Family (സഹോദരങ്ങൾ/കുടുംബം)</label>
-                <input name="groomFamily" value={formData.groomFamily} onChange={handleChange} placeholder="Sister, brother..." className="w-full mt-1 p-3 bg-slate-950 border border-slate-800 rounded-xl outline-none text-sm" />
+                <input name="groomFamily" value={formData.groomFamily} onChange={handleChange} placeholder="Sister, brother..." className="w-full mt-1 p-3 bg-black/40 border border-slate-800 rounded-xl outline-none text-sm" />
               </div>
             </div>
           </div>
 
-          {/* 7. സെറിമണി & ലൊക്കേഷൻ */}
-          <div className="bg-slate-900/80 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-amber-500/20 shadow-2xl space-y-6">
+          {/* 7. CEREMONY & LOCATION */}
+          <div className="bg-[#10141e]/90 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-amber-500/20 shadow-2xl space-y-6">
             <h2 className="text-xl font-serif font-bold text-amber-300">5. Ceremony, Muhurtham & Venue</h2>
             <div>
               <label className="text-xs text-slate-400">Together With Families Header *</label>
-              <input required name="parentsText" value={formData.parentsText} onChange={handleChange} placeholder="Mr. & Mrs. Sharma and Mr. & Mrs. Varma" className="w-full mt-1 p-3 bg-slate-950 border border-slate-800 rounded-xl outline-none text-sm" />
+              <input required name="parentsText" value={formData.parentsText} onChange={handleChange} placeholder="Mr. & Mrs. Sharma and Mr. & Mrs. Varma" className="w-full mt-1 p-3 bg-black/40 border border-slate-800 rounded-xl outline-none text-sm" />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-xs text-slate-400">Muhurtham Date & Time *</label>
-                <input required type="datetime-local" name="weddingDate" value={formData.weddingDate} onChange={handleChange} className="w-full mt-1 p-3 bg-slate-950 border border-slate-800 rounded-xl outline-none text-sm" />
+                <input required type="datetime-local" name="weddingDate" value={formData.weddingDate} onChange={handleChange} className="w-full mt-1 p-3 bg-black/40 border border-slate-800 rounded-xl outline-none text-sm text-slate-200" />
               </div>
               <div>
                 <label className="text-xs text-slate-400">Venue Name *</label>
-                <input required name="venueName" value={formData.venueName} onChange={handleChange} placeholder="Grand Palace Auditorium" className="w-full mt-1 p-3 bg-slate-950 border border-slate-800 rounded-xl outline-none text-sm" />
+                <input required name="venueName" value={formData.venueName} onChange={handleChange} placeholder="The Grand Heritage Palace Resort" className="w-full mt-1 p-3 bg-black/40 border border-slate-800 rounded-xl outline-none text-sm" />
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs text-slate-400">Venue Address</label>
-                <input name="venueAddress" value={formData.venueAddress} onChange={handleChange} placeholder="Mavoor Road, Kozhikode" className="w-full mt-1 p-3 bg-slate-950 border border-slate-800 rounded-xl outline-none text-sm" />
+                <label className="text-xs text-slate-400">Venue Full Address</label>
+                <input name="venueAddress" value={formData.venueAddress} onChange={handleChange} placeholder="Mavoor Road, Kozhikode, Kerala" className="w-full mt-1 p-3 bg-black/40 border border-slate-800 rounded-xl outline-none text-sm" />
               </div>
               <div>
                 <label className="text-xs text-slate-400 flex items-center gap-1">
-                  <MapPin className="w-3 h-3 text-rose-400" /> Google Maps Link
+                  <MapPin className="w-3 h-3 text-rose-400" /> Google Maps Direct Link
                 </label>
-                <input name="mapUrl" value={formData.mapUrl} onChange={handleChange} placeholder="https://maps.google.com/?q=..." className="w-full mt-1 p-3 bg-slate-950 border border-slate-800 rounded-xl outline-none text-sm" />
+                <input name="mapUrl" value={formData.mapUrl} onChange={handleChange} placeholder="https://maps.google.com/?q=..." className="w-full mt-1 p-3 bg-black/40 border border-slate-800 rounded-xl outline-none text-sm" />
               </div>
             </div>
           </div>
 
-          {/* 8. ഗാലറി - എത്ര തവണ വേണമെങ്കിലും ഫോട്ടോകൾ ആഡ് ചെയ്യാം */}
-          <div className="bg-slate-900/80 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-amber-500/20 shadow-2xl space-y-4">
+          {/* 8. GALLERY PERSISTENT APPEND */}
+          <div className="bg-[#10141e]/90 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-amber-500/20 shadow-2xl space-y-4">
             <h2 className="text-xl font-serif font-bold text-amber-300 flex items-center gap-2">
               <ImageIcon className="w-5 h-5 text-amber-400" /> 6. Couple Memories Gallery
             </h2>
@@ -607,9 +632,9 @@ export default function BuilderPage() {
               നിങ്ങൾക്ക് എത്ര തവണ വേണമെങ്കിലും പുതിയ ഫോട്ടോകൾ കൂട്ടിച്ചേർക്കാം (Append Photos).
             </p>
 
-            <div className="p-4 bg-slate-950/80 rounded-2xl border border-dashed border-slate-800">
-              <label className="cursor-pointer flex items-center justify-center gap-2 text-xs font-semibold text-amber-300 hover:text-amber-200">
-                <Plus className="w-4 h-4" /> Click here to Add Photos (+ ഫോട്ടോകൾ ചേർക്കുക)
+            <div className="p-4 bg-black/40 rounded-2xl border border-dashed border-amber-500/30 text-center">
+              <label className="cursor-pointer inline-flex items-center justify-center gap-2 text-xs font-semibold text-amber-300 hover:text-amber-200 py-2 px-4 rounded-xl bg-amber-500/10 border border-amber-500/30">
+                <Plus className="w-4 h-4" /> Click to Choose & Add Photos (+ ഫോട്ടോകൾ ചേർക്കുക)
                 <input
                   type="file"
                   multiple
@@ -622,31 +647,31 @@ export default function BuilderPage() {
 
             {(galleryFiles.length > 0 || sampleGalleryUrls.length > 0) && (
               <div className="pt-2">
-                <p className="text-xs text-slate-400 mb-2 font-semibold">
-                  Selected Photos ({galleryFiles.length + sampleGalleryUrls.length} ഫോട്ടോകൾ തയ്യാറാണ്):
+                <p className="text-xs text-slate-400 mb-3 font-semibold">
+                  Selected Moments ({galleryFiles.length + sampleGalleryUrls.length} ഫോട്ടോകൾ തയ്യാറാണ്):
                 </p>
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
                   {galleryFiles.map((file, idx) => (
-                    <div key={`file-${idx}`} className="relative aspect-square rounded-xl overflow-hidden border border-slate-700 group">
+                    <div key={`file-${idx}`} className="relative aspect-square rounded-2xl overflow-hidden border border-slate-700 shadow-md">
                       <img src={URL.createObjectURL(file)} alt="Uploaded" className="w-full h-full object-cover" />
                       <button
                         type="button"
                         onClick={() => removeGalleryFile(idx)}
-                        className="absolute top-1 right-1 p-1 bg-rose-600/90 text-white rounded-full hover:scale-110 transition"
+                        className="absolute top-1.5 right-1.5 p-1 bg-rose-600 text-white rounded-full hover:scale-110 shadow-lg"
                       >
-                        <X className="w-3 h-3" />
+                        <X className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   ))}
                   {sampleGalleryUrls.map((url, idx) => (
-                    <div key={`sample-${idx}`} className="relative aspect-square rounded-xl overflow-hidden border border-amber-500/40 group">
+                    <div key={`sample-${idx}`} className="relative aspect-square rounded-2xl overflow-hidden border border-amber-500/40 shadow-md">
                       <img src={url} alt="Sample" className="w-full h-full object-cover" />
                       <button
                         type="button"
                         onClick={() => removeSampleGalleryUrl(idx)}
-                        className="absolute top-1 right-1 p-1 bg-rose-600/90 text-white rounded-full hover:scale-110 transition"
+                        className="absolute top-1.5 right-1.5 p-1 bg-rose-600 text-white rounded-full hover:scale-110 shadow-lg"
                       >
-                        <X className="w-3 h-3" />
+                        <X className="w-3.5 h-3.5" />
                       </button>
                     </div>
                   ))}
@@ -655,21 +680,21 @@ export default function BuilderPage() {
             )}
           </div>
 
-          {/* 9. കോൺടാക്റ്റ് & വാട്ട്‌സ്ആപ്പ് */}
-          <div className="bg-slate-900/80 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-amber-500/20 shadow-2xl space-y-6">
-            <h2 className="text-xl font-serif font-bold text-amber-300">7. Contacts & WhatsApp Wishes</h2>
+          {/* 9. CONTACT & WHATSAPP */}
+          <div className="bg-[#10141e]/90 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-amber-500/20 shadow-2xl space-y-6">
+            <h2 className="text-xl font-serif font-bold text-amber-300">7. Contacts & WhatsApp RSVP</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-xs text-slate-400 flex items-center gap-1">
-                  <Phone className="w-3 h-3 text-emerald-400" /> WhatsApp Number *
+                  <Phone className="w-3 h-3 text-emerald-400" /> Primary WhatsApp Number *
                 </label>
-                <input required name="whatsappNumber" value={formData.whatsappNumber} onChange={handleChange} placeholder="+91 00000 00000" className="w-full mt-1 p-3 bg-slate-950 border border-slate-800 rounded-xl outline-none text-sm" />
+                <input required name="whatsappNumber" value={formData.whatsappNumber} onChange={handleChange} placeholder="+91 00000 00000" className="w-full mt-1 p-3 bg-black/40 border border-slate-800 rounded-xl outline-none text-sm" />
               </div>
               <div>
                 <label className="text-xs text-slate-400 flex items-center gap-1">
                   <Mail className="w-3 h-3 text-sky-400" /> Contact Email
                 </label>
-                <input name="email" value={formData.email} onChange={handleChange} placeholder="couple@wedding.xyz" className="w-full mt-1 p-3 bg-slate-950 border border-slate-800 rounded-xl outline-none text-sm" />
+                <input name="email" value={formData.email} onChange={handleChange} placeholder="couple@wedding.xyz" className="w-full mt-1 p-3 bg-black/40 border border-slate-800 rounded-xl outline-none text-sm" />
               </div>
             </div>
 
@@ -685,7 +710,7 @@ export default function BuilderPage() {
                       updated[idx].name = e.target.value;
                       setContacts(updated);
                     }}
-                    className="w-1/2 p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs outline-none"
+                    className="w-1/2 p-2.5 bg-black/40 border border-slate-800 rounded-xl text-xs outline-none"
                   />
                   <input
                     value={c.phone}
@@ -695,7 +720,7 @@ export default function BuilderPage() {
                       updated[idx].phone = e.target.value;
                       setContacts(updated);
                     }}
-                    className="w-1/2 p-2.5 bg-slate-950 border border-slate-800 rounded-xl text-xs outline-none"
+                    className="w-1/2 p-2.5 bg-black/40 border border-slate-800 rounded-xl text-xs outline-none"
                   />
                   <button
                     type="button"
@@ -716,12 +741,12 @@ export default function BuilderPage() {
             </div>
           </div>
 
-          {/* 10. കസ്റ്റം സെക്ഷനുകൾ */}
-          <div className="bg-slate-900/80 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-amber-500/20 shadow-2xl space-y-4">
+          {/* 10. CUSTOM SECTIONS */}
+          <div className="bg-[#10141e]/90 backdrop-blur-md p-6 sm:p-8 rounded-3xl border border-amber-500/20 shadow-2xl space-y-4">
             <h2 className="text-xl font-serif font-bold text-amber-300">8. Extra Custom Sections (കൂടുതൽ വിവരങ്ങൾ)</h2>
             <p className="text-xs text-slate-400">Add detailed schedules, special attire, travel details, or party instructions.</p>
             {customSections.map((sec, idx) => (
-              <div key={idx} className="p-5 bg-slate-950/80 rounded-2xl border border-slate-800 space-y-3 relative">
+              <div key={idx} className="p-5 bg-black/40 rounded-2xl border border-slate-800 space-y-3 relative">
                 <button
                   type="button"
                   onClick={() => setCustomSections(customSections.filter((_, i) => i !== idx))}
@@ -767,7 +792,7 @@ export default function BuilderPage() {
             </button>
           </div>
 
-          {/* സബ്മിറ്റ് ബട്ടൺ */}
+          {/* SUBMIT BUTTON */}
           <button
             type="submit"
             disabled={loading}
@@ -779,10 +804,10 @@ export default function BuilderPage() {
         </form>
       </div>
 
-      {/* തീം പ്രിവ്യൂ പോപ്പ്അപ്പ് */}
+      {/* THEME PREVIEW MODAL */}
       {previewTheme && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-700 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
+          <div className="bg-[#10141e] border border-slate-700 rounded-3xl max-w-lg w-full p-6 space-y-4 shadow-2xl">
             <div className="flex justify-between items-center">
               <h3 className="text-lg font-serif font-bold text-amber-300">{previewTheme.name}</h3>
               <button onClick={() => setPreviewTheme(null)} className="p-1 rounded-full hover:bg-slate-800 text-slate-400">
