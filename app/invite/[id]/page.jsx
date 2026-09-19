@@ -3,8 +3,6 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "../../../lib/supabaseClient";
 import TemplateOne from "../../../components/templates/TemplateOne";
-// ഭാവിയിൽ TemplateTwo ഉണ്ടാക്കുമ്പോൾ ഇവിടെ ഇമ്പോർട്ട് ചെയ്യാം:
-// import TemplateTwo from "../../../components/templates/TemplateTwo";
 
 export default function InviteViewPage() {
   const params = useParams();
@@ -28,11 +26,13 @@ export default function InviteViewPage() {
         bride_bio: "A lover of heritage homes, morning filter coffee, and quiet rainy evenings.",
         bride_family: "Elder brother Dr. Kevin & Sister-in-law Riya",
         bride_parents: "K. V. Thomas & Susan Thomas",
+        bride_photo: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80",
         groom_name: "Joel",
         groom_profession: "Cloud Security Specialist",
         groom_bio: "Passionate about football, landscape photography, and long hill-country drives.",
         groom_family: "Younger sister Sharon & Grandparents",
         groom_parents: "Pastor Thomas Joseph & Mrs. Mincy Thomas",
+        groom_photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80",
         parents_text: "Together with their families",
         wedding_date: "2026-10-21T10:30",
         venue_name: "Jacobs Entertainments",
@@ -45,11 +45,13 @@ export default function InviteViewPage() {
         cover_photo: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1400&q=80",
         wedding_card_photo: "https://images.unsplash.com/photo-1607190074257-dd4b7af0309f?auto=format&fit=crop&w=800&q=80",
         gallery_photos: [
-          "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80",
-          "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=800&q=80",
-          "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=800&q=80"
+          "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=1200&q=80",
+          "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=800&q=80",
+          "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=800&q=80"
         ],
-        music_url: "https://cdn.pixabay.com/download/audio/2022/05/16/audio_db6591201e.mp3?filename=indian-flute-and-tabla-110903.mp3",
+        music_url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
         contact_numbers: [
           { name: "Bride Family Coordinator", phone: "+91 00000 00001" },
           { name: "Groom Family Coordinator", phone: "+91 01234 56789" }
@@ -140,12 +142,6 @@ export default function InviteViewPage() {
     );
   }
 
-  // 👇 ഭാവിയിൽ കൂടുതൽ ടെംപ്ലേറ്റുകൾ ചേർക്കാനുള്ള എളുപ്പവഴി:
-  // if (invitation.template_id === "template2") {
-  //   return <TemplateTwo invitation={invitation} onRsvpSubmit={handleRsvpSubmit} onWishSubmit={handleWishSubmit} wishes={wishes} wishLoading={wishLoading} isSampleDemo={isSampleDemo} />;
-  // }
-
-  // ഡിഫോൾട്ട് ആയി അല്ലെങ്കിൽ template1 ആണെങ്കിൽ TemplateOne ലോഡ് ചെയ്യും:
   return (
     <TemplateOne
       invitation={invitation}
