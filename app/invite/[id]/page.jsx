@@ -1,296 +1,436 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
-import { useParams } from "next/navigation";
+import React, { useEffect, useState, use } from "react";
 import { supabase } from "../../../lib/supabaseClient";
-import { Volume2, VolumeX, Calendar, MapPin, Heart, Share2, Send, Gift, Video, MessageCircle, ChevronDown, CheckCircle2 } from "lucide-react";
+import { 
+  Heart, Calendar, MapPin, Music, Volume2, VolumeX, Share2, 
+  Send, Gift, Video, Phone, Mail, FileText, Image as ImageIcon, X, Sparkles
+} from "lucide-react";
 
-export default function DynamicInvitationPage() {
-  const params = useParams();
-  const invitationId = params.id;
+export default function InviteViewPage({ params }) {
+  const unwrappedParams = use(params);
+  const id = unwrappedParams.id;
 
-  const [data, setData] = useState(null);
+  const [invitation, setInvitation] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isOpen, setIsOpen] = useState(false);
-  const [isMuted, setIsMuted] = useState(true);
-  const [countdown, setCountdown] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
-  const [showCard, setShowCard] = useState(false);
-  const [wishes, setWishes] = useState([]);
-  const [guestName, setGuestName] = useState("");
-  const [guestWish, setGuestWish] = useState("");
-  const [rsvpSubmitted, setRsvpSubmitted] = useState(false);
-  const audioRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [audio, setAudio] = useState(null);
 
-  // Fetch invitation data from Supabase by ID
+  // Modals
+  const [showCardModal, setShowCardModal] = useState(false);
+  const [selectedGalleryImg, setSelectedGalleryImg] = useState(null);
+
+  // RSVP Form State
+  const [rsvpName, setRsvpName] = useState("");
+  const [rsvpGuests, setRsvpGuests] = useState(1);
+  const [rsvpSubmitted, setRsvpSubmitted] = useState(false);
+
+  // Wishes State
+  const [guestName, setGuestName] = useState("");
+  const [guestMessage, setGuestMessage] = useState("");
+  const [wishes, setWishes] = useState([]);
+  const [wishLoading, setWishLoading] = useState(false);
+
   useEffect(() => {
-    async function fetchInvitation() {
-      if (!invitationId) return;
-      const { data: result, error } = await supabase
+    async function loadData() {
+      const { data, error } = await supabase
         .from("invitations")
         .select("*")
-        .eq("id", invitationId)
+        .eq("id", id)
         .single();
 
-      if (error || !result) {
-        console.error("Invitation not found:", error);
-      } else {
-        setData(result);
+      if (!error && data) {
+        setInvitation(data);
+        if (data.music_url) {
+          const snd = new Audio(data.music_url);
+          snd.loop = true;
+          setAudio(snd);
+        }
       }
+
+      // Load Wishes
+      const { data: wishesData } = await supabase
+        .from("guest_wishes")
+        .select("*")
+        .eq("invitation_id", id)
+        .order("created_at", { ascending: false });
+
+      if (wishesData) setWishes(wishesData);
       setLoading(false);
     }
-    fetchInvitation();
-  }, [invitationId]);
+    loadData();
 
-  // Countdown timer
-  useEffect(() => {
-    if (!data?.wedding_date) return;
-    const interval = setInterval(() => {
-      const difference = new Date(data.wedding_date) - new Date();
-      if (difference > 0) {
-        setCountdown({
-          days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-          minutes: Math.floor((difference / 1000 / 60) % 60),
-          seconds: Math.floor((difference / 1000) % 60),
-        });
-      }
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [data]);
-
-  const handleOpenInvitation = () => {
-    setIsOpen(true);
-    if (audioRef.current) {
-      audioRef.current.play().catch(() => {});
-      setIsMuted(false);
-    }
-  };
+    return () => {
+      if (audio) audio.pause();
+    };
+  }, [id]);
 
   const toggleMusic = () => {
-    if (audioRef.current) {
-      if (isMuted) audioRef.current.play();
-      else audioRef.current.pause();
-      setIsMuted(!isMuted);
+    if (!audio) return;
+    if (isPlaying) {
+      audio.pause();
+      setIsPlaying(false);
+    } else {
+      audio.play().catch(() => {});
+      setIsPlaying(true);
     }
   };
 
-  const handleAddWish = (e) => {
+  const copyShareLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    alert("Wedding invitation link copied to clipboard!");
+  };
+
+  const handleRsvpSubmit = async (e) => {
     e.preventDefault();
-    if (guestName && guestWish) {
-      setWishes([{ name: guestName, message: guestWish }, ...wishes]);
-      setGuestName("");
-      setGuestWish("");
+    const { error } = await supabase.from("rsvps").insert([
+      { invitation_id: id, guest_name: rsvpName, guest_count: parseInt(rsvpGuests), attending: true }
+    ]);
+    if (!error) {
+      setRsvpSubmitted(true);
+    } else {
+      alert("Error submitting RSVP: " + error.message);
     }
+  };
+
+  const handleWishSubmit = async (e) => {
+    e.preventDefault();
+    if (!guestName || !guestMessage) return;
+    setWishLoading(true);
+
+    const { error } = await supabase.from("guest_wishes").insert([
+      { invitation_id: id, guest_name: guestName, message: guestMessage }
+    ]);
+
+    if (!error) {
+      setWishes([{ guest_name: guestName, message: guestMessage, created_at: new Date().toISOString() }, ...wishes]);
+      setGuestName("");
+      setGuestMessage("");
+    }
+    setWishLoading(false);
   };
 
   if (loading) {
-    return <div className="min-h-screen bg-stone-900 flex items-center justify-center text-amber-200">Loading Invitation...</div>;
+    return (
+      <div className="min-h-screen bg-stone-950 flex flex-col items-center justify-center text-amber-200">
+        <Heart className="w-12 h-12 animate-pulse text-rose-500 mb-4" />
+        <p className="font-serif text-lg tracking-widest">OPENING INVITATION...</p>
+      </div>
+    );
   }
 
-  if (!data) {
-    return <div className="min-h-screen bg-stone-900 flex items-center justify-center text-stone-300">Invitation not found!</div>;
+  if (!invitation) {
+    return (
+      <div className="min-h-screen bg-stone-950 flex flex-col items-center justify-center text-slate-300 p-4">
+        <h2 className="text-2xl font-serif font-bold text-rose-400">Invitation Not Found</h2>
+        <p className="text-sm text-slate-400 mt-2">The link might be invalid or has expired.</p>
+      </div>
+    );
   }
 
-  const brideInitial = data.bride_name?.charAt(0) || "A";
-  const groomInitial = data.groom_name?.charAt(0) || "V";
+  const weddingDateObj = new Date(invitation.wedding_date);
+  const formattedDate = weddingDateObj.toLocaleDateString("en-US", {
+    weekday: "long", year: "numeric", month: "long", day: "numeric"
+  });
+  const formattedTime = weddingDateObj.toLocaleTimeString("en-US", {
+    hour: "2-digit", minute: "2-digit"
+  });
+
+  const contacts = Array.isArray(invitation.contact_numbers) ? invitation.contact_numbers : [];
+  const gallery = Array.isArray(invitation.gallery_photos) ? invitation.gallery_photos : [];
+  const customSecs = Array.isArray(invitation.custom_sections) ? invitation.custom_sections : [];
 
   return (
-    <div className="relative min-h-screen bg-stone-900 text-stone-100 selection:bg-rose-500 overflow-x-hidden">
-      <audio ref={audioRef} src={data.music_url} loop />
+    <main className="min-h-screen bg-stone-950 text-slate-100 font-sans selection:bg-amber-400 selection:text-black relative pb-28">
 
-      {/* Music & Share Buttons */}
-      <div className="fixed top-5 right-5 z-50 flex gap-2">
-        <button onClick={() => {
-          navigator.clipboard.writeText(window.location.href);
-          alert("Wedding website link copied to clipboard!");
-        }} className="p-3 bg-stone-800/80 backdrop-blur rounded-full border border-amber-400/30 text-amber-300">
+      {/* FLOATING AUDIO & SHARE BAR */}
+      <div className="fixed top-5 right-5 z-40 flex items-center gap-3">
+        {invitation.music_url && (
+          <button
+            onClick={toggleMusic}
+            className="p-3 bg-stone-900/80 backdrop-blur-md border border-amber-400/40 text-amber-300 rounded-full shadow-2xl hover:scale-110 transition"
+            title="Play / Pause Music"
+          >
+            {isPlaying ? <Volume2 className="w-5 h-5 text-amber-300 animate-pulse" /> : <VolumeX className="w-5 h-5" />}
+          </button>
+        )}
+        <button
+          onClick={copyShareLink}
+          className="p-3 bg-stone-900/80 backdrop-blur-md border border-amber-400/40 text-amber-300 rounded-full shadow-2xl hover:scale-110 transition"
+          title="Share Invitation Link"
+        >
           <Share2 className="w-5 h-5" />
         </button>
-        <button onClick={toggleMusic} className="p-3 bg-stone-800/80 backdrop-blur rounded-full border border-amber-400/30 text-amber-300">
-          {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5 text-rose-400" />}
-        </button>
       </div>
 
-      {/* WhatsApp Button */}
-      {data.whatsapp_number && (
-        <a href={`https://wa.me/${data.whatsapp_number}`} target="_blank" rel="noreferrer" className="fixed bottom-6 right-6 z-50 p-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-full shadow-2xl">
-          <MessageCircle className="w-6 h-6" />
-        </a>
-      )}
+      {/* 1. HERO COVER SECTION */}
+      <section className="relative h-[85vh] w-full flex items-center justify-center overflow-hidden">
+        <div 
+          className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 scale-105"
+          style={{ backgroundImage: `url(${invitation.cover_photo})` }}
+        >
+          <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/60 to-black/40" />
+        </div>
 
-      {/* Falling Leaves Animation */}
-      <div className="pointer-events-none fixed inset-0 z-40 overflow-hidden">
-        {[...Array(10)].map((_, i) => (
-          <div
-            key={i}
-            className={`absolute top-0 text-amber-200/50 text-xl select-none ${i % 2 === 0 ? "animate-fall-slow" : "animate-fall-medium"}`}
-            style={{ left: `${(i * 10) + 4}%`, animationDelay: `${i * 0.8}s` }}
-          >
-            🍁
+        <div className="relative z-10 text-center px-4 max-w-3xl space-y-6">
+          <p className="text-amber-300/90 tracking-[0.3em] uppercase text-xs sm:text-sm font-semibold">
+            {invitation.parents_text || "Together with their families"}
+          </p>
+          <h1 className="text-4xl sm:text-7xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-rose-100 to-amber-300 tracking-tight drop-shadow-md">
+            {invitation.bride_name} & {invitation.groom_name}
+          </h1>
+          <p className="text-stone-300 text-sm sm:text-base font-serif italic max-w-lg mx-auto">
+            "Two lives, two hearts, joined together in friendship, united forever in love."
+          </p>
+
+          <div className="pt-4 flex flex-wrap justify-center gap-4">
+            <span className="px-5 py-2 rounded-full bg-black/50 border border-amber-400/30 text-amber-200 text-xs sm:text-sm font-serif">
+              {formattedDate}
+            </span>
+            {invitation.wedding_card_photo && (
+              <button
+                onClick={() => setShowCardModal(true)}
+                className="px-5 py-2 rounded-full bg-amber-500 hover:bg-amber-400 text-stone-950 text-xs sm:text-sm font-semibold shadow-xl flex items-center gap-2"
+              >
+                <FileText className="w-4 h-4" /> View Official Wedding Card
+              </button>
+            )}
           </div>
-        ))}
-      </div>
+        </div>
+      </section>
 
-      {/* Cover / Splash Screen */}
-      {!isOpen ? (
-        <section className="relative h-screen flex flex-col items-center justify-center text-center px-4 bg-cover bg-center" style={{ backgroundImage: `linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url(${data.cover_photo})` }}>
-          <div className="space-y-6 max-w-lg">
-            <div className="w-28 h-28 mx-auto rounded-full border-2 border-amber-300/80 flex items-center justify-center bg-stone-900/60 backdrop-blur shadow-2xl">
-              <span className="text-4xl font-serif text-amber-300 font-bold tracking-widest">{brideInitial} & {groomInitial}</span>
+      {/* 2. BRIDE & GROOM PROFILES */}
+      <section className="max-w-4xl mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <Heart className="w-6 h-6 text-rose-500 mx-auto fill-rose-500 mb-2" />
+          <h2 className="text-3xl font-serif font-bold text-amber-200">The Happy Couple</h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Bride Card */}
+          <div className="bg-stone-900/60 border border-rose-500/30 rounded-3xl p-6 sm:p-8 text-center space-y-4 shadow-xl">
+            {invitation.bride_photo ? (
+              <img src={invitation.bride_photo} alt={invitation.bride_name} className="w-32 h-32 rounded-full object-cover mx-auto border-2 border-rose-400/60 shadow-lg" />
+            ) : (
+              <div className="w-24 h-24 rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center mx-auto text-rose-300 font-serif text-2xl font-bold">
+                {invitation.bride_name[0]}
+              </div>
+            )}
+            <h3 className="text-2xl font-serif font-bold text-rose-300">{invitation.bride_name}</h3>
+            {invitation.bride_profession && (
+              <p className="text-xs font-semibold text-amber-300 uppercase tracking-widest">{invitation.bride_profession}</p>
+            )}
+            {invitation.bride_parents && (
+              <p className="text-xs text-stone-400"><strong className="text-stone-300">Parents:</strong> {invitation.bride_parents}</p>
+            )}
+            {invitation.bride_bio && (
+              <p className="text-sm text-stone-300 italic font-serif leading-relaxed">"{invitation.bride_bio}"</p>
+            )}
+            {invitation.bride_family && (
+              <p className="text-xs text-stone-400 pt-2 border-t border-stone-800"><strong className="text-stone-300">Family:</strong> {invitation.bride_family}</p>
+            )}
+          </div>
+
+          {/* Groom Card */}
+          <div className="bg-stone-900/60 border border-amber-500/30 rounded-3xl p-6 sm:p-8 text-center space-y-4 shadow-xl">
+            {invitation.groom_photo ? (
+              <img src={invitation.groom_photo} alt={invitation.groom_name} className="w-32 h-32 rounded-full object-cover mx-auto border-2 border-amber-400/60 shadow-lg" />
+            ) : (
+              <div className="w-24 h-24 rounded-full bg-amber-500/10 border border-amber-500/30 flex items-center justify-center mx-auto text-amber-300 font-serif text-2xl font-bold">
+                {invitation.groom_name[0]}
+              </div>
+            )}
+            <h3 className="text-2xl font-serif font-bold text-amber-300">{invitation.groom_name}</h3>
+            {invitation.groom_profession && (
+              <p className="text-xs font-semibold text-amber-300 uppercase tracking-widest">{invitation.groom_profession}</p>
+            )}
+            {invitation.groom_parents && (
+              <p className="text-xs text-stone-400"><strong className="text-stone-300">Parents:</strong> {invitation.groom_parents}</p>
+            )}
+            {invitation.groom_bio && (
+              <p className="text-sm text-stone-300 italic font-serif leading-relaxed">"{invitation.groom_bio}"</p>
+            )}
+            {invitation.groom_family && (
+              <p className="text-xs text-stone-400 pt-2 border-t border-stone-800"><strong className="text-stone-300">Family:</strong> {invitation.groom_family}</p>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* 3. CEREMONY & LOCATION */}
+      <section className="max-w-4xl mx-auto px-4 py-12">
+        <div className="bg-stone-900/80 border border-amber-500/30 rounded-3xl p-8 text-center space-y-6 shadow-2xl">
+          <h2 className="text-3xl font-serif font-bold text-amber-200">The Wedding Ceremony</h2>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-8 py-4">
+            <div className="flex items-center gap-3">
+              <Calendar className="w-6 h-6 text-amber-400" />
+              <div className="text-left">
+                <p className="font-semibold text-stone-200">{formattedDate}</p>
+                <p className="text-xs text-stone-400">Muhurtham: {formattedTime}</p>
+              </div>
             </div>
-            <p className="text-amber-200 uppercase tracking-widest text-sm">Together Forever</p>
-            <h1 className="text-5xl font-serif font-bold text-white tracking-wide">{data.bride_name} & {data.groom_name}</h1>
-            <button onClick={handleOpenInvitation} className="mt-8 px-8 py-4 bg-gradient-to-r from-amber-500 to-rose-600 text-white font-medium rounded-full shadow-2xl flex items-center gap-2 mx-auto transition-transform active:scale-95">
-              <span>Open Invitation</span>
-              <ChevronDown className="w-4 h-4 animate-bounce" />
-            </button>
+            <div className="flex items-center gap-3">
+              <MapPin className="w-6 h-6 text-rose-400" />
+              <div className="text-left">
+                <p className="font-semibold text-stone-200">{invitation.venue_name}</p>
+                <p className="text-xs text-stone-400">{invitation.venue_address}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-4 pt-2">
+            {invitation.map_url && (
+              <a
+                href={invitation.map_url}
+                target="_blank"
+                rel="noreferrer"
+                className="px-6 py-3 rounded-xl bg-amber-500 hover:bg-amber-400 text-stone-950 font-semibold text-xs flex items-center gap-2"
+              >
+                <MapPin className="w-4 h-4" /> Open in Google Maps
+              </a>
+            )}
+            {invitation.whatsapp_number && (
+              <a
+                href={`https://wa.me/${invitation.whatsapp_number.replace(/[^0-9]/g, "")}?text=Congratulations%20${encodeURIComponent(invitation.bride_name)}%20and%20${encodeURIComponent(invitation.groom_name)}!`}
+                target="_blank"
+                rel="noreferrer"
+                className="px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs flex items-center gap-2"
+              >
+                <Send className="w-4 h-4" /> Send WhatsApp Wishes
+              </a>
+            )}
+            {invitation.email && (
+              <a
+                href={`mailto:${invitation.email}`}
+                className="px-6 py-3 rounded-xl bg-stone-800 hover:bg-stone-700 text-stone-200 font-semibold text-xs flex items-center gap-2 border border-stone-700"
+              >
+                <Mail className="w-4 h-4" /> Contact via Email
+              </a>
+            )}
+          </div>
+        </div>
+      </section>
+
+      {/* 4. PHOTO GALLERY */}
+      {gallery.length > 0 && (
+        <section className="max-w-5xl mx-auto px-4 py-12">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-serif font-bold text-amber-200">Captured Moments</h2>
+            <p className="text-xs text-stone-400 mt-1">Glimpses of their beautiful journey</p>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+            {gallery.map((imgUrl, i) => (
+              <div 
+                key={i} 
+                onClick={() => setSelectedGalleryImg(imgUrl)}
+                className="aspect-square rounded-2xl overflow-hidden border border-stone-800 cursor-pointer hover:scale-105 transition transform shadow-lg"
+              >
+                <img src={imgUrl} alt={`Moment ${i+1}`} className="w-full h-full object-cover" />
+              </div>
+            ))}
           </div>
         </section>
-      ) : (
-        /* Main Invitation Page */
-        <main className="bg-stone-950">
-          <section className="py-20 px-4 text-center max-w-3xl mx-auto space-y-6">
-            <span className="text-amber-400 font-serif italic text-lg tracking-widest">A Moment of Love</span>
-            <h2 className="text-4xl sm:text-5xl font-serif text-amber-100 font-bold">{data.bride_name} & {data.groom_name}</h2>
-            <div className="grid grid-cols-4 gap-3 max-w-md mx-auto pt-6">
-              {[
-                { label: "Days", val: countdown.days },
-                { label: "Hours", val: countdown.hours },
-                { label: "Mins", val: countdown.minutes },
-                { label: "Secs", val: countdown.seconds },
-              ].map((item, idx) => (
-                <div key={idx} className="bg-stone-900 border border-amber-500/20 rounded-2xl p-3">
-                  <div className="text-3xl font-serif font-bold text-amber-300">{item.val}</div>
-                  <div className="text-xs uppercase text-stone-400 mt-1">{item.label}</div>
+      )}
+
+      {/* 5. CUSTOM SECTIONS */}
+      {customSecs.length > 0 && (
+        <section className="max-w-4xl mx-auto px-4 py-8 space-y-6">
+          {customSecs.map((sec, i) => (
+            <div key={i} className="bg-stone-900/50 border border-stone-800 rounded-3xl p-6 sm:p-8 space-y-2">
+              <h3 className="text-xl font-serif font-bold text-amber-300">{sec.title}</h3>
+              <p className="text-sm text-stone-300 leading-relaxed whitespace-pre-line">{sec.content}</p>
+            </div>
+          ))}
+        </section>
+      )}
+
+      {/* 6. CONTACT COORDINATORS */}
+      {contacts.length > 0 && (
+        <section className="max-w-4xl mx-auto px-4 py-8">
+          <div className="bg-stone-900/40 border border-stone-800 rounded-3xl p-6 sm:p-8 text-center space-y-4">
+            <h3 className="text-lg font-serif font-bold text-amber-200">Event Coordinators & Family Contacts</h3>
+            <div className="flex flex-wrap justify-center gap-6">
+              {contacts.map((c, i) => (
+                <div key={i} className="text-center">
+                  <p className="text-xs text-stone-400">{c.name || "Coordinator"}</p>
+                  <a href={`tel:${c.phone}`} className="text-sm font-semibold text-amber-300 hover:underline flex items-center gap-1 justify-center mt-1">
+                    <Phone className="w-3.5 h-3.5 text-emerald-400" /> {c.phone}
+                  </a>
                 </div>
               ))}
             </div>
-          </section>
-
-          <section className="py-12 px-6 max-w-2xl mx-auto text-center border-y border-amber-500/20 space-y-3">
-            <p className="text-xs uppercase tracking-widest text-amber-400 font-semibold">Together with their families</p>
-            <p className="text-stone-300 font-serif text-lg leading-relaxed">{data.parents_text}</p>
-          </section>
-
-          <section className="py-16 px-4 max-w-3xl mx-auto space-y-12">
-            <div className="text-center">
-              <Heart className="w-6 h-6 text-rose-500 mx-auto mb-2" />
-              <h3 className="text-3xl font-serif text-amber-200">Our Story</h3>
-            </div>
-            <div className="space-y-6">
-              {data.first_met_story && (
-                <div className="bg-stone-900/60 p-6 rounded-2xl border border-stone-800">
-                  <h4 className="text-amber-400 font-serif text-lg mb-2">The First Time We Met</h4>
-                  <p className="text-stone-300 leading-relaxed">{data.first_met_story}</p>
-                </div>
-              )}
-              {data.journey_story && (
-                <div className="bg-stone-900/60 p-6 rounded-2xl border border-stone-800">
-                  <h4 className="text-amber-400 font-serif text-lg mb-2">Journey of Love</h4>
-                  <p className="text-stone-300 leading-relaxed">{data.journey_story}</p>
-                </div>
-              )}
-            </div>
-          </section>
-
-          <section className="py-16 px-4 bg-stone-900 text-center">
-            <div className="max-w-xl mx-auto space-y-6">
-              <Calendar className="w-8 h-8 text-amber-400 mx-auto" />
-              <h3 className="text-3xl font-serif text-amber-100">When & Where</h3>
-              <p className="text-stone-300">{new Date(data.wedding_date).toLocaleString("en-US", { dateStyle: "full", timeStyle: "short" })}</p>
-              <div className="p-4 bg-stone-950 rounded-xl border border-stone-800">
-                <p className="font-semibold text-amber-200">{data.venue_name}</p>
-                <p className="text-sm text-stone-400 mt-1">{data.venue_address}</p>
-              </div>
-              {data.map_url && (
-                <a href={data.map_url} target="_blank" rel="noreferrer" className="inline-flex px-6 py-3 bg-stone-800 rounded-full border border-amber-500/30 text-amber-200 text-sm font-medium items-center gap-2">
-                  <MapPin className="w-4 h-4" /> Open in Google Maps
-                </a>
-              )}
-            </div>
-          </section>
-
-          <section className="py-16 px-4 text-center">
-            <div className="max-w-md mx-auto">
-              <button onClick={() => setShowCard(!showCard)} className="w-full py-4 bg-gradient-to-r from-amber-600 to-rose-700 text-white rounded-2xl shadow-xl font-serif">
-                {showCard ? "Close Formal Invitation" : "💌 Click to Open Official Card"}
-              </button>
-              {showCard && (
-                <div className="mt-6 p-8 bg-stone-100 text-stone-900 rounded-2xl shadow-2xl border-4 border-double border-amber-600 font-serif text-center space-y-3">
-                  <p className="text-xs uppercase text-amber-800 font-bold">Formal Invitation</p>
-                  <h4 className="text-3xl font-bold">{data.bride_name} & {data.groom_name}</h4>
-                  <p className="text-sm text-stone-600">{data.parents_text}</p>
-                </div>
-              )}
-            </div>
-          </section>
-
-          <section className="py-16 px-4 max-w-lg mx-auto">
-            <div className="bg-stone-900 p-8 rounded-2xl border border-stone-800 text-center space-y-6">
-              <h3 className="text-2xl font-serif text-amber-200">Will You Join Us?</h3>
-              {rsvpSubmitted ? (
-                <div className="text-emerald-400 flex items-center justify-center gap-2 py-4">
-                  <CheckCircle2 className="w-6 h-6" /> Thank you! We look forward to seeing you.
-                </div>
-              ) : (
-                <form onSubmit={(e) => { e.preventDefault(); setRsvpSubmitted(true); }} className="space-y-4 text-left">
-                  <input required className="w-full p-3 bg-stone-950 border border-stone-800 rounded-xl text-white outline-none" placeholder="Your Name" />
-                  <button type="submit" className="w-full py-3 bg-rose-600 font-semibold rounded-xl text-white">
-                    Confirm Attendance
-                  </button>
-                </form>
-              )}
-            </div>
-          </section>
-
-          {data.live_stream_url && (
-            <section className="py-16 px-4 max-w-3xl mx-auto space-y-4 text-center">
-              <Video className="w-6 h-6 text-rose-500 mx-auto" />
-              <h3 className="text-2xl font-serif text-amber-200">Live Streaming</h3>
-              <p className="text-sm text-stone-400">Can't make it in person? Join our live stream on the big day.</p>
-              <a href={data.live_stream_url} target="_blank" rel="noreferrer" className="inline-block px-6 py-2 bg-rose-600/20 text-rose-400 border border-rose-500/30 rounded-full text-sm">
-                Watch YouTube Broadcast
-              </a>
-            </section>
-          )}
-
-          <section className="py-16 px-4 max-w-3xl mx-auto space-y-6">
-            <div className="bg-stone-900 p-6 rounded-2xl border border-stone-800 space-y-4">
-              <h4 className="text-lg font-serif text-amber-200">Blessings & Greetings</h4>
-              <form onSubmit={handleAddWish} className="space-y-3">
-                <input value={guestName} onChange={(e) => setGuestName(e.target.value)} placeholder="Your Name" required className="w-full p-3 bg-stone-950 border border-stone-800 rounded-xl text-sm text-white outline-none" />
-                <textarea value={guestWish} onChange={(e) => setGuestWish(e.target.value)} placeholder="Heartfelt wishes..." required rows={2} className="w-full p-3 bg-stone-950 border border-stone-800 rounded-xl text-sm text-white outline-none" />
-                <button type="submit" className="px-5 py-2 bg-amber-500 text-stone-950 rounded-xl text-sm font-semibold flex items-center gap-2">
-                  <Send className="w-4 h-4" /> Send Blessing
-                </button>
-              </form>
-              <div className="space-y-3 max-h-60 overflow-y-auto">
-                {wishes.map((w, idx) => (
-                  <div key={idx} className="p-3 bg-stone-950 rounded-xl border border-stone-800">
-                    <p className="text-xs text-amber-400 font-semibold">{w.name}</p>
-                    <p className="text-sm text-stone-300 mt-1">{w.message}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {data.upi_id && (
-            <section className="py-12 px-4 bg-stone-900 border-t border-stone-800 text-center">
-              <div className="max-w-md mx-auto space-y-3">
-                <Gift className="w-6 h-6 text-amber-400 mx-auto" />
-                <h3 className="text-xl font-serif text-amber-100">Send a Token of Love</h3>
-                <div className="p-4 bg-stone-950 rounded-xl border border-dashed border-amber-500/40 text-stone-300 text-sm">
-                  UPI ID: <span className="font-mono text-amber-300 font-semibold">{data.upi_id}</span>
-                </div>
-              </div>
-            </section>
-          )}
-
-          <footer className="py-8 text-center text-xs text-stone-500">
-            Created with ❤️ for {data.bride_name} & {data.groom_name}
-          </footer>
-        </main>
+          </div>
+        </section>
       )}
-    </div>
+
+      {/* 7. RSVP FORM */}
+      <section className="max-w-xl mx-auto px-4 py-12">
+        <div className="bg-stone-900/90 border border-rose-500/30 rounded-3xl p-6 sm:p-8 text-center space-y-6 shadow-2xl">
+          <h2 className="text-2xl font-serif font-bold text-rose-200">Will You Join Our Celebration?</h2>
+          {rsvpSubmitted ? (
+            <p className="text-emerald-400 font-serif">Thank you! Your RSVP has been confirmed. ❤️</p>
+          ) : (
+            <form onSubmit={handleRsvpSubmit} className="space-y-4 text-left">
+              <div>
+                <label className="text-xs text-stone-400">Your Full Name</label>
+                <input required value={rsvpName} onChange={(e) => setRsvpName(e.target.value)} placeholder="John Doe" className="w-full mt-1 p-3 bg-stone-950 border border-stone-700 rounded-xl outline-none" />
+              </div>
+              <div>
+                <label className="text-xs text-stone-400">Number of Guests Attending</label>
+                <input required type="number" min="1" max="10" value={rsvpGuests} onChange={(e) => setRsvpGuests(e.target.value)} className="w-full mt-1 p-3 bg-stone-950 border border-stone-700 rounded-xl outline-none" />
+              </div>
+              <button type="submit" className="w-full py-3 bg-rose-600 hover:bg-rose-500 text-white font-semibold rounded-xl text-sm transition">
+                Confirm Attendance (RSVP)
+              </button>
+            </form>
+          )}
+        </div>
+      </section>
+
+      {/* 8. GUEST WISHES WALL */}
+      <section className="max-w-2xl mx-auto px-4 py-12 space-y-8">
+        <div className="bg-stone-900/60 border border-stone-800 rounded-3xl p-6 sm:p-8 space-y-4">
+          <h3 className="text-xl font-serif font-bold text-amber-200 text-center">Leave Your Blessings & Wishes</h3>
+          <form onSubmit={handleWishSubmit} className="space-y-3">
+            <input required value={guestName} onChange={(e) => setGuestName(e.target.value)} placeholder="Your Name" className="w-full p-3 bg-stone-950 border border-stone-700 rounded-xl text-xs outline-none" />
+            <textarea required rows={2} value={guestMessage} onChange={(e) => setGuestMessage(e.target.value)} placeholder="Warmest congratulations to the couple..." className="w-full p-3 bg-stone-950 border border-stone-700 rounded-xl text-xs outline-none" />
+            <button type="submit" disabled={wishLoading} className="w-full py-2.5 bg-amber-500 hover:bg-amber-400 text-stone-950 font-semibold text-xs rounded-xl">
+              {wishLoading ? "Posting..." : "Post Wedding Wish"}
+            </button>
+          </form>
+        </div>
+
+        {/* Wishes List */}
+        <div className="space-y-3">
+          {wishes.map((w, i) => (
+            <div key={i} className="p-4 bg-stone-900/40 border border-stone-800 rounded-2xl space-y-1">
+              <span className="text-xs font-bold text-amber-300">{w.guest_name}</span>
+              <p className="text-xs text-stone-300 leading-relaxed">{w.message}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* OFFICIAL WEDDING CARD MODAL */}
+      {showCardModal && invitation.wedding_card_photo && (
+        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="relative max-w-2xl w-full bg-stone-900 border border-stone-700 rounded-3xl p-4 shadow-2xl">
+            <button onClick={() => setShowCardModal(false)} className="absolute top-3 right-3 p-2 bg-stone-800 rounded-full text-stone-300 hover:text-white">
+              <X className="w-5 h-5" />
+            </button>
+            <h3 className="text-base font-serif font-bold text-amber-300 text-center mb-3">Official Invitation Card</h3>
+            <img src={invitation.wedding_card_photo} alt="Official Card" className="max-h-[75vh] w-full object-contain rounded-2xl" />
+          </div>
+        </div>
+      )}
+
+      {/* GALLERY FULLSCREEN MODAL */}
+      {selectedGalleryImg && (
+        <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4" onClick={() => setSelectedGalleryImg(null)}>
+          <div className="relative max-w-3xl w-full p-2">
+            <img src={selectedGalleryImg} alt="Enlarged Moment" className="max-h-[85vh] w-full object-contain rounded-2xl shadow-2xl" />
+          </div>
+        </div>
+      )}
+    </main>
   );
 }
