@@ -37,12 +37,33 @@ export default function BuilderPage() {
       let uploadedCoverUrl = "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=1200&q=80";
 
       // Upload cover photo to Supabase bucket
-      if (coverFile) {
+     /* if (coverFile) {
         const fileExt = coverFile.name.split('.').pop();
         const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
         const { error: uploadError } = await supabase.storage
           .from("wedding-photos")
-          .upload(fileName, coverFile);
+          .upload(fileName, coverFile);*/
+
+      if (coverFile) {
+  // ഫയൽ എക്സ്റ്റൻഷൻ മാത്രം എടുത്ത് സേഫ് ആയ പേര് നൽകുന്നു
+  const fileExt = coverFile.name.split('.').pop().toLowerCase();
+  const safeFileName = `${Date.now()}_${Math.random().toString(36).substring(2, 8)}.${fileExt}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("wedding-photos")
+    .upload(safeFileName, coverFile, {
+      cacheControl: '3600',
+      upsert: false
+    });
+
+  if (uploadError) throw uploadError;
+
+  const { data: publicUrlData } = supabase.storage
+    .from("wedding-photos")
+    .getPublicUrl(safeFileName);
+
+  uploadedCoverUrl = publicUrlData.publicUrl;
+}
 
         if (uploadError) throw uploadError;
 
