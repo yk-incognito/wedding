@@ -19,7 +19,7 @@ export default function TemplateOne({
   const [rsvpGuests, setRsvpGuests] = useState(1);
   const [rsvpSubmitted, setRsvpSubmitted] = useState(false);
 
-  // Wishes Local State
+  // Wishes State
   const [guestName, setGuestName] = useState("");
   const [guestMessage, setGuestMessage] = useState("");
 
@@ -167,6 +167,7 @@ export default function TemplateOne({
 
   return (
     <div className="netflix-luxury-container">
+      {/* നിങ്ങളുടെ ഒറിജിനൽ ഫുൾ CSS അതേപടി */}
       <style dangerouslySetInnerHTML={{ __html: `
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500&display=swap');
 
@@ -252,8 +253,8 @@ export default function TemplateOne({
         }
         .gate-glow {
           position: absolute;
-          width: 380px;
-          height: 380px;
+          width: 440px;
+          height: 440px;
           left: 50%;
           top: 48%;
           transform: translate(-50%, -50%);
@@ -262,7 +263,7 @@ export default function TemplateOne({
           filter: blur(55px);
         }
         .monogram, .closing-monogram {
-          font: 500 clamp(2.5rem, 6vw, 4.5rem)/1 var(--serif);
+          font: 500 clamp(3rem, 11vw, 6rem)/1 var(--serif);
           letter-spacing: .12em;
           color: var(--gold);
         }
@@ -292,8 +293,8 @@ export default function TemplateOne({
           font-size: .72rem;
         }
         .open-button {
-          width: min(300px, 82vw);
-          margin: 24px auto 0;
+          width: min(310px, 82vw);
+          margin: 28px auto 0;
           padding: 7px 7px 7px 24px;
           display: flex;
           align-items: center;
@@ -328,8 +329,8 @@ export default function TemplateOne({
         }
 
         .hero {
-          height: 92svh;
-          min-height: 550px;
+          height: 100svh;
+          min-height: 620px;
           position: relative;
           display: grid;
           align-items: end;
@@ -352,7 +353,7 @@ export default function TemplateOne({
         .hero-copy {
           position: relative;
           text-align: center;
-          padding: 0 22px 10vh;
+          padding: 0 22px 13vh;
         }
         .hero-copy h1 {
           font: 500 clamp(2.8rem, 6.5vw, 5.2rem)/1.1 var(--serif);
@@ -361,7 +362,7 @@ export default function TemplateOne({
           text-shadow: 0 2px 18px rgba(0, 0, 0, .45);
         }
         .hero-copy h1 span {
-          font-size: .6em;
+          font-size: .55em;
           font-style: italic;
           color: var(--gold);
         }
@@ -374,8 +375,8 @@ export default function TemplateOne({
         .visual-story { background: #10080a; }
         .story-frame {
           position: relative;
-          height: 85svh;
-          min-height: 520px;
+          height: 100svh;
+          min-height: 650px;
           margin: 0;
           overflow: hidden;
           display: grid;
@@ -391,14 +392,15 @@ export default function TemplateOne({
         .story-grade {
           position: absolute;
           inset: 0;
-          background: linear-gradient(180deg, rgba(12, 7, 8, .08) 0%, rgba(12, 7, 8, .04) 42%, rgba(13, 7, 9, .82) 100%);
+          background: linear-gradient(180deg, rgba(12, 7, 8, .08) 0%, rgba(12, 7, 8, .04) 42%, rgba(13, 7, 9, .78) 100%), linear-gradient(90deg, rgba(70, 15, 25, .13), transparent 45%, rgba(20, 8, 11, .12));
+          box-shadow: inset 0 0 110px rgba(22, 8, 12, .25);
         }
         .story-frame figcaption {
           position: relative;
           z-index: 2;
-          padding: 0 max(25px, 8vw) clamp(50px, 8vh, 80px);
-          max-width: 800px;
-          text-shadow: 0 3px 20px rgba(0, 0, 0, .6);
+          padding: 0 max(25px, 8vw) clamp(70px, 10vh, 120px);
+          max-width: 900px;
+          text-shadow: 0 3px 24px rgba(0, 0, 0, .55);
         }
         .story-frame figcaption span {
           display: block;
@@ -406,7 +408,7 @@ export default function TemplateOne({
           font: 500 .66rem/1.5 var(--sans);
           letter-spacing: .3em;
           text-transform: uppercase;
-          margin-bottom: 12px;
+          margin-bottom: 17px;
         }
         .story-frame figcaption strong {
           display: block;
@@ -416,7 +418,7 @@ export default function TemplateOne({
         }
 
         .section {
-          padding: clamp(60px, 8vw, 110px) max(24px, 8vw);
+          padding: clamp(80px, 12vw, 160px) max(24px, 8vw);
           position: relative;
         }
         .welcome {
@@ -438,7 +440,7 @@ export default function TemplateOne({
         }
         .gold-rule {
           width: min(260px, 55vw);
-          margin: 36px auto;
+          margin: 40px auto;
           display: flex;
           align-items: center;
           gap: 12px;
@@ -451,7 +453,7 @@ export default function TemplateOne({
           background: var(--gold);
         }
         .intro {
-          font: 400 clamp(1.15rem, 2.2vw, 1.6rem)/1.45 var(--serif);
+          font: 400 clamp(1.4rem, 3vw, 2.2rem)/1.35 var(--serif);
           max-width: 650px;
           margin: auto;
           color: #4b3d3c;
@@ -464,10 +466,10 @@ export default function TemplateOne({
         .family-grid {
           display: grid;
           grid-template-columns: 1fr auto 1fr;
-          gap: 4vw;
+          gap: 5vw;
           align-items: center;
-          max-width: 950px;
-          margin: 45px auto 0;
+          max-width: 1100px;
+          margin: 65px auto 0;
         }
         .family-label {
           text-transform: uppercase;
@@ -476,8 +478,8 @@ export default function TemplateOne({
           font-size: .62rem;
         }
         .family-grid h2 {
-          font: 400 clamp(1.5rem, 2.8vw, 2.2rem)/1.15 var(--serif);
-          margin: 16px 0;
+          font: 400 clamp(1.8rem, 3.3vw, 3rem)/1.05 var(--serif);
+          margin: 20px 0;
         }
         .family-grid h2 i {
           color: var(--gold);
@@ -489,13 +491,13 @@ export default function TemplateOne({
           letter-spacing: .08em;
         }
         .family-amp {
-          width: 80px;
-          height: 80px;
+          width: 110px;
+          height: 110px;
           border: 1px solid rgba(199, 163, 106, .4);
           border-radius: 50%;
           display: grid;
           place-content: center;
-          font: 500 1.6rem var(--serif);
+          font: 500 2.1rem var(--serif);
           color: var(--gold);
           margin: auto;
         }
@@ -507,18 +509,18 @@ export default function TemplateOne({
           text-align: center;
         }
         .date-card {
-          max-width: 860px;
+          max-width: 980px;
           margin: auto;
           border: 1px solid rgba(84, 16, 26, .25);
-          padding: clamp(35px, 6vw, 65px) 18px;
-          box-shadow: 0 25px 60px rgba(53, 23, 20, .1);
+          padding: clamp(45px, 8vw, 90px) 18px;
+          box-shadow: 0 30px 80px rgba(53, 23, 20, .1);
         }
         .date-lockup {
           display: flex;
           justify-content: center;
           align-items: center;
-          gap: clamp(14px, 3.5vw, 40px);
-          margin: 18px 0;
+          gap: clamp(18px, 5vw, 70px);
+          margin: 22px 0;
         }
         .date-lockup strong {
           font: 500 clamp(4rem, 9vw, 6.8rem)/.9 var(--serif);
@@ -530,20 +532,20 @@ export default function TemplateOne({
           writing-mode: vertical-rl;
         }
         .date-card h2 {
-          font: 400 clamp(1.4rem, 2.8vw, 2rem) var(--serif);
-          margin: 20px 0 6px;
+          font: 400 clamp(1.6rem, 4vw, 2.5rem) var(--serif);
+          margin: 30px 0 8px;
         }
         .countdown {
-          margin: 40px auto 30px;
+          margin: 55px auto 45px;
           display: grid;
           grid-template-columns: repeat(4, 1fr);
-          max-width: 550px;
+          max-width: 640px;
         }
         .countdown div { border-right: 1px solid rgba(84, 16, 26, .18); }
         .countdown div:last-child { border: 0; }
         .countdown strong {
           display: block;
-          font: 500 clamp(1.6rem, 3.2vw, 2.5rem) var(--serif);
+          font: 500 clamp(2rem, 5vw, 3.6rem) var(--serif);
           color: var(--wine);
         }
         .countdown span {
@@ -555,7 +557,7 @@ export default function TemplateOne({
           border: 1px solid var(--wine);
           background: transparent;
           color: var(--wine);
-          padding: 14px 24px;
+          padding: 16px 26px;
           text-transform: uppercase;
           letter-spacing: .2em;
           font: 500 .62rem var(--sans);
@@ -565,7 +567,7 @@ export default function TemplateOne({
         .venue {
           display: grid;
           grid-template-columns: 1.2fr .8fr;
-          gap: 8vw;
+          gap: 10vw;
           align-items: center;
           text-align: left;
         }
@@ -575,24 +577,24 @@ export default function TemplateOne({
           color: var(--ivory);
         }
         .venue-copy > p:not(.eyebrow) {
-          font: 400 clamp(1.1rem, 2vw, 1.4rem)/1.5 var(--serif);
+          font: 400 clamp(1.2rem, 2.5vw, 1.8rem)/1.5 var(--serif);
           color: #c8bbae;
         }
         .venue-time {
-          margin-top: 20px !important;
+          margin-top: 28px !important;
           color: var(--gold) !important;
         }
         .actions {
-          margin-top: 35px;
+          margin-top: 45px;
           display: flex;
           align-items: center;
           flex-wrap: wrap;
-          gap: 16px;
+          gap: 20px;
         }
         .gold-button {
           background: var(--gold);
           color: var(--ink);
-          padding: 15px 22px;
+          padding: 17px 23px;
           text-decoration: none;
           text-transform: uppercase;
           letter-spacing: .18em;
@@ -601,7 +603,7 @@ export default function TemplateOne({
           display: inline-flex;
           align-items: center;
         }
-        .gold-button span { font-size: 1rem; margin-left: 12px; }
+        .gold-button span { font-size: 1rem; margin-left: 14px; }
         .text-link {
           color: var(--ivory);
           font-size: .66rem;
@@ -611,8 +613,8 @@ export default function TemplateOne({
         }
         .qr-card {
           background: var(--ivory);
-          padding: 22px;
-          max-width: 320px;
+          padding: 25px;
+          max-width: 360px;
           justify-self: end;
           color: var(--wine);
           text-align: center;
@@ -621,7 +623,7 @@ export default function TemplateOne({
         .qr-card img { display: block; width: 100%; height: auto; }
         .qr-card span {
           display: block;
-          margin-top: 14px;
+          margin-top: 17px;
           text-transform: uppercase;
           letter-spacing: .24em;
           font-size: .62rem;
@@ -630,7 +632,7 @@ export default function TemplateOne({
         .closing {
           text-align: center;
           background: radial-gradient(circle at 50% 45%, #591723, #250a0f 48%, #100708);
-          min-height: 80svh;
+          min-height: 90svh;
           display: grid;
           place-content: center;
         }
@@ -638,7 +640,7 @@ export default function TemplateOne({
           font: 400 clamp(2.4rem, 5.5vw, 4.5rem)/1.15 var(--serif);
           margin: 25px 0 35px;
         }
-        .closing-monogram { margin-top: 45px; }
+        .closing-monogram { margin-top: 65px; }
         .closing-date {
           font-size: .64rem;
           letter-spacing: .3em;
@@ -687,10 +689,10 @@ export default function TemplateOne({
 
         @media(max-width: 720px) {
           .family-grid { grid-template-columns: 1fr; }
-          .family-amp { margin: 12px auto; width: 68px; height: 68px; }
+          .family-amp { margin: 12px auto; width: 76px; height: 76px; }
           .venue { grid-template-columns: 1fr; text-align: center; }
           .actions { justify-content: center; }
-          .qr-card { justify-self: center; width: min(290px, 90vw); }
+          .qr-card { justify-self: center; width: min(320px, 90vw); }
           .gate::before { inset: 12px; }
           .gate::after { inset: 18px; }
         }
@@ -730,7 +732,7 @@ export default function TemplateOne({
             <div className="mt-6">
               <button
                 onClick={() => setShowCardModal(true)}
-                className="px-6 py-2.5 rounded-full bg-[#54101a] hover:bg-[#7f2639] text-[#f6efe3] font-serif text-xs uppercase tracking-widest border border-[#c7a36a]/60 shadow-xl transition"
+                className="px-6 py-2.5 rounded-full bg-[#54101a] hover:bg-[#7f2639] text-[#f6efe3] font-serif text-xs uppercase tracking-widest border border-[#c7a36a]/60 shadow-xl transition cursor-pointer"
               >
                 <FileText className="w-3.5 h-3.5 inline mr-2" /> View Official Card
               </button>
@@ -969,7 +971,7 @@ export default function TemplateOne({
                 <label className="text-xs text-stone-400 font-serif">Number of Guests</label>
                 <input required type="number" min="1" max="10" value={rsvpGuests} onChange={(e) => setRsvpGuests(e.target.value)} className="w-full mt-1 p-3 bg-black/50 border border-stone-700 rounded-xl outline-none text-sm text-stone-200" />
               </div>
-              <button type="submit" className="w-full py-3.5 bg-[#c7a36a] text-stone-950 font-bold rounded-xl text-xs uppercase tracking-widest hover:brightness-110 transition">
+              <button type="submit" className="w-full py-3.5 bg-[#c7a36a] text-stone-950 font-bold rounded-xl text-xs uppercase tracking-widest hover:brightness-110 transition cursor-pointer">
                 Confirm Attendance
               </button>
             </form>
@@ -985,7 +987,7 @@ export default function TemplateOne({
             <form onSubmit={localWishSubmit} className="space-y-3">
               <input required value={guestName} onChange={(e) => setGuestName(e.target.value)} placeholder="Your Name" className="w-full p-3 bg-black/50 border border-stone-700 rounded-xl text-xs text-stone-200 outline-none" />
               <textarea required rows={2} value={guestMessage} onChange={(e) => setGuestMessage(e.target.value)} placeholder="Write your heartfelt wishes..." className="w-full p-3 bg-black/50 border border-stone-700 rounded-xl text-xs text-stone-200 outline-none" />
-              <button type="submit" disabled={wishLoading} className="w-full py-3 bg-[#54101a] hover:bg-[#7f2639] text-[#f6efe3] font-serif text-xs uppercase tracking-widest border border-[#c7a36a]/60 rounded-xl">
+              <button type="submit" disabled={wishLoading} className="w-full py-3 bg-[#54101a] hover:bg-[#7f2639] text-[#f6efe3] font-serif text-xs uppercase tracking-widest border border-[#c7a36a]/60 rounded-xl cursor-pointer">
                 {wishLoading ? "Posting..." : "Post Wedding Wish"}
               </button>
             </form>
