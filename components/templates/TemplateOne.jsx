@@ -32,7 +32,7 @@ export default function TemplateOne({
   const [timeLeft, setTimeLeft] = useState({ days: "00", hours: "00", minutes: "00", seconds: "00" });
   const audioRef = useRef(null);
 
-  // ഓഡിയോ പ്ലെയർ സെറ്റപ്പ്
+  // 1. ഓഡിയോ പ്ലെയർ സെറ്റപ്പ്
   useEffect(() => {
     if (invitation?.music_url) {
       const audio = new Audio(invitation.music_url);
@@ -47,7 +47,7 @@ export default function TemplateOne({
     };
   }, [invitation?.music_url]);
 
-  // തത്സമയ കൗണ്ട്ഡൗൺ ടൈമർ
+  // 2. തത്സമയ കൗണ്ട്ഡൗൺ ടൈമർ
   useEffect(() => {
     if (!invitation?.wedding_date) return;
     const target = new Date(invitation.wedding_date).getTime();
@@ -70,13 +70,19 @@ export default function TemplateOne({
     return () => clearInterval(interval);
   }, [invitation?.wedding_date]);
 
-  const handleOpenGate = () => {
+  // 3. റോയൽ ഗേറ്റ് തുറക്കലും മ്യൂസിക് പ്ലേയും (മൊബൈൽ ടച്ച് ഫിക്സ് സഹിതം)
+  const handleOpenGate = (e) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     setGateOpened(true);
     if (audioRef.current) {
       audioRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
     }
   };
 
+  // 4. മ്യൂസിക് പ്ലേ / പോസ് കൺട്രോളർ
   const toggleMusic = () => {
     if (!audioRef.current) return;
     if (isPlaying) {
@@ -87,6 +93,7 @@ export default function TemplateOne({
     }
   };
 
+  // 5. ആഡ് ടു കലണ്ടർ (.ics കലണ്ടർ ഇൻവിറ്റേഷൻ)
   const handleAddToCalendar = () => {
     const weddingDate = new Date(invitation?.wedding_date || Date.now());
     const year = weddingDate.getUTCFullYear();
@@ -117,6 +124,7 @@ export default function TemplateOne({
     document.body.removeChild(link);
   };
 
+  // 6. UPI ഐഡി കോപ്പി ചെയ്യൽ
   const handleCopyUpi = () => {
     if (invitation?.upi_id) {
       navigator.clipboard.writeText(invitation.upi_id);
@@ -125,6 +133,7 @@ export default function TemplateOne({
     }
   };
 
+  // 7. RSVP സബ്മിഷൻ
   const localRsvpSubmit = async (e) => {
     e.preventDefault();
     if (onRsvpSubmit) {
@@ -133,6 +142,7 @@ export default function TemplateOne({
     }
   };
 
+  // 8. ഗസ്റ്റ് ആശംസ സബ്മിഷൻ
   const localWishSubmit = async (e) => {
     e.preventDefault();
     if (!guestName || !guestMessage) return;
@@ -155,6 +165,7 @@ export default function TemplateOne({
   const yearNumber = dateObj ? dateObj.getFullYear() : "";
   const muhurthamTime = dateObj ? dateObj.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) : "";
 
+  // ഗാലറി ഇമേജുകൾ
   const defaultGallery = [
     invitation?.cover_photo || "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1400&q=80",
     "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=80",
@@ -170,14 +181,17 @@ export default function TemplateOne({
   const contacts = Array.isArray(invitation?.contact_numbers) ? invitation.contact_numbers.filter(c => c.name || c.phone) : [];
   const customSecs = Array.isArray(invitation?.custom_sections) ? invitation.custom_sections.filter(s => s.title || s.content) : [];
 
+  // Google Maps Dynamic QR Code
   const qrDataUrl = invitation?.map_url 
     ? `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=18&data=${encodeURIComponent(invitation.map_url)}`
     : `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=18&data=${encodeURIComponent("https://maps.google.com")}`;
 
+  // UPI പേയ്‌മെന്റ് QR കോഡ്
   const upiQrUrl = invitation?.upi_id
     ? `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=16&data=${encodeURIComponent(`upi://pay?pa=${invitation.upi_id}&pn=${encodeURIComponent((invitation.groom_name || "Groom") + " and " + (invitation.bride_name || "Bride"))}&cu=INR`)}`
     : null;
 
+  // YouTube Embed
   const getEmbedYoutubeUrl = (url) => {
     if (!url) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|live\/)([^#\&\?]*).*/;
@@ -328,6 +342,8 @@ export default function TemplateOne({
           letter-spacing: .35em;
           font-size: .72rem;
         }
+
+        /* 2. മൊബൈൽ-ഫ്രണ്ട്‌ലി ഓപ്പൺ ഇൻവിറ്റേഷൻ ബട്ടൺ (എവിടെ തൊട്ടാലും പ്രവർത്തിക്കും) */
         .open-button {
           width: min(290px, 80vw);
           margin: 22px auto 0;
@@ -335,14 +351,27 @@ export default function TemplateOne({
           display: flex;
           align-items: center;
           justify-content: space-between;
-          border: 1px solid rgba(199, 163, 106, .6);
+          border: 1.5px solid rgba(199, 163, 106, .7);
           border-radius: 99px;
-          background: rgba(255, 255, 255, .05);
+          background: rgba(255, 255, 255, .08);
           color: var(--ivory);
-          font: 500 .7rem var(--sans);
+          font: 600 .72rem var(--sans);
           text-transform: uppercase;
           letter-spacing: .18em;
           cursor: pointer;
+          touch-action: manipulation;
+          -webkit-tap-highlight-color: transparent;
+          user-select: none;
+          position: relative;
+          z-index: 10;
+        }
+        .open-button:active {
+          transform: scale(0.96) !important;
+          background: rgba(255, 255, 255, .15);
+        }
+        /* ഉള്ളിലെ എഴുത്തിലും സർക്കിളിലും തൊട്ടാലും ബട്ടൺ ക്ലിക്ക് ആവാൻ */
+        .open-button * {
+          pointer-events: none;
         }
         .open-button i {
           width: 40px;
@@ -586,16 +615,29 @@ export default function TemplateOne({
           max-width: 920px;
           margin: 40px auto 0;
         }
+        
+        /* 3. M & J മോണോഗ്രാം സർക്കിൾ ഫിക്സ് (അക്ഷരങ്ങൾ സർക്കിളിനുള്ളിൽ കൃത്യമായി നിൽക്കുന്നു) */
         .family-amp {
-          width: 76px;
-          height: 76px;
-          border: 1px solid rgba(199, 163, 106, .4);
+          width: 86px;
+          height: 86px;
+          border: 1.5px solid rgba(199, 163, 106, .55);
           border-radius: 50%;
-          display: grid;
-          place-content: center;
-          font: 500 1.5rem var(--serif);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 2px;
+          font: 500 1.35rem/1 var(--serif);
           color: var(--gold);
           margin: auto;
+          white-space: nowrap;
+          text-align: center;
+          box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        }
+        .family-amp span {
+          font-size: 0.85em;
+          font-style: italic;
+          color: var(--gold-bright);
+          margin: 0 1px;
         }
 
         .date-card {
@@ -842,21 +884,28 @@ export default function TemplateOne({
         <div className="css-leaf"></div>
       </div>
 
-      {/* 1. റോയൽ ഗേറ്റ് കർട്ടൻ */}
+      {/* 1. റോയൽ ഗേറ്റ് കർട്ടൻ (മൊബൈൽ ടച്ച് ഫിക്സ് സഹിതം) */}
       <section className={`gate ${gateOpened ? "opened" : ""}`}>
         <div className="gate-glow"></div>
         <div className="monogram">{brideInitial} <span>&</span> {groomInitial}</div>
         <p className="eyebrow">{invitation?.parents_text || "Together with their families"}</p>
         <h1>You’re invited<br /><em>to celebrate love</em></h1>
         {dayOfMonth && <p className="gate-date">{dayOfMonth} · {monthAbbr} · {yearNumber}</p>}
-        <button className="open-button" type="button" onClick={handleOpenGate}>
+        
+        {/* മൊബൈലിൽ എവിടെ തൊട്ടാലും ക്ലിക്ക് ആകുന്ന ഓപ്പൺ ബട്ടൺ */}
+        <button 
+          className="open-button" 
+          type="button" 
+          onClick={handleOpenGate}
+          onTouchEnd={handleOpenGate}
+        >
           <span>Open invitation</span>
           <i aria-hidden="true">→</i>
         </button>
-        <p className="sound-note">Tap to enter with music</p>
+        <p className="sound-note">Tap anywhere on the button to enter with music</p>
       </section>
 
-      {/* 2. ഫുൾ-സ്ക്രീൻ ഹീറോ + ടോപ്പിൽ വരുന്ന VIEW OFFICIAL CARD ബട്ടൺ */}
+      {/* 2. ഫുൾ-സ്ക്രീൻ ഹീറോ + ടോപ്പിൽ തന്നെ VIEW OFFICIAL CARD ബട്ടൺ */}
       <section className="hero">
         <img 
           className="hero-image" 
@@ -980,7 +1029,7 @@ export default function TemplateOne({
         </section>
       )}
 
-      {/* 7. ടുഗെദർ വിത്ത് ഫാമിലീസ് */}
+      {/* 7. ടുഗെദർ വിത്ത് ഫാമിലീസ് & M & J മോണോഗ്രാം സർക്കിൾ */}
       {(invitation?.groom_parents || invitation?.bride_parents) && (
         <section className="section cream-section">
           <p className="verse">Blessings of Elders</p>
@@ -991,7 +1040,12 @@ export default function TemplateOne({
               <h3 className="text-xl sm:text-2xl font-serif text-[#480e17] mt-2 mb-1">{invitation?.groom_parents || `${invitation?.groom_name}'s Parents`}</h3>
               {invitation?.groom_family && <p className="text-xs text-stone-600">{invitation.groom_family}</p>}
             </div>
-            <div className="family-amp">{brideInitial}<span>&</span>{groomInitial}</div>
+
+            {/* 3. കൃത്യമായി സർക്കിളിനുള്ളിൽ ഒതുങ്ങിനിൽക്കുന്ന M & J */}
+            <div className="family-amp">
+              {brideInitial}<span>&</span>{groomInitial}
+            </div>
+
             <div>
               <span className="text-[10px] uppercase tracking-[0.22em] text-[#c7a36a] font-bold">Parents of the Bride</span>
               <h3 className="text-xl sm:text-2xl font-serif text-[#480e17] mt-2 mb-1">{invitation?.bride_parents || `${invitation?.bride_name}'s Parents`}</h3>
@@ -1216,7 +1270,6 @@ export default function TemplateOne({
               </button>
             </form>
 
-            {/* അപ്രൂവ് ചെയ്ത ആശംസകൾ */}
             {wishes.length > 0 && (
               <div className="mt-4 space-y-2 max-h-48 overflow-y-auto pr-1 text-left">
                 {wishes.map((w, i) => (
@@ -1253,7 +1306,7 @@ export default function TemplateOne({
         </button>
       )}
 
-      {/* 16. OFFICIAL CARD LIGHTBOX MODAL (എപ്പോഴും ഹെഡിംഗും ക്ലോസ് ബട്ടണും സ്ക്രീനിനുള്ളിൽ നിൽക്കുന്ന ഫിക്സ്) */}
+      {/* 16. OFFICIAL CARD LIGHTBOX MODAL */}
       {showCardModal && invitation?.wedding_card_photo && (
         <div 
           onClick={() => setShowCardModal(false)}
@@ -1278,7 +1331,7 @@ export default function TemplateOne({
               </button>
             </div>
 
-            {/* കാർഡ് ഫോട്ടോ സ്ക്രീനിൽ പൂർണ്ണമായി ഒതുങ്ങാൻ max-h കൺട്രോൾ ചെയ്തു */}
+            {/* കാർഡ് ഫോട്ടോ സ്ക്രോളബിൾ ഏരിയ */}
             <div className="w-full overflow-y-auto max-h-[68vh] rounded-xl flex items-center justify-center bg-black/40 p-1">
               <img 
                 src={invitation.wedding_card_photo} 
