@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
-import { FileText, X, MapPin, Send, Phone, Calendar, Heart, MessageCircle, QrCode } from "lucide-react";
+import { FileText, X, MapPin, Send, Phone, Calendar, Heart, MessageCircle } from "lucide-react";
 
 export default function TemplateOne({
   invitation,
@@ -62,7 +62,7 @@ export default function TemplateOne({
     return () => clearInterval(interval);
   }, [invitation?.wedding_date]);
 
-  // വീഴുന്ന പൂവിതളുകൾ
+  // വീഴുന്ന റോസാപ്പൂവിതളുകൾ
   useEffect(() => {
     if (!gateOpened) return;
     const interval = setInterval(() => {
@@ -174,7 +174,6 @@ export default function TemplateOne({
   const contacts = Array.isArray(invitation?.contact_numbers) ? invitation.contact_numbers.filter(c => c.name || c.phone) : [];
   const customSecs = Array.isArray(invitation?.custom_sections) ? invitation.custom_sections.filter(s => s.title || s.content) : [];
 
-  // Google Maps Dynamic QR Code
   const qrDataUrl = invitation?.map_url 
     ? `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=18&data=${encodeURIComponent(invitation.map_url)}`
     : `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=18&data=${encodeURIComponent("https://maps.google.com")}`;
@@ -205,6 +204,12 @@ export default function TemplateOne({
         }
 
         .netflix-luxury-container * { box-sizing: border-box; }
+
+        /* ടെക്സ്റ്റുകൾ ചാഞ്ചാടുന്ന അരോചകമായ ആനിമേഷൻ ഒഴിവാക്കുന്നു */
+        * {
+          transform: none;
+          animation-play-state: running;
+        }
 
         .grain {
           position: fixed;
@@ -393,26 +398,24 @@ export default function TemplateOne({
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          margin-top: 24px;
-          padding: 12px 28px;
+          margin-top: 18px;
+          padding: 11px 26px;
           border-radius: 99px;
           background: rgba(34, 7, 12, 0.85);
-          backdrop-filter: blur(10px);
+          backdrop-filter: blur(8px);
           border: 1px solid rgba(199, 163, 106, 0.8);
           color: var(--gold-bright);
-          font-size: 0.72rem;
+          font-size: 0.7rem;
           text-transform: uppercase;
           letter-spacing: 0.18em;
           font-weight: 600;
           cursor: pointer;
-          transition: all 0.3s;
-          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+          transition: background 0.3s;
+          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
         }
         .official-card-btn:hover {
           background: rgba(72, 14, 23, 0.95);
-          border-color: var(--gold-bright);
-          transform: translateY(-2px);
-          box-shadow: 0 12px 30px rgba(199, 163, 106, 0.25);
+          border-color: var(--gold);
         }
 
         /* 3. വിഷ്വൽ സ്റ്റോറി ഫ്രെയിം */
@@ -464,7 +467,7 @@ export default function TemplateOne({
           position: relative;
         }
 
-        /* ക്രീം / ഐവറി സെക്ഷൻ */
+        /* ക്രീം സെക്ഷൻ */
         .cream-section {
           background: var(--ivory);
           color: var(--wine);
@@ -510,34 +513,30 @@ export default function TemplateOne({
           text-align: center;
         }
 
-        /* 4. THE COUPLE (ഗ്രാൻഡ് നവീകരിച്ച കാർഡുകൾ) */
+        /* The Couple ഗ്രാൻഡ് കാർഡുകൾ */
         .couple-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 32px;
-          max-width: 900px;
+          gap: 30px;
+          max-width: 850px;
           margin: 0 auto;
         }
         .person-card {
-          padding: 38px 28px;
-          border-radius: 24px;
-          background: linear-gradient(180deg, rgba(46, 12, 19, 0.85) 0%, rgba(24, 6, 11, 0.95) 100%);
-          border: 1px solid rgba(199, 163, 106, 0.45);
+          padding: 35px 26px;
+          border-radius: 20px;
+          background: rgba(34, 7, 12, 0.75);
+          border: 1px solid rgba(199, 163, 106, 0.35);
           text-align: center;
-          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
-          transition: transform 0.3s ease, border-color 0.3s ease;
-        }
-        .person-card:hover {
-          border-color: var(--gold-bright);
+          box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
         }
         .person-img-wrap {
-          width: 120px;
-          height: 120px;
-          margin: 0 auto 18px;
+          width: 110px;
+          height: 110px;
+          margin: 0 auto 16px;
           border-radius: 50%;
           overflow: hidden;
           border: 2px solid var(--gold);
-          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
         }
         .person-img-wrap img {
           width: 100%;
@@ -545,9 +544,9 @@ export default function TemplateOne({
           object-fit: cover;
         }
         .person-avatar {
-          width: 120px;
-          height: 120px;
-          margin: 0 auto 18px;
+          width: 110px;
+          height: 110px;
+          margin: 0 auto 16px;
           border-radius: 50%;
           display: flex;
           align-items: center;
@@ -555,32 +554,30 @@ export default function TemplateOne({
           background: rgba(199, 163, 106, 0.15);
           border: 2px solid var(--gold);
           color: var(--gold-bright);
-          font: 500 2.5rem var(--serif);
+          font: 500 2.2rem var(--serif);
         }
 
-        /* സ്പെഷ്യൽ കപ്പിൾ പോർട്രെയ്റ്റ് സെക്ഷൻ */
         .couple-banner-section {
           background: #17070b;
           padding: 60px max(24px, 8vw);
           text-align: center;
         }
         .couple-banner-frame {
-          max-width: 820px;
+          max-width: 780px;
           margin: 0 auto;
           border-radius: 24px;
           overflow: hidden;
-          border: 1px solid rgba(199, 163, 106, 0.4);
+          border: 1px solid rgba(199, 163, 106, 0.35);
           position: relative;
-          box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
         .couple-banner-frame img {
           width: 100%;
-          max-height: 500px;
+          max-height: 480px;
           object-fit: cover;
           display: block;
         }
 
-        /* ടുഗെദർ വിത്ത് ഫാമിലീസ് */
         .family-grid {
           display: grid;
           grid-template-columns: 1fr auto 1fr;
@@ -601,7 +598,6 @@ export default function TemplateOne({
           margin: auto;
         }
 
-        /* തീയതി & കൗണ്ട്ഡൗൺ */
         .date-card {
           max-width: 820px;
           margin: auto;
@@ -657,13 +653,8 @@ export default function TemplateOne({
           letter-spacing: .18em;
           font: 500 .62rem var(--sans);
           cursor: pointer;
-          transition: background 0.3s;
-        }
-        .outline-button:hover {
-          background: rgba(72, 14, 23, 0.08);
         }
 
-        /* വേദി & ക്യുആർ കോഡ് */
         .venue {
           display: grid;
           grid-template-columns: 1.2fr .8fr;
@@ -696,9 +687,7 @@ export default function TemplateOne({
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          transition: filter 0.3s;
         }
-        .gold-button:hover { filter: brightness(1.15); }
         .whatsapp-btn {
           background: #25D366;
           color: #fff;
@@ -712,30 +701,27 @@ export default function TemplateOne({
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          transition: filter 0.3s;
         }
-        .whatsapp-btn:hover { filter: brightness(1.1); }
         .qr-card {
           background: var(--ivory);
-          padding: 22px;
-          max-width: 290px;
+          padding: 20px;
+          max-width: 280px;
           justify-self: end;
           color: var(--wine);
           text-align: center;
-          border-radius: 20px;
-          box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
+          border-radius: 16px;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
         }
-        .qr-card img { display: block; width: 100%; height: auto; border-radius: 8px; }
+        .qr-card img { display: block; width: 100%; height: auto; }
         .qr-card span {
           display: block;
-          margin-top: 14px;
+          margin-top: 12px;
           text-transform: uppercase;
           letter-spacing: .22em;
-          font-size: .62rem;
-          font-weight: 600;
+          font-size: .6rem;
+          font-weight: 500;
         }
 
-        /* 6+ ഫോട്ടോ മാഗസിൻ ഗാലറി ഗ്രിഡ് */
         .gallery-grid {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
@@ -754,22 +740,8 @@ export default function TemplateOne({
           width: 100%;
           height: 100%;
           object-fit: cover;
-          transition: transform 0.5s ease;
-        }
-        .gallery-item:hover img { transform: scale(1.05); }
-
-        /* കസ്റ്റം സെക്ഷനുകൾ (ലക്ഷ്വറി ബോക്സ്) */
-        .custom-card {
-          padding: 30px 24px;
-          border-radius: 20px;
-          background: linear-gradient(135deg, rgba(34, 7, 12, 0.8) 0%, rgba(20, 5, 8, 0.9) 100%);
-          border: 1px solid rgba(199, 163, 106, 0.35);
-          box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-          position: relative;
-          overflow: hidden;
         }
 
-        /* RSVP & ഗസ്റ്റ് ആശംസ കാർഡുകൾ */
         .form-card {
           max-width: 520px;
           margin: 0 auto;
@@ -793,7 +765,6 @@ export default function TemplateOne({
           border-color: var(--gold);
         }
 
-        /* ക്ലോസിംഗ് */
         .closing {
           text-align: center;
           background: radial-gradient(circle at 50% 45%, #4e121e, #1a0509 50%, #0c0305);
@@ -812,7 +783,6 @@ export default function TemplateOne({
           color: var(--gold);
         }
 
-        /* മ്യൂസിക് കൺട്രോളർ */
         .music-control {
           position: fixed;
           z-index: 120;
@@ -913,7 +883,7 @@ export default function TemplateOne({
         </section>
       )}
 
-      {/* 4. WELCOME & SCRIPTURE / PROMISE (ഡൈനാമിക്: ഉണ്ടെങ്കിൽ മാത്രം) */}
+      {/* 4. WELCOME & SCRIPTURE / PROMISE */}
       {(invitation?.first_met_story || invitation?.journey_story) && (
         <section className="section cream-section">
           {invitation?.first_met_story && (
@@ -929,10 +899,10 @@ export default function TemplateOne({
         </section>
       )}
 
-      {/* 5. BRIDE & GROOM PROFILES (DARK SECTION - ഗ്രാൻഡ് നവീകരിച്ചത്) */}
+      {/* 5. BRIDE & GROOM PROFILES */}
       <section className="section dark-section">
         <p className="eyebrow" style={{ fontSize: "0.85rem", letterSpacing: "0.35em" }}>The Couple</p>
-        <div className="couple-grid mt-10">
+        <div className="couple-grid mt-8">
           
           {/* Bride Card */}
           <div className="person-card">
@@ -943,19 +913,19 @@ export default function TemplateOne({
             ) : (
               <div className="person-avatar">{brideInitial}</div>
             )}
-            <span className="text-xs uppercase font-serif tracking-[0.25em] text-[#c7a36a] font-semibold">The Bride</span>
-            <h3 className="text-2xl sm:text-3xl font-serif font-bold text-rose-200 mt-2">{invitation?.bride_name}</h3>
+            <span className="text-[10px] uppercase font-serif tracking-[0.22em] text-[#c7a36a]">The Bride</span>
+            <h3 className="text-xl sm:text-2xl font-serif font-bold text-rose-200 mt-1">{invitation?.bride_name}</h3>
             {invitation?.bride_profession && (
               <p className="text-xs font-semibold text-amber-300 uppercase tracking-wider mt-1">{invitation.bride_profession}</p>
             )}
             {invitation?.bride_parents && (
-              <p className="text-xs text-stone-300 mt-3"><strong className="text-[#c7a36a]">Daughter of:</strong> {invitation.bride_parents}</p>
+              <p className="text-xs text-stone-400 mt-2"><strong className="text-stone-300">Daughter of:</strong> {invitation.bride_parents}</p>
             )}
             {invitation?.bride_bio && (
-              <p className="text-xs sm:text-sm italic font-serif text-stone-200 mt-3 leading-relaxed">"{invitation.bride_bio}"</p>
+              <p className="text-xs italic font-serif text-stone-300 mt-2 leading-relaxed">"{invitation.bride_bio}"</p>
             )}
             {invitation?.bride_family && (
-              <p className="text-xs text-stone-400 pt-3 mt-4 border-t border-stone-800/90"><strong className="text-stone-300">Family:</strong> {invitation.bride_family}</p>
+              <p className="text-xs text-stone-400 pt-3 mt-3 border-t border-stone-800/80"><strong className="text-stone-300">Family:</strong> {invitation.bride_family}</p>
             )}
           </div>
 
@@ -968,19 +938,19 @@ export default function TemplateOne({
             ) : (
               <div className="person-avatar">{groomInitial}</div>
             )}
-            <span className="text-xs uppercase font-serif tracking-[0.25em] text-[#c7a36a] font-semibold">The Groom</span>
-            <h3 className="text-2xl sm:text-3xl font-serif font-bold text-amber-200 mt-2">{invitation?.groom_name}</h3>
+            <span className="text-[10px] uppercase font-serif tracking-[0.22em] text-[#c7a36a]">The Groom</span>
+            <h3 className="text-xl sm:text-2xl font-serif font-bold text-amber-200 mt-1">{invitation?.groom_name}</h3>
             {invitation?.groom_profession && (
               <p className="text-xs font-semibold text-amber-300 uppercase tracking-wider mt-1">{invitation.groom_profession}</p>
             )}
             {invitation?.groom_parents && (
-              <p className="text-xs text-stone-300 mt-3"><strong className="text-[#c7a36a]">Son of:</strong> {invitation.groom_parents}</p>
+              <p className="text-xs text-stone-400 mt-2"><strong className="text-stone-300">Son of:</strong> {invitation.groom_parents}</p>
             )}
             {invitation?.groom_bio && (
-              <p className="text-xs sm:text-sm italic font-serif text-stone-200 mt-3 leading-relaxed">"{invitation.groom_bio}"</p>
+              <p className="text-xs italic font-serif text-stone-300 mt-2 leading-relaxed">"{invitation.groom_bio}"</p>
             )}
             {invitation?.groom_family && (
-              <p className="text-xs text-stone-400 pt-3 mt-4 border-t border-stone-800/90"><strong className="text-stone-300">Family:</strong> {invitation.groom_family}</p>
+              <p className="text-xs text-stone-400 pt-3 mt-3 border-t border-stone-800/80"><strong className="text-stone-300">Family:</strong> {invitation.groom_family}</p>
             )}
           </div>
 
@@ -992,7 +962,7 @@ export default function TemplateOne({
         <p className="eyebrow mb-4">Together in Grace</p>
         <div className="couple-banner-frame">
           <img 
-            src={gallery[2] || invitation?.cover_photo || "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1400&q=80"} 
+            src={gallery[2] || invitation?.cover_photo} 
             alt="Together" 
           />
         </div>
@@ -1011,7 +981,7 @@ export default function TemplateOne({
         )}
       </section>
 
-      {/* 7. TOGETHER WITH FAMILIES (വിവരങ്ങൾ ഉണ്ടെങ്കിൽ മാത്രം) */}
+      {/* 7. TOGETHER WITH FAMILIES */}
       {(invitation?.groom_parents || invitation?.bride_parents) && (
         <section className="section cream-section">
           <p className="verse">Blessings of Elders</p>
@@ -1032,7 +1002,7 @@ export default function TemplateOne({
         </section>
       )}
 
-      {/* 8. SAVE THE DATE & COUNTDOWN (തീയതി നൽകിയിട്ടുണ്ടെങ്കിൽ മാത്രം) */}
+      {/* 8. SAVE THE DATE & COUNTDOWN */}
       {invitation?.wedding_date && (
         <section className="section" style={{ background: "var(--paper)", color: "var(--ink)", textAlign: "center" }}>
           <div className="date-card">
@@ -1097,7 +1067,7 @@ export default function TemplateOne({
         </section>
       )}
 
-      {/* 10. ഫോട്ടോ മാഗസിൻ ഗാലറി (Captured Memories) */}
+      {/* 10. ഫോട്ടോ മാഗസിൻ ഗാലറി */}
       {gallery.length > 0 && (
         <section className="section cream-section">
           <p className="verse">Photo Gallery</p>
@@ -1112,37 +1082,21 @@ export default function TemplateOne({
         </section>
       )}
 
-      {/* 11. കസ്റ്റം സെക്ഷനുകൾ (സംഗീത്, ഡ്രസ്സ് കോഡ് തുടങ്ങിയവ പ്രീമിയം ലുക്കിൽ) */}
+      {/* 11. കസ്റ്റം സെക്ഷനുകൾ */}
       {customSecs.length > 0 && (
         <section className="section dark-section">
-          <div className="max-w-3xl mx-auto space-y-6">
-            <p className="eyebrow">Event Guidelines & Traditions</p>
+          <div className="max-w-3xl mx-auto space-y-4">
             {customSecs.map((sec, i) => (
-              <div key={i} className="custom-card text-center space-y-2">
-                <h3 className="text-xl sm:text-2xl font-serif text-[#c7a36a]">{sec.title}</h3>
-                <p className="text-xs sm:text-sm text-stone-200 font-serif leading-relaxed whitespace-pre-line">{sec.content}</p>
+              <div key={i} className="p-6 rounded-2xl bg-[#22070c] border border-[#c7a36a]/25 text-center space-y-2">
+                <h3 className="text-xl font-serif text-[#c7a36a]">{sec.title}</h3>
+                <p className="text-xs sm:text-sm text-stone-300 font-serif leading-relaxed whitespace-pre-line">{sec.content}</p>
               </div>
             ))}
           </div>
         </section>
       )}
 
-      {/* 12. കോൺടാക്റ്റ് നമ്പറുകൾ (ഉണ്ടെങ്കിൽ) */}
-      {contacts.length > 0 && (
-        <section className="section dark-section border-t border-stone-800/80">
-          <p className="eyebrow mb-2">Coordinators</p>
-          <div className="flex flex-wrap justify-center gap-4 text-xs font-serif">
-            {contacts.map((c, i) => (
-              <div key={i} className="px-5 py-2.5 bg-black/40 rounded-full border border-[#c7a36a]/30">
-                <span className="text-stone-300">{c.name}: </span>
-                <a href={`tel:${c.phone}`} className="text-amber-300 font-bold hover:underline">{c.phone}</a>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* 13. ഇന്ററാക്ടീവ് RSVP & ഗസ്റ്റ് ആശംസകൾ */}
+      {/* 12. ഇന്ററാക്ടീവ് RSVP & ഗസ്റ്റ് ആശംസകൾ */}
       <section className="section dark-section border-t border-stone-800/80">
         <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           
@@ -1181,6 +1135,7 @@ export default function TemplateOne({
               </button>
             </form>
 
+            {/* ഡാഷ്‌ബോർഡ് വഴി അപ്രൂവ് ചെയ്ത ആശംസകൾ മാത്രം ഇവിടെ ഡിസ്പ്ലേ ആകും */}
             {wishes.length > 0 && (
               <div className="mt-4 space-y-2 max-h-48 overflow-y-auto pr-1 text-left">
                 {wishes.map((w, i) => (
@@ -1196,7 +1151,7 @@ export default function TemplateOne({
         </div>
       </section>
 
-      {/* 14. CLOSING */}
+      {/* 13. CLOSING */}
       <section className="closing section">
         <p className="eyebrow">With love and blessings</p>
         <h2>We can’t wait<br />to celebrate with you.</h2>
