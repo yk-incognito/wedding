@@ -1,4 +1,6 @@
 "use client";
+export const dynamic = "force-dynamic";
+
 import React, { useState, useRef, useEffect, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "../lib/supabaseClient";
@@ -61,7 +63,7 @@ const ANIMATION_EFFECTS = [
 function BuilderContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const editId = searchParams.get("edit");
+  const editId = searchParams?.get("edit");
   const formRef = useRef(null);
   const [loading, setLoading] = useState(false);
 
@@ -124,10 +126,10 @@ function BuilderContent() {
   const [contacts, setContacts] = useState([{ name: "Family Coordinator", phone: "" }]);
   const [customSections, setCustomSections] = useState([]);
 
-  // 1. എഡിറ്റ് ചെയ്യുമ്പോൾ മുൻപ് ടൈപ്പ് ചെയ്ത ഡാറ്റയും ഫോട്ടോകളും പൂർണ്ണമായി റീസ്റ്റോർ ചെയ്യുന്നു
+  // എഡിറ്റ് ചെയ്യുമ്പോൾ മുൻപ് ടൈപ്പ് ചെയ്ത ഡാറ്റയും ഫോട്ടോകളും തിരികെ റീസ്റ്റോർ ചെയ്യുന്നു
   useEffect(() => {
-    const activeId = editId || sessionStorage.getItem("last_active_edit_id");
-    if (activeId) {
+    const activeId = editId || (typeof window !== "undefined" ? sessionStorage.getItem("last_active_edit_id") : null);
+    if (activeId && typeof window !== "undefined") {
       const savedSession = sessionStorage.getItem(`preview_session_${activeId}`);
       if (savedSession) {
         try {
@@ -212,7 +214,7 @@ function BuilderContent() {
     }
   };
 
-  // 2. ഇമേജ് ക്രോപ്പർ ഫംഗ്ഷനുകൾ (Inbuilt Canvas Cropper)
+  // ക്രോപ്പർ ഫംഗ്ഷനുകൾ
   const triggerCropModal = (file, target, ratio) => {
     if (!file) return;
     const reader = new FileReader();
@@ -364,7 +366,7 @@ function BuilderContent() {
 
   const resetForm = () => {
     if (confirm("മുഴുവൻ വിവരങ്ങളും മായ്‌ച്ച് ഫോം റീസെറ്റ് ചെയ്യണമോ?")) {
-      sessionStorage.clear();
+      if (typeof window !== "undefined") sessionStorage.clear();
       setExistingId(null);
       setExistingDashId(null);
       setFormData({
@@ -447,8 +449,10 @@ function BuilderContent() {
       const { error: upsertError } = await supabase.from("invitations").upsert([invitationData]);
       if (upsertError) throw upsertError;
 
-      sessionStorage.setItem(`preview_session_${publicId}`, JSON.stringify(invitationData));
-      sessionStorage.setItem("last_active_edit_id", publicId);
+      if (typeof window !== "undefined") {
+        sessionStorage.setItem(`preview_session_${publicId}`, JSON.stringify(invitationData));
+        sessionStorage.setItem("last_active_edit_id", publicId);
+      }
 
       router.push(`/preview/${publicId}?auth_dash=${dashboardId}`);
     } catch (err) {
@@ -526,7 +530,7 @@ function BuilderContent() {
             </div>
           </div>
 
-          {/* 2. ഫോട്ടോ അപ്‌ലോഡ് & ക്രോപ്പർ (Cover & Official Card) */}
+          {/* 2. ഫോട്ടോ അപ്‌ലോഡ് & ക്രോപ്പർ */}
           <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#e4d7c0] shadow-sm space-y-6">
             <h2 className="text-xl font-serif font-bold text-[#54101a]">2. Main Banner & Official Wedding Card (With Cropper)</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -580,7 +584,7 @@ function BuilderContent() {
             </div>
           </div>
 
-          {/* 3. ബ്രൈഡ് & ഗ്രൂം പ്രൊഫൈലുകൾ (With 1:1 Square Cropper) */}
+          {/* 3. ബ്രൈഡ് & ഗ്രൂം പ്രൊഫൈലുകൾ */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             {/* Bride */}
@@ -723,7 +727,7 @@ function BuilderContent() {
             </div>
           </div>
 
-          {/* 6. ഗാലറി ഫോട്ടോകൾ (With 4:5 Magazine Ratio Cropper) */}
+          {/* 6. ഗാലറി ഫോട്ടോകൾ */}
           <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#e4d7c0] shadow-sm space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-serif font-bold text-[#54101a] flex items-center gap-2">
@@ -966,7 +970,7 @@ function BuilderContent() {
   );
 }
 
-// സുരക്ഷിതമായ Suspense Wrapper എക്സ്പോർട്ട് (Next.js Build Fix)
+// Suspense Wrapper എക്സ്പോർട്ട്
 export default function BuilderPage() {
   return (
     <Suspense fallback={
