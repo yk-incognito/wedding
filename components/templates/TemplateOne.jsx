@@ -62,7 +62,7 @@ export default function TemplateOne({
     return () => clearInterval(interval);
   }, [invitation?.wedding_date]);
 
-  // വീഴുന്ന റോസാപ്പൂവിതളുകൾ
+  // പൂവിതളുകൾ
   useEffect(() => {
     if (!gateOpened) return;
     const interval = setInterval(() => {
@@ -157,7 +157,7 @@ export default function TemplateOne({
   const yearNumber = dateObj ? dateObj.getFullYear() : "";
   const muhurthamTime = dateObj ? dateObj.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) : "";
 
-  // ഗാലറി ഇമേജുകൾ
+  // ഗാലറി
   const defaultGallery = [
     invitation?.cover_photo || "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1400&q=80",
     "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=80",
@@ -181,14 +181,14 @@ export default function TemplateOne({
   return (
     <div className="netflix-luxury-container">
       <style dangerouslySetInnerHTML={{ __html: `
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
 
         .netflix-luxury-container {
           --ink: #14070a;
           --wine: #480e17;
           --wine-dark: #22070c;
           --ivory: #faf5ed;
-          --paper: #f2e8dc;
+          --paper: #f4ecdf;
           --gold: #c7a36a;
           --gold-bright: #dfbe87;
           --soft: #d7cab7;
@@ -205,10 +205,11 @@ export default function TemplateOne({
 
         .netflix-luxury-container * { box-sizing: border-box; }
 
-        /* ടെക്സ്റ്റുകൾ ചാഞ്ചാടുന്ന അരോചകമായ ആനിമേഷൻ ഒഴിവാക്കുന്നു */
+        /* 1. എല്ലാത്തരം ഷിവറിങ് / സൂം-ഇൻ-ഔട്ട് ആനിമേഷനുകളും പൂർണ്ണമായി ഒഴിവാക്കി */
         * {
-          transform: none;
-          animation-play-state: running;
+          animation: none !important;
+          transform: none !important;
+          transition: background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
         }
 
         .grain {
@@ -235,14 +236,14 @@ export default function TemplateOne({
           border-radius: 80% 20% 70% 30%;
           background: linear-gradient(135deg, #8d2740, #3d0915);
           opacity: .4;
-          animation: petalFall linear forwards;
+          animation: petalFall linear forwards !important;
         }
         @keyframes petalFall {
-          0% { transform: translateY(-6vh) rotate(0deg); }
-          100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
+          0% { transform: translateY(-6vh) rotate(0deg) !important; }
+          100% { transform: translateY(105vh) rotate(360deg) !important; opacity: 0; }
         }
 
-        /* 1. റോയൽ ഗേറ്റ് */
+        /* റോയൽ ഗേറ്റ് */
         .gate {
           position: fixed;
           z-index: 150;
@@ -252,7 +253,7 @@ export default function TemplateOne({
           text-align: center;
           padding: 24px;
           background: radial-gradient(circle at 50% 38%, #5a1725 0, #27080f 45%, #0f0507 80%);
-          transition: opacity 1.1s ease, visibility 1.1s ease;
+          transition: opacity 0.8s ease, visibility 0.8s ease !important;
         }
         .gate::before, .gate::after {
           content: "";
@@ -276,7 +277,7 @@ export default function TemplateOne({
           height: 380px;
           left: 50%;
           top: 48%;
-          transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%) !important;
           border-radius: 50%;
           background: rgba(199, 163, 106, .1);
           filter: blur(55px);
@@ -319,17 +320,12 @@ export default function TemplateOne({
           justify-content: space-between;
           border: 1px solid rgba(199, 163, 106, .6);
           border-radius: 99px;
-          background: rgba(255, 255, 255, .03);
+          background: rgba(255, 255, 255, .05);
           color: var(--ivory);
           font: 500 .7rem var(--sans);
           text-transform: uppercase;
           letter-spacing: .18em;
           cursor: pointer;
-          transition: background 0.3s, border-color 0.3s;
-        }
-        .open-button:hover {
-          background: rgba(255, 255, 255, .08);
-          border-color: var(--gold-bright);
         }
         .open-button i {
           width: 40px;
@@ -349,7 +345,7 @@ export default function TemplateOne({
           margin-top: 12px;
         }
 
-        /* 2. ഫുൾ-സ്ക്രീൻ ഹീറോ */
+        /* ഹീറോ */
         .hero {
           height: 100svh;
           min-height: 580px;
@@ -365,12 +361,12 @@ export default function TemplateOne({
           height: 100%;
           object-fit: cover;
           object-position: center;
-          filter: grayscale(85%) contrast(1.04);
+          filter: grayscale(75%) contrast(1.05);
         }
         .hero-shade {
           position: absolute;
           inset: 0;
-          background: linear-gradient(180deg, rgba(14, 5, 8, .2), rgba(14, 5, 8, .15) 40%, rgba(14, 5, 8, .92) 100%);
+          background: linear-gradient(180deg, rgba(14, 5, 8, .2), rgba(14, 5, 8, .25) 45%, rgba(14, 5, 8, .95) 100%);
         }
         .hero-copy {
           position: relative;
@@ -380,7 +376,7 @@ export default function TemplateOne({
         .hero-copy h1 {
           font: 500 clamp(2.6rem, 5.5vw, 4.4rem)/1.1 var(--serif);
           margin: 14px 0 20px;
-          text-shadow: 0 2px 15px rgba(0, 0, 0, .5);
+          text-shadow: 0 2px 15px rgba(0, 0, 0, .6);
         }
         .hero-copy h1 span {
           font-size: .65em;
@@ -398,27 +394,25 @@ export default function TemplateOne({
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          margin-top: 18px;
-          padding: 11px 26px;
+          padding: 12px 28px;
           border-radius: 99px;
-          background: rgba(34, 7, 12, 0.85);
-          backdrop-filter: blur(8px);
-          border: 1px solid rgba(199, 163, 106, 0.8);
+          background: rgba(34, 7, 12, 0.9);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(199, 163, 106, 0.85);
           color: var(--gold-bright);
-          font-size: 0.7rem;
+          font-size: 0.72rem;
           text-transform: uppercase;
           letter-spacing: 0.18em;
           font-weight: 600;
           cursor: pointer;
-          transition: background 0.3s;
-          box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
         }
         .official-card-btn:hover {
           background: rgba(72, 14, 23, 0.95);
           border-color: var(--gold);
         }
 
-        /* 3. വിഷ്വൽ സ്റ്റോറി ഫ്രെയിം */
+        /* വിഷ്വൽ സ്റ്റോറി ഫ്രെയിം */
         .visual-story { background: #0f0507; }
         .story-frame {
           position: relative;
@@ -467,7 +461,6 @@ export default function TemplateOne({
           position: relative;
         }
 
-        /* ക്രീം സെക്ഷൻ */
         .cream-section {
           background: var(--ivory);
           color: var(--wine);
@@ -507,36 +500,57 @@ export default function TemplateOne({
           color: #4b3d3c;
         }
 
-        /* ഡാർക്ക് സെക്ഷൻ */
         .dark-section {
           background: linear-gradient(145deg, #22070c, #120407);
           text-align: center;
         }
 
-        /* The Couple ഗ്രാൻഡ് കാർഡുകൾ */
+        /* 2. THE COUPLE സെക്ഷൻ: പുറത്ത് പ്രീമിയം ഐവറി ക്രീം ബാക്ക്ഗ്രൗണ്ട്, ഉള്ളിൽ റോയൽ വൈൻ കാർഡുകൾ */
+        .the-couple-section {
+          background: var(--ivory);
+          color: var(--wine);
+          padding: clamp(70px, 9vw, 120px) max(24px, 8vw);
+          text-align: center;
+          position: relative;
+        }
+        .the-couple-section .couple-eyebrow {
+          color: #8c5b23;
+          font-size: 0.82rem;
+          letter-spacing: 0.35em;
+          text-transform: uppercase;
+          font-weight: 600;
+          display: block;
+          margin-bottom: 8px;
+        }
+        .the-couple-section .couple-main-title {
+          font: 600 clamp(2.8rem, 6vw, 4.5rem)/1.1 var(--serif);
+          color: var(--wine);
+          margin-bottom: 40px;
+        }
         .couple-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 30px;
-          max-width: 850px;
+          gap: 36px;
+          max-width: 920px;
           margin: 0 auto;
         }
         .person-card {
-          padding: 35px 26px;
-          border-radius: 20px;
-          background: rgba(34, 7, 12, 0.75);
-          border: 1px solid rgba(199, 163, 106, 0.35);
+          padding: 42px 30px;
+          border-radius: 26px;
+          background: linear-gradient(180deg, #320a12 0%, #1a0509 100%);
+          color: var(--ivory);
+          border: 1.5px solid rgba(199, 163, 106, 0.45);
           text-align: center;
-          box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+          box-shadow: 0 25px 60px rgba(50, 10, 18, 0.35);
         }
         .person-img-wrap {
-          width: 110px;
-          height: 110px;
-          margin: 0 auto 16px;
+          width: 120px;
+          height: 120px;
+          margin: 0 auto 18px;
           border-radius: 50%;
           overflow: hidden;
           border: 2px solid var(--gold);
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
         }
         .person-img-wrap img {
           width: 100%;
@@ -544,17 +558,17 @@ export default function TemplateOne({
           object-fit: cover;
         }
         .person-avatar {
-          width: 110px;
-          height: 110px;
-          margin: 0 auto 16px;
+          width: 120px;
+          height: 120px;
+          margin: 0 auto 18px;
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          background: rgba(199, 163, 106, 0.15);
+          background: rgba(199, 163, 106, 0.18);
           border: 2px solid var(--gold);
           color: var(--gold-bright);
-          font: 500 2.2rem var(--serif);
+          font: 500 2.6rem var(--serif);
         }
 
         .couple-banner-section {
@@ -563,13 +577,13 @@ export default function TemplateOne({
           text-align: center;
         }
         .couple-banner-frame {
-          max-width: 780px;
+          max-width: 820px;
           margin: 0 auto;
           border-radius: 24px;
           overflow: hidden;
           border: 1px solid rgba(199, 163, 106, 0.35);
           position: relative;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
         }
         .couple-banner-frame img {
           width: 100%;
@@ -742,6 +756,49 @@ export default function TemplateOne({
           object-fit: cover;
         }
 
+        /* 4. കസ്റ്റം സെക്ഷനുകൾ (Sangeeth, Guidelines): ആകർഷകമായ പ്രീമിയം ലക്ഷ്വറി കാർഡുകൾ */
+        .custom-sections-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+          gap: 24px;
+          max-width: 920px;
+          margin: 30px auto 0;
+        }
+        .custom-card-box {
+          padding: 34px 28px;
+          border-radius: 22px;
+          background: linear-gradient(145deg, #2b0c14 0%, #180509 100%);
+          border: 1.5px solid rgba(199, 163, 106, 0.4);
+          box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+          text-align: center;
+          position: relative;
+        }
+        .custom-card-badge {
+          display: inline-block;
+          font-size: 0.65rem;
+          text-transform: uppercase;
+          letter-spacing: 0.22em;
+          color: var(--gold);
+          background: rgba(199, 163, 106, 0.12);
+          border: 1px solid rgba(199, 163, 106, 0.3);
+          padding: 4px 14px;
+          border-radius: 99px;
+          margin-bottom: 12px;
+          font-weight: 600;
+        }
+        .custom-card-title {
+          font: 600 1.55rem/1.25 var(--serif);
+          color: #f7eedf;
+          margin: 0 0 12px;
+        }
+        .custom-card-content {
+          font-size: 0.85rem;
+          line-height: 1.6;
+          color: #d8c8ba;
+          margin: 0;
+          white-space: pre-line;
+        }
+
         .form-card {
           max-width: 520px;
           margin: 0 auto;
@@ -812,13 +869,13 @@ export default function TemplateOne({
           display: block;
           width: 2px;
           background: var(--gold);
-          animation: musicAnim .7s ease-in-out infinite alternate;
+          animation: musicAnim .7s ease-in-out infinite alternate !important;
         }
         .bars i:nth-child(1) { height: 7px; }
         .bars i:nth-child(2) { height: 13px; animation-delay: .2s; }
         .bars i:nth-child(3) { height: 9px; animation-delay: .4s; }
         .music-control.paused .bars i {
-          animation-play-state: paused;
+          animation-play-state: paused !important;
           height: 3px;
         }
         @keyframes musicAnim { to { height: 3px; } }
@@ -832,6 +889,7 @@ export default function TemplateOne({
           .gallery-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
           .gate::before { inset: 12px; }
           .gate::after { inset: 18px; }
+          .custom-sections-grid { grid-template-columns: 1fr; }
         }
       ` }} />
 
@@ -899,10 +957,11 @@ export default function TemplateOne({
         </section>
       )}
 
-      {/* 5. BRIDE & GROOM PROFILES */}
-      <section className="section dark-section">
-        <p className="eyebrow" style={{ fontSize: "0.85rem", letterSpacing: "0.35em" }}>The Couple</p>
-        <div className="couple-grid mt-8">
+      {/* 5. BRIDE & GROOM PROFILES (ബാക്ക്ഗ്രൗണ്ട് ക്രീം, കാർഡുകൾ ഡീപ് റോയൽ വൈൻ) */}
+      <section className="the-couple-section">
+        <span className="couple-eyebrow">Two Souls, One Heart</span>
+        <h2 className="couple-main-title">The Couple</h2>
+        <div className="couple-grid">
           
           {/* Bride Card */}
           <div className="person-card">
@@ -913,19 +972,19 @@ export default function TemplateOne({
             ) : (
               <div className="person-avatar">{brideInitial}</div>
             )}
-            <span className="text-[10px] uppercase font-serif tracking-[0.22em] text-[#c7a36a]">The Bride</span>
-            <h3 className="text-xl sm:text-2xl font-serif font-bold text-rose-200 mt-1">{invitation?.bride_name}</h3>
+            <span className="text-xs uppercase font-serif tracking-[0.25em] text-[#c7a36a] font-semibold">The Bride</span>
+            <h3 className="text-2xl sm:text-3xl font-serif font-bold text-rose-200 mt-2">{invitation?.bride_name}</h3>
             {invitation?.bride_profession && (
               <p className="text-xs font-semibold text-amber-300 uppercase tracking-wider mt-1">{invitation.bride_profession}</p>
             )}
             {invitation?.bride_parents && (
-              <p className="text-xs text-stone-400 mt-2"><strong className="text-stone-300">Daughter of:</strong> {invitation.bride_parents}</p>
+              <p className="text-xs text-stone-300 mt-3"><strong className="text-[#c7a36a]">Daughter of:</strong> {invitation.bride_parents}</p>
             )}
             {invitation?.bride_bio && (
-              <p className="text-xs italic font-serif text-stone-300 mt-2 leading-relaxed">"{invitation.bride_bio}"</p>
+              <p className="text-xs sm:text-sm italic font-serif text-stone-200 mt-3 leading-relaxed">"{invitation.bride_bio}"</p>
             )}
             {invitation?.bride_family && (
-              <p className="text-xs text-stone-400 pt-3 mt-3 border-t border-stone-800/80"><strong className="text-stone-300">Family:</strong> {invitation.bride_family}</p>
+              <p className="text-xs text-stone-400 pt-3 mt-4 border-t border-stone-800/90"><strong className="text-stone-300">Family:</strong> {invitation.bride_family}</p>
             )}
           </div>
 
@@ -938,26 +997,26 @@ export default function TemplateOne({
             ) : (
               <div className="person-avatar">{groomInitial}</div>
             )}
-            <span className="text-[10px] uppercase font-serif tracking-[0.22em] text-[#c7a36a]">The Groom</span>
-            <h3 className="text-xl sm:text-2xl font-serif font-bold text-amber-200 mt-1">{invitation?.groom_name}</h3>
+            <span className="text-xs uppercase font-serif tracking-[0.25em] text-[#c7a36a] font-semibold">The Groom</span>
+            <h3 className="text-2xl sm:text-3xl font-serif font-bold text-amber-200 mt-2">{invitation?.groom_name}</h3>
             {invitation?.groom_profession && (
               <p className="text-xs font-semibold text-amber-300 uppercase tracking-wider mt-1">{invitation.groom_profession}</p>
             )}
             {invitation?.groom_parents && (
-              <p className="text-xs text-stone-400 mt-2"><strong className="text-stone-300">Son of:</strong> {invitation.groom_parents}</p>
+              <p className="text-xs text-stone-300 mt-3"><strong className="text-[#c7a36a]">Son of:</strong> {invitation.groom_parents}</p>
             )}
             {invitation?.groom_bio && (
-              <p className="text-xs italic font-serif text-stone-300 mt-2 leading-relaxed">"{invitation.groom_bio}"</p>
+              <p className="text-xs sm:text-sm italic font-serif text-stone-200 mt-3 leading-relaxed">"{invitation.groom_bio}"</p>
             )}
             {invitation?.groom_family && (
-              <p className="text-xs text-stone-400 pt-3 mt-3 border-t border-stone-800/80"><strong className="text-stone-300">Family:</strong> {invitation.groom_family}</p>
+              <p className="text-xs text-stone-400 pt-3 mt-4 border-t border-stone-800/90"><strong className="text-stone-300">Family:</strong> {invitation.groom_family}</p>
             )}
           </div>
 
         </div>
       </section>
 
-      {/* 6. സ്പെഷ്യൽ കപ്പിൾ പോർട്രെയ്റ്റ് ബാനർ & VIEW OFFICIAL CARD (ഫോട്ടോയ്ക്ക് താഴെ) */}
+      {/* 6. സ്പെഷ്യൽ കപ്പിൾ പോർട്രെയ്റ്റ് ബാനർ & VIEW OFFICIAL CARD */}
       <section className="couple-banner-section">
         <p className="eyebrow mb-4">Together in Grace</p>
         <div className="couple-banner-frame">
@@ -969,7 +1028,7 @@ export default function TemplateOne({
 
         {/* VIEW OFFICIAL CARD BUTTON (കാർഡ് ഉണ്ടെങ്കിൽ മാത്രം ഫോട്ടോയ്ക്ക് താഴെ വൃത്തിയായി വരുന്നു) */}
         {invitation?.wedding_card_photo && (
-          <div className="text-center mt-6">
+          <div className="text-center mt-8">
             <button
               type="button"
               onClick={() => setShowCardModal(true)}
@@ -1058,7 +1117,6 @@ export default function TemplateOne({
               </div>
             </div>
 
-            {/* Google Maps Dynamic QR Code */}
             <div className="qr-card">
               <img src={qrDataUrl} alt="QR code for directions" />
               <span>Scan for directions</span>
@@ -1082,14 +1140,16 @@ export default function TemplateOne({
         </section>
       )}
 
-      {/* 11. കസ്റ്റം സെക്ഷനുകൾ */}
+      {/* 11. കസ്റ്റം സെക്ഷനുകൾ (SANGEETH & GUIDELINES: പ്രീമിയം ലക്ഷ്വറി കാർഡുകൾ) */}
       {customSecs.length > 0 && (
         <section className="section dark-section">
-          <div className="max-w-3xl mx-auto space-y-4">
+          <p className="eyebrow">Celebration Notes</p>
+          <div className="custom-sections-grid">
             {customSecs.map((sec, i) => (
-              <div key={i} className="p-6 rounded-2xl bg-[#22070c] border border-[#c7a36a]/25 text-center space-y-2">
-                <h3 className="text-xl font-serif text-[#c7a36a]">{sec.title}</h3>
-                <p className="text-xs sm:text-sm text-stone-300 font-serif leading-relaxed whitespace-pre-line">{sec.content}</p>
+              <div key={i} className="custom-card-box">
+                <span className="custom-card-badge">Important Detail</span>
+                <h3 className="custom-card-title">{sec.title}</h3>
+                <p className="custom-card-content">{sec.content}</p>
               </div>
             ))}
           </div>
@@ -1135,7 +1195,6 @@ export default function TemplateOne({
               </button>
             </form>
 
-            {/* ഡാഷ്‌ബോർഡ് വഴി അപ്രൂവ് ചെയ്ത ആശംസകൾ മാത്രം ഇവിടെ ഡിസ്പ്ലേ ആകും */}
             {wishes.length > 0 && (
               <div className="mt-4 space-y-2 max-h-48 overflow-y-auto pr-1 text-left">
                 {wishes.map((w, i) => (
@@ -1172,22 +1231,35 @@ export default function TemplateOne({
         </button>
       )}
 
-      {/* OFFICIAL CARD LIGHTBOX MODAL */}
+      {/* 3. OFFICIAL CARD LIGHTBOX MODAL (എളുപ്പത്തിൽ ക്ലോസ് ചെയ്യാവുന്ന ഫിക്സ്) */}
       {showCardModal && invitation?.wedding_card_photo && (
-        <div className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="relative max-w-xl w-full bg-[#1e070c] border border-[#c7a36a]/70 rounded-2xl p-4 shadow-2xl text-center">
+        <div 
+          onClick={() => setShowCardModal(false)}
+          className="fixed inset-0 z-[300] bg-black/95 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer"
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()} 
+            className="relative max-w-xl w-full max-h-[90vh] bg-[#1e070c] border border-[#c7a36a] rounded-2xl p-5 shadow-[0_20px_60px_rgba(0,0,0,0.9)] text-center cursor-default flex flex-col items-center"
+          >
+            {/* വലിയ ക്ലോസ് ബട്ടൺ */}
             <button 
+              type="button"
               onClick={() => setShowCardModal(false)} 
-              className="absolute top-3 right-3 p-2 bg-black/60 rounded-full text-stone-300 hover:text-white"
+              className="absolute -top-4 -right-4 p-2.5 bg-[#c7a36a] text-black font-bold rounded-full shadow-2xl hover:bg-amber-300 cursor-pointer"
+              title="Close Card"
             >
               <X className="w-5 h-5" />
             </button>
-            <h3 className="text-xs font-serif font-bold text-[#c7a36a] uppercase tracking-widest mb-3">Official Wedding Invitation Card</h3>
-            <img 
-              src={invitation.wedding_card_photo} 
-              alt="Official Card" 
-              className="max-h-[78vh] w-full object-contain rounded-xl mx-auto shadow-inner" 
-            />
+            <h3 className="text-xs font-serif font-bold text-[#c7a36a] uppercase tracking-widest mb-3">
+              Official Wedding Invitation Card
+            </h3>
+            <div className="w-full overflow-y-auto max-h-[78vh] rounded-xl border border-white/10">
+              <img 
+                src={invitation.wedding_card_photo} 
+                alt="Official Wedding Invitation Card" 
+                className="w-full h-auto object-contain mx-auto" 
+              />
+            </div>
           </div>
         </div>
       )}
