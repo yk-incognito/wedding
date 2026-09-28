@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
-import { FileText, X, MapPin, Send, Phone, Calendar, Heart, MessageCircle } from "lucide-react";
+import { FileText, X, MapPin, Send, Phone, Calendar, Heart, MessageCircle, QrCode } from "lucide-react";
 
 export default function TemplateOne({
   invitation,
@@ -8,7 +8,8 @@ export default function TemplateOne({
   onWishSubmit,
   wishes = [],
   wishLoading = false,
-  isSampleDemo = false
+  isSampleDemo = false,
+  isPreviewMode = false
 }) {
   const [gateOpened, setGateOpened] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -61,7 +62,7 @@ export default function TemplateOne({
     return () => clearInterval(interval);
   }, [invitation?.wedding_date]);
 
-  // വീഴുന്ന റോസാപ്പൂവിതളുകൾ
+  // വീഴുന്ന പൂവിതളുകൾ
   useEffect(() => {
     if (!gateOpened) return;
     const interval = setInterval(() => {
@@ -109,8 +110,8 @@ export default function TemplateOne({
       `PRODID:-//${invitation?.bride_name} & ${invitation?.groom_name}//Wedding//EN`,
       "BEGIN:VEVENT",
       `SUMMARY:${invitation?.bride_name} & ${invitation?.groom_name} — Wedding`,
-      `DESCRIPTION:Wedding celebration at ${invitation?.venue_name}.`,
-      `LOCATION:${invitation?.venue_name}, ${invitation?.venue_address || ""}`,
+      `DESCRIPTION:Wedding celebration at ${invitation?.venue_name || "the venue"}.`,
+      `LOCATION:${invitation?.venue_name || ""}, ${invitation?.venue_address || ""}`,
       `DTSTART:${formatted}`,
       `DTEND:${formatted}`,
       "END:VEVENT",
@@ -149,14 +150,14 @@ export default function TemplateOne({
   const brideInitial = (invitation?.bride_name || "B")[0]?.toUpperCase();
   const groomInitial = (invitation?.groom_name || "G")[0]?.toUpperCase();
 
-  const dateObj = invitation?.wedding_date ? new Date(invitation.wedding_date) : new Date();
-  const dateFormatted = dateObj.toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" });
-  const dayOfMonth = dateObj.getDate();
-  const monthAbbr = dateObj.toLocaleDateString("en-US", { month: "short" }).toUpperCase();
-  const yearNumber = dateObj.getFullYear();
-  const muhurthamTime = dateObj.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+  const dateObj = invitation?.wedding_date ? new Date(invitation.wedding_date) : null;
+  const dateFormatted = dateObj ? dateObj.toLocaleDateString("en-US", { weekday: "long", year: "numeric", month: "long", day: "numeric" }) : "";
+  const dayOfMonth = dateObj ? dateObj.getDate() : "";
+  const monthAbbr = dateObj ? dateObj.toLocaleDateString("en-US", { month: "short" }).toUpperCase() : "";
+  const yearNumber = dateObj ? dateObj.getFullYear() : "";
+  const muhurthamTime = dateObj ? dateObj.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) : "";
 
-  // ഗാലറി ഇമേജുകൾ (മിനിമം 6 ഫോട്ടോകൾ കാണിക്കാൻ)
+  // ഗാലറി ഇമേജുകൾ
   const defaultGallery = [
     invitation?.cover_photo || "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1400&q=80",
     "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=80",
@@ -170,10 +171,13 @@ export default function TemplateOne({
     ? (invitation.gallery_photos.length < 4 ? [...invitation.gallery_photos, ...defaultGallery.slice(invitation.gallery_photos.length)] : invitation.gallery_photos)
     : defaultGallery;
 
-  const contacts = Array.isArray(invitation?.contact_numbers) ? invitation.contact_numbers : [];
-  const customSecs = Array.isArray(invitation?.custom_sections) ? invitation.custom_sections : [];
+  const contacts = Array.isArray(invitation?.contact_numbers) ? invitation.contact_numbers.filter(c => c.name || c.phone) : [];
+  const customSecs = Array.isArray(invitation?.custom_sections) ? invitation.custom_sections.filter(s => s.title || s.content) : [];
 
-  const qrDataUrl = `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=18&data=${encodeURIComponent(invitation?.map_url || "https://maps.google.com")}`;
+  // Google Maps Dynamic QR Code
+  const qrDataUrl = invitation?.map_url 
+    ? `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=18&data=${encodeURIComponent(invitation.map_url)}`
+    : `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=18&data=${encodeURIComponent("https://maps.google.com")}`;
 
   return (
     <div className="netflix-luxury-container">
@@ -202,12 +206,6 @@ export default function TemplateOne({
 
         .netflix-luxury-container * { box-sizing: border-box; }
 
-        /* എല്ലാവിധ അനാവശ്യ സൂമുകളും ഷേക്കിംഗും ഒഴിവാക്കുന്നു */
-        * {
-          transform: none !important;
-          animation-play-state: running;
-        }
-
         .grain {
           position: fixed;
           inset: 0;
@@ -232,11 +230,11 @@ export default function TemplateOne({
           border-radius: 80% 20% 70% 30%;
           background: linear-gradient(135deg, #8d2740, #3d0915);
           opacity: .4;
-          animation: petalFall linear forwards !important;
+          animation: petalFall linear forwards;
         }
         @keyframes petalFall {
-          0% { transform: translateY(-6vh) rotate(0deg) !important; }
-          100% { transform: translateY(105vh) rotate(360deg) !important; opacity: 0; }
+          0% { transform: translateY(-6vh) rotate(0deg); }
+          100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
         }
 
         /* 1. റോയൽ ഗേറ്റ് */
@@ -273,7 +271,7 @@ export default function TemplateOne({
           height: 380px;
           left: 50%;
           top: 48%;
-          transform: translate(-50%, -50%) !important;
+          transform: translate(-50%, -50%);
           border-radius: 50%;
           background: rgba(199, 163, 106, .1);
           filter: blur(55px);
@@ -322,6 +320,11 @@ export default function TemplateOne({
           text-transform: uppercase;
           letter-spacing: .18em;
           cursor: pointer;
+          transition: background 0.3s, border-color 0.3s;
+        }
+        .open-button:hover {
+          background: rgba(255, 255, 255, .08);
+          border-color: var(--gold-bright);
         }
         .open-button i {
           width: 40px;
@@ -385,28 +388,31 @@ export default function TemplateOne({
           letter-spacing: .25em;
         }
 
-        /* ഒഫീഷ്യൽ കാർഡ് ബട്ടൺ (വൃത്തിയുള്ള ഗോൾഡൻ സ്റ്റൈൽ) */
+        /* ഒഫീഷ്യൽ കാർഡ് ബട്ടൺ */
         .official-card-btn {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          margin-top: 18px;
-          padding: 10px 24px;
+          margin-top: 24px;
+          padding: 12px 28px;
           border-radius: 99px;
-          background: rgba(34, 7, 12, 0.75);
-          backdrop-filter: blur(8px);
-          border: 1px solid rgba(199, 163, 106, 0.7);
+          background: rgba(34, 7, 12, 0.85);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(199, 163, 106, 0.8);
           color: var(--gold-bright);
-          font-size: 0.68rem;
+          font-size: 0.72rem;
           text-transform: uppercase;
           letter-spacing: 0.18em;
-          font-weight: 500;
+          font-weight: 600;
           cursor: pointer;
-          transition: background 0.3s;
+          transition: all 0.3s;
+          box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
         }
         .official-card-btn:hover {
-          background: rgba(72, 14, 23, 0.9);
-          border-color: var(--gold);
+          background: rgba(72, 14, 23, 0.95);
+          border-color: var(--gold-bright);
+          transform: translateY(-2px);
+          box-shadow: 0 12px 30px rgba(199, 163, 106, 0.25);
         }
 
         /* 3. വിഷ്വൽ സ്റ്റോറി ഫ്രെയിം */
@@ -453,7 +459,6 @@ export default function TemplateOne({
           font: 400 clamp(1.8rem, 4.2vw, 3.2rem)/1.2 var(--serif);
         }
 
-        /* സെക്ഷനുകൾ & ആൾട്ടർനേറ്റിംഗ് തീമുകൾ */
         .section {
           padding: clamp(60px, 8vw, 100px) max(24px, 8vw);
           position: relative;
@@ -505,29 +510,34 @@ export default function TemplateOne({
           text-align: center;
         }
 
-        /* ബ്രൈഡ് & ഗ്രൂം സ്മോൾ പ്രൊഫൈൽ കാർഡുകൾ */
+        /* 4. THE COUPLE (ഗ്രാൻഡ് നവീകരിച്ച കാർഡുകൾ) */
         .couple-grid {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 30px;
-          max-width: 850px;
+          gap: 32px;
+          max-width: 900px;
           margin: 0 auto;
         }
         .person-card {
-          padding: 30px 24px;
-          border-radius: 20px;
-          background: rgba(34, 7, 12, 0.65);
-          border: 1px solid rgba(199, 163, 106, 0.25);
+          padding: 38px 28px;
+          border-radius: 24px;
+          background: linear-gradient(180deg, rgba(46, 12, 19, 0.85) 0%, rgba(24, 6, 11, 0.95) 100%);
+          border: 1px solid rgba(199, 163, 106, 0.45);
           text-align: center;
+          box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
+          transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+        .person-card:hover {
+          border-color: var(--gold-bright);
         }
         .person-img-wrap {
-          width: 96px;
-          height: 96px;
-          margin: 0 auto 16px;
+          width: 120px;
+          height: 120px;
+          margin: 0 auto 18px;
           border-radius: 50%;
           overflow: hidden;
           border: 2px solid var(--gold);
-          box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
         }
         .person-img-wrap img {
           width: 100%;
@@ -535,9 +545,9 @@ export default function TemplateOne({
           object-fit: cover;
         }
         .person-avatar {
-          width: 96px;
-          height: 96px;
-          margin: 0 auto 16px;
+          width: 120px;
+          height: 120px;
+          margin: 0 auto 18px;
           border-radius: 50%;
           display: flex;
           align-items: center;
@@ -545,7 +555,7 @@ export default function TemplateOne({
           background: rgba(199, 163, 106, 0.15);
           border: 2px solid var(--gold);
           color: var(--gold-bright);
-          font: 500 2rem var(--serif);
+          font: 500 2.5rem var(--serif);
         }
 
         /* സ്പെഷ്യൽ കപ്പിൾ പോർട്രെയ്റ്റ് സെക്ഷൻ */
@@ -555,17 +565,17 @@ export default function TemplateOne({
           text-align: center;
         }
         .couple-banner-frame {
-          max-width: 780px;
+          max-width: 820px;
           margin: 0 auto;
           border-radius: 24px;
           overflow: hidden;
-          border: 1px solid rgba(199, 163, 106, 0.35);
+          border: 1px solid rgba(199, 163, 106, 0.4);
           position: relative;
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+          box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6);
         }
         .couple-banner-frame img {
           width: 100%;
-          max-height: 480px;
+          max-height: 500px;
           object-fit: cover;
           display: block;
         }
@@ -647,6 +657,10 @@ export default function TemplateOne({
           letter-spacing: .18em;
           font: 500 .62rem var(--sans);
           cursor: pointer;
+          transition: background 0.3s;
+        }
+        .outline-button:hover {
+          background: rgba(72, 14, 23, 0.08);
         }
 
         /* വേദി & ക്യുആർ കോഡ് */
@@ -682,7 +696,9 @@ export default function TemplateOne({
           display: inline-flex;
           align-items: center;
           gap: 8px;
+          transition: filter 0.3s;
         }
+        .gold-button:hover { filter: brightness(1.15); }
         .whatsapp-btn {
           background: #25D366;
           color: #fff;
@@ -696,25 +712,27 @@ export default function TemplateOne({
           display: inline-flex;
           align-items: center;
           gap: 8px;
+          transition: filter 0.3s;
         }
+        .whatsapp-btn:hover { filter: brightness(1.1); }
         .qr-card {
           background: var(--ivory);
-          padding: 20px;
-          max-width: 280px;
+          padding: 22px;
+          max-width: 290px;
           justify-self: end;
           color: var(--wine);
           text-align: center;
-          border-radius: 16px;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+          border-radius: 20px;
+          box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
         }
-        .qr-card img { display: block; width: 100%; height: auto; }
+        .qr-card img { display: block; width: 100%; height: auto; border-radius: 8px; }
         .qr-card span {
           display: block;
-          margin-top: 12px;
+          margin-top: 14px;
           text-transform: uppercase;
           letter-spacing: .22em;
-          font-size: .6rem;
-          font-weight: 500;
+          font-size: .62rem;
+          font-weight: 600;
         }
 
         /* 6+ ഫോട്ടോ മാഗസിൻ ഗാലറി ഗ്രിഡ് */
@@ -736,9 +754,22 @@ export default function TemplateOne({
           width: 100%;
           height: 100%;
           object-fit: cover;
+          transition: transform 0.5s ease;
+        }
+        .gallery-item:hover img { transform: scale(1.05); }
+
+        /* കസ്റ്റം സെക്ഷനുകൾ (ലക്ഷ്വറി ബോക്സ്) */
+        .custom-card {
+          padding: 30px 24px;
+          border-radius: 20px;
+          background: linear-gradient(135deg, rgba(34, 7, 12, 0.8) 0%, rgba(20, 5, 8, 0.9) 100%);
+          border: 1px solid rgba(199, 163, 106, 0.35);
+          box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+          position: relative;
+          overflow: hidden;
         }
 
-        /* വൃത്തിയുള്ള പ്രീമിയം RSVP & ഗസ്റ്റ്ബുക്ക് കാർഡുകൾ */
+        /* RSVP & ഗസ്റ്റ് ആശംസ കാർഡുകൾ */
         .form-card {
           max-width: 520px;
           margin: 0 auto;
@@ -811,13 +842,13 @@ export default function TemplateOne({
           display: block;
           width: 2px;
           background: var(--gold);
-          animation: musicAnim .7s ease-in-out infinite alternate !important;
+          animation: musicAnim .7s ease-in-out infinite alternate;
         }
         .bars i:nth-child(1) { height: 7px; }
         .bars i:nth-child(2) { height: 13px; animation-delay: .2s; }
         .bars i:nth-child(3) { height: 9px; animation-delay: .4s; }
         .music-control.paused .bars i {
-          animation-play-state: paused !important;
+          animation-play-state: paused;
           height: 3px;
         }
         @keyframes musicAnim { to { height: 3px; } }
@@ -843,7 +874,7 @@ export default function TemplateOne({
         <div className="monogram">{brideInitial} <span>&</span> {groomInitial}</div>
         <p className="eyebrow">{invitation?.parents_text || "Together with their families"}</p>
         <h1>You’re invited<br /><em>to celebrate love</em></h1>
-        <p className="gate-date">{dayOfMonth} · {monthAbbr} · {yearNumber}</p>
+        {dayOfMonth && <p className="gate-date">{dayOfMonth} · {monthAbbr} · {yearNumber}</p>}
         <button className="open-button" type="button" onClick={handleOpenGate}>
           <span>Open invitation</span>
           <i aria-hidden="true">→</i>
@@ -862,49 +893,47 @@ export default function TemplateOne({
         <div className="hero-copy">
           <p className="eyebrow">The wedding of</p>
           <h1>{invitation?.bride_name} <span>&</span> {invitation?.groom_name}</h1>
-          <p className="hero-date">{dateFormatted}</p>
-
-          {invitation?.wedding_card_photo && (
-            <div>
-              <button
-                type="button"
-                onClick={() => setShowCardModal(true)}
-                className="official-card-btn"
-              >
-                <FileText className="w-3.5 h-3.5" /> View Official Card
-              </button>
-            </div>
-          )}
+          {dateFormatted && <p className="hero-date">{dateFormatted}</p>}
         </div>
       </section>
 
       {/* 3. VISUAL STORY CHAPTER 1 & 2 */}
-      <section className="visual-story">
-        {gallery.slice(0, 2).map((imgUrl, i) => (
-          <figure key={i} className="story-frame">
-            <img src={imgUrl} alt={`Story Chapter ${i+1}`} />
-            <div className="story-grade"></div>
-            <figcaption>
-              <span>{i === 0 ? "Chapter one" : "Chapter two"}</span>
-              <strong>{i === 0 ? "A beautiful beginning" : "Where every horizon feels like home"}</strong>
-            </figcaption>
-          </figure>
-        ))}
-      </section>
+      {gallery.length >= 2 && (
+        <section className="visual-story">
+          {gallery.slice(0, 2).map((imgUrl, i) => (
+            <figure key={i} className="story-frame">
+              <img src={imgUrl} alt={`Story Chapter ${i+1}`} />
+              <div className="story-grade"></div>
+              <figcaption>
+                <span>{i === 0 ? "Chapter one" : "Chapter two"}</span>
+                <strong>{i === 0 ? "A beautiful beginning" : "Where every horizon feels like home"}</strong>
+              </figcaption>
+            </figure>
+          ))}
+        </section>
+      )}
 
-      {/* 4. WELCOME & SCRIPTURE / PROMISE (CREAM SECTION 1) */}
-      <section className="section cream-section">
-        <p className="verse">A promise, a prayer, a forever</p>
-        <blockquote>“{invitation?.first_met_story || "This is the Lord’s doing; it is marvellous in our eyes."}”</blockquote>
-        <p className="verse">Psalm 118:23</p>
-        <div className="gold-rule"><span>✦</span></div>
-        <p className="intro">{invitation?.journey_story || "With hearts full of gratitude, we invite you to witness the beginning of our forever."}</p>
-      </section>
+      {/* 4. WELCOME & SCRIPTURE / PROMISE (ഡൈനാമിക്: ഉണ്ടെങ്കിൽ മാത്രം) */}
+      {(invitation?.first_met_story || invitation?.journey_story) && (
+        <section className="section cream-section">
+          {invitation?.first_met_story && (
+            <>
+              <p className="verse">A promise, a prayer, a forever</p>
+              <blockquote>“{invitation.first_met_story}”</blockquote>
+              <div className="gold-rule"><span>✦</span></div>
+            </>
+          )}
+          {invitation?.journey_story && (
+            <p className="intro">{invitation.journey_story}</p>
+          )}
+        </section>
+      )}
 
-      {/* 5. BRIDE & GROOM PROFILES (DARK SECTION) */}
+      {/* 5. BRIDE & GROOM PROFILES (DARK SECTION - ഗ്രാൻഡ് നവീകരിച്ചത്) */}
       <section className="section dark-section">
-        <p className="eyebrow">The Couple</p>
-        <div className="couple-grid mt-8">
+        <p className="eyebrow" style={{ fontSize: "0.85rem", letterSpacing: "0.35em" }}>The Couple</p>
+        <div className="couple-grid mt-10">
+          
           {/* Bride Card */}
           <div className="person-card">
             {invitation?.bride_photo ? (
@@ -914,19 +943,19 @@ export default function TemplateOne({
             ) : (
               <div className="person-avatar">{brideInitial}</div>
             )}
-            <span className="text-[10px] uppercase font-serif tracking-[0.22em] text-[#c7a36a]">The Bride</span>
-            <h3 className="text-xl sm:text-2xl font-serif font-bold text-rose-200 mt-1">{invitation?.bride_name}</h3>
+            <span className="text-xs uppercase font-serif tracking-[0.25em] text-[#c7a36a] font-semibold">The Bride</span>
+            <h3 className="text-2xl sm:text-3xl font-serif font-bold text-rose-200 mt-2">{invitation?.bride_name}</h3>
             {invitation?.bride_profession && (
               <p className="text-xs font-semibold text-amber-300 uppercase tracking-wider mt-1">{invitation.bride_profession}</p>
             )}
             {invitation?.bride_parents && (
-              <p className="text-xs text-stone-400 mt-2"><strong className="text-stone-300">Daughter of:</strong> {invitation.bride_parents}</p>
+              <p className="text-xs text-stone-300 mt-3"><strong className="text-[#c7a36a]">Daughter of:</strong> {invitation.bride_parents}</p>
             )}
             {invitation?.bride_bio && (
-              <p className="text-xs italic font-serif text-stone-300 mt-2 leading-relaxed">"{invitation.bride_bio}"</p>
+              <p className="text-xs sm:text-sm italic font-serif text-stone-200 mt-3 leading-relaxed">"{invitation.bride_bio}"</p>
             )}
             {invitation?.bride_family && (
-              <p className="text-xs text-stone-400 pt-3 mt-3 border-t border-stone-800/80"><strong className="text-stone-300">Family:</strong> {invitation.bride_family}</p>
+              <p className="text-xs text-stone-400 pt-3 mt-4 border-t border-stone-800/90"><strong className="text-stone-300">Family:</strong> {invitation.bride_family}</p>
             )}
           </div>
 
@@ -939,139 +968,181 @@ export default function TemplateOne({
             ) : (
               <div className="person-avatar">{groomInitial}</div>
             )}
-            <span className="text-[10px] uppercase font-serif tracking-[0.22em] text-[#c7a36a]">The Groom</span>
-            <h3 className="text-xl sm:text-2xl font-serif font-bold text-amber-200 mt-1">{invitation?.groom_name}</h3>
+            <span className="text-xs uppercase font-serif tracking-[0.25em] text-[#c7a36a] font-semibold">The Groom</span>
+            <h3 className="text-2xl sm:text-3xl font-serif font-bold text-amber-200 mt-2">{invitation?.groom_name}</h3>
             {invitation?.groom_profession && (
               <p className="text-xs font-semibold text-amber-300 uppercase tracking-wider mt-1">{invitation.groom_profession}</p>
             )}
             {invitation?.groom_parents && (
-              <p className="text-xs text-stone-400 mt-2"><strong className="text-stone-300">Son of:</strong> {invitation.groom_parents}</p>
+              <p className="text-xs text-stone-300 mt-3"><strong className="text-[#c7a36a]">Son of:</strong> {invitation.groom_parents}</p>
             )}
             {invitation?.groom_bio && (
-              <p className="text-xs italic font-serif text-stone-300 mt-2 leading-relaxed">"{invitation.groom_bio}"</p>
+              <p className="text-xs sm:text-sm italic font-serif text-stone-200 mt-3 leading-relaxed">"{invitation.groom_bio}"</p>
             )}
             {invitation?.groom_family && (
-              <p className="text-xs text-stone-400 pt-3 mt-3 border-t border-stone-800/80"><strong className="text-stone-300">Family:</strong> {invitation.groom_family}</p>
+              <p className="text-xs text-stone-400 pt-3 mt-4 border-t border-stone-800/90"><strong className="text-stone-300">Family:</strong> {invitation.groom_family}</p>
             )}
           </div>
+
         </div>
       </section>
 
-      {/* 6. സ്പെഷ്യൽ കപ്പിൾ പോർട്രെയ്റ്റ് ബാനർ */}
+      {/* 6. സ്പെഷ്യൽ കപ്പിൾ പോർട്രെയ്റ്റ് ബാനർ & VIEW OFFICIAL CARD (ഫോട്ടോയ്ക്ക് താഴെ) */}
       <section className="couple-banner-section">
         <p className="eyebrow mb-4">Together in Grace</p>
         <div className="couple-banner-frame">
           <img 
-            src={gallery[2] || invitation?.cover_photo} 
-            alt="Joel & Merin Together" 
+            src={gallery[2] || invitation?.cover_photo || "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1400&q=80"} 
+            alt="Together" 
           />
         </div>
+
+        {/* VIEW OFFICIAL CARD BUTTON (കാർഡ് ഉണ്ടെങ്കിൽ മാത്രം ഫോട്ടോയ്ക്ക് താഴെ വൃത്തിയായി വരുന്നു) */}
+        {invitation?.wedding_card_photo && (
+          <div className="text-center mt-6">
+            <button
+              type="button"
+              onClick={() => setShowCardModal(true)}
+              className="official-card-btn"
+            >
+              <FileText className="w-4 h-4 text-[#c7a36a]" /> View Official Wedding Card
+            </button>
+          </div>
+        )}
       </section>
 
-      {/* 7. TOGETHER WITH FAMILIES (CREAM SECTION 2) */}
-      <section className="section cream-section">
-        <p className="verse">Blessings of Elders</p>
-        <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#480e17] mt-2 mb-6">Together With Their Families</h2>
-        <div className="family-grid">
-          <div>
-            <span className="text-[10px] uppercase tracking-[0.22em] text-[#c7a36a] font-bold">Parents of the Groom</span>
-            <h3 className="text-xl sm:text-2xl font-serif text-[#480e17] mt-2 mb-1">{invitation?.groom_parents || `${invitation?.groom_name}'s Parents`}</h3>
-            <p className="text-xs text-stone-600">{invitation?.groom_family || "Family of the groom"}</p>
-          </div>
-          <div className="family-amp">{brideInitial}<span>&</span>{groomInitial}</div>
-          <div>
-            <span className="text-[10px] uppercase tracking-[0.22em] text-[#c7a36a] font-bold">Parents of the Bride</span>
-            <h3 className="text-xl sm:text-2xl font-serif text-[#480e17] mt-2 mb-1">{invitation?.bride_parents || `${invitation?.bride_name}'s Parents`}</h3>
-            <p className="text-xs text-stone-600">{invitation?.bride_family || "Family of the bride"}</p>
-          </div>
-        </div>
-      </section>
-
-      {/* 8. SAVE THE DATE & COUNTDOWN */}
-      <section className="section" style={{ background: "var(--paper)", color: "var(--ink)", textAlign: "center" }}>
-        <div className="date-card">
-          <p className="eyebrow" style={{ color: "var(--wine)" }}>Save the date</p>
-          <div className="date-lockup">
-            <span>{monthAbbr}</span>
-            <strong>{dayOfMonth}</strong>
-            <span>{yearNumber}</span>
-          </div>
-          <h2 className="text-xl sm:text-2xl font-serif text-stone-900 mt-2 mb-1">{dateFormatted} at {muhurthamTime}</h2>
-          <p className="text-xs uppercase tracking-widest text-stone-600 mb-4">Ceremony & Reception to follow</p>
-          <div className="countdown">
-            <div><strong>{timeLeft.days}</strong><span>Days</span></div>
-            <div><strong>{timeLeft.hours}</strong><span>Hours</span></div>
-            <div><strong>{timeLeft.minutes}</strong><span>Minutes</span></div>
-            <div><strong>{timeLeft.seconds}</strong><span>Seconds</span></div>
-          </div>
-          <button className="outline-button" onClick={handleAddToCalendar} type="button">
-            Add to calendar (.ics)
-          </button>
-        </div>
-      </section>
-
-      {/* 9. വേദി, ലൊക്കേഷൻ & WHATSAPP */}
-      <section className="section dark-section">
-        <div className="max-w-4xl mx-auto venue">
-          <div>
-            <p className="eyebrow">The Celebration</p>
-            <h2 className="venue-copy">{invitation?.venue_name}</h2>
-            <p className="text-stone-300 text-sm sm:text-base leading-relaxed">{invitation?.venue_address}</p>
-            <p className="text-xs uppercase tracking-widest text-[#c7a36a] mt-3">Ceremony · {muhurthamTime} | Reception to follow</p>
-            
-            <div className="venue-actions">
-              {invitation?.map_url && (
-                <a className="gold-button" href={invitation.map_url} target="_blank" rel="noopener">
-                  <MapPin className="w-3.5 h-3.5" /> Get directions <span>↗</span>
-                </a>
-              )}
-              {invitation?.whatsapp_number && (
-                <a 
-                  className="whatsapp-btn"
-                  href={`https://wa.me/${invitation.whatsapp_number.replace(/[^0-9]/g, "")}?text=Congratulations%20${encodeURIComponent(invitation.bride_name || "")}%20and%20${encodeURIComponent(invitation.groom_name || "")}!`} 
-                  target="_blank" 
-                  rel="noopener"
-                >
-                  <MessageCircle className="w-4 h-4" /> Send WhatsApp Wishes
-                </a>
-              )}
+      {/* 7. TOGETHER WITH FAMILIES (വിവരങ്ങൾ ഉണ്ടെങ്കിൽ മാത്രം) */}
+      {(invitation?.groom_parents || invitation?.bride_parents) && (
+        <section className="section cream-section">
+          <p className="verse">Blessings of Elders</p>
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#480e17] mt-2 mb-6">Together With Their Families</h2>
+          <div className="family-grid">
+            <div>
+              <span className="text-[10px] uppercase tracking-[0.22em] text-[#c7a36a] font-bold">Parents of the Groom</span>
+              <h3 className="text-xl sm:text-2xl font-serif text-[#480e17] mt-2 mb-1">{invitation?.groom_parents || `${invitation?.groom_name}'s Parents`}</h3>
+              {invitation?.groom_family && <p className="text-xs text-stone-600">{invitation.groom_family}</p>}
+            </div>
+            <div className="family-amp">{brideInitial}<span>&</span>{groomInitial}</div>
+            <div>
+              <span className="text-[10px] uppercase tracking-[0.22em] text-[#c7a36a] font-bold">Parents of the Bride</span>
+              <h3 className="text-xl sm:text-2xl font-serif text-[#480e17] mt-2 mb-1">{invitation?.bride_parents || `${invitation?.bride_name}'s Parents`}</h3>
+              {invitation?.bride_family && <p className="text-xs text-stone-600">{invitation.bride_family}</p>}
             </div>
           </div>
-          <div className="qr-card">
-            <img src={qrDataUrl} alt="QR code for directions" />
-            <span>Scan for directions</span>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
-      {/* 10. 6+ ഫോട്ടോ മാഗസിൻ ഗാലറി (Captured Memories) */}
-      <section className="section cream-section">
-        <p className="verse">Photo Gallery</p>
-        <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#480e17] mt-1 mb-2">Captured Memories</h2>
-        <div className="gallery-grid">
-          {gallery.slice(0, 6).map((imgUrl, i) => (
-            <div key={i} className="gallery-item">
-              <img src={imgUrl} alt={`Memory ${i+1}`} />
+      {/* 8. SAVE THE DATE & COUNTDOWN (തീയതി നൽകിയിട്ടുണ്ടെങ്കിൽ മാത്രം) */}
+      {invitation?.wedding_date && (
+        <section className="section" style={{ background: "var(--paper)", color: "var(--ink)", textAlign: "center" }}>
+          <div className="date-card">
+            <p className="eyebrow" style={{ color: "var(--wine)" }}>Save the date</p>
+            <div className="date-lockup">
+              <span>{monthAbbr}</span>
+              <strong>{dayOfMonth}</strong>
+              <span>{yearNumber}</span>
             </div>
-          ))}
-        </div>
-      </section>
+            <h2 className="text-xl sm:text-2xl font-serif text-stone-900 mt-2 mb-1">{dateFormatted} at {muhurthamTime}</h2>
+            <p className="text-xs uppercase tracking-widest text-stone-600 mb-4">Ceremony & Reception to follow</p>
+            <div className="countdown">
+              <div><strong>{timeLeft.days}</strong><span>Days</span></div>
+              <div><strong>{timeLeft.hours}</strong><span>Hours</span></div>
+              <div><strong>{timeLeft.minutes}</strong><span>Minutes</span></div>
+              <div><strong>{timeLeft.seconds}</strong><span>Seconds</span></div>
+            </div>
+            <button className="outline-button" onClick={handleAddToCalendar} type="button">
+              Add to calendar (.ics)
+            </button>
+          </div>
+        </section>
+      )}
 
-      {/* 11. കസ്റ്റം സെക്ഷനുകൾ (ഉണ്ടെങ്കിൽ) */}
-      {customSecs.length > 0 && (
+      {/* 9. വേദി, ലൊക്കേഷൻ & QR CODE */}
+      {(invitation?.venue_name || invitation?.venue_address) && (
         <section className="section dark-section">
-          <div className="max-w-3xl mx-auto space-y-4">
-            {customSecs.map((sec, i) => (
-              <div key={i} className="p-6 rounded-2xl bg-[#22070c] border border-[#c7a36a]/25 text-center space-y-2">
-                <h3 className="text-xl font-serif text-[#c7a36a]">{sec.title}</h3>
-                <p className="text-xs sm:text-sm text-stone-300 font-serif leading-relaxed whitespace-pre-line">{sec.content}</p>
+          <div className="max-w-4xl mx-auto venue">
+            <div>
+              <p className="eyebrow">The Celebration</p>
+              <h2 className="venue-copy">{invitation?.venue_name}</h2>
+              <p className="text-stone-300 text-sm sm:text-base leading-relaxed">{invitation?.venue_address}</p>
+              {muhurthamTime && (
+                <p className="text-xs uppercase tracking-widest text-[#c7a36a] mt-3">Ceremony · {muhurthamTime} | Reception to follow</p>
+              )}
+              
+              <div className="venue-actions">
+                {invitation?.map_url && (
+                  <a className="gold-button" href={invitation.map_url} target="_blank" rel="noopener">
+                    <MapPin className="w-3.5 h-3.5" /> Get directions <span>↗</span>
+                  </a>
+                )}
+                {invitation?.whatsapp_number && (
+                  <a 
+                    className="whatsapp-btn"
+                    href={`https://wa.me/${invitation.whatsapp_number.replace(/[^0-9]/g, "")}?text=Congratulations%20${encodeURIComponent(invitation.bride_name || "")}%20and%20${encodeURIComponent(invitation.groom_name || "")}!`} 
+                    target="_blank" 
+                    rel="noopener"
+                  >
+                    <MessageCircle className="w-4 h-4" /> Send WhatsApp Wishes
+                  </a>
+                )}
+              </div>
+            </div>
+
+            {/* Google Maps Dynamic QR Code */}
+            <div className="qr-card">
+              <img src={qrDataUrl} alt="QR code for directions" />
+              <span>Scan for directions</span>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* 10. ഫോട്ടോ മാഗസിൻ ഗാലറി (Captured Memories) */}
+      {gallery.length > 0 && (
+        <section className="section cream-section">
+          <p className="verse">Photo Gallery</p>
+          <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#480e17] mt-1 mb-2">Captured Memories</h2>
+          <div className="gallery-grid">
+            {gallery.slice(0, 6).map((imgUrl, i) => (
+              <div key={i} className="gallery-item">
+                <img src={imgUrl} alt={`Memory ${i+1}`} />
               </div>
             ))}
           </div>
         </section>
       )}
 
-      {/* 12. ഇന്ററാക്ടീവ് RSVP & ഗസ്റ്റ് ആശംസാ മതിൽ (വൃത്തിയുള്ള പ്രീമിയം ഡിസൈൻ) */}
+      {/* 11. കസ്റ്റം സെക്ഷനുകൾ (സംഗീത്, ഡ്രസ്സ് കോഡ് തുടങ്ങിയവ പ്രീമിയം ലുക്കിൽ) */}
+      {customSecs.length > 0 && (
+        <section className="section dark-section">
+          <div className="max-w-3xl mx-auto space-y-6">
+            <p className="eyebrow">Event Guidelines & Traditions</p>
+            {customSecs.map((sec, i) => (
+              <div key={i} className="custom-card text-center space-y-2">
+                <h3 className="text-xl sm:text-2xl font-serif text-[#c7a36a]">{sec.title}</h3>
+                <p className="text-xs sm:text-sm text-stone-200 font-serif leading-relaxed whitespace-pre-line">{sec.content}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 12. കോൺടാക്റ്റ് നമ്പറുകൾ (ഉണ്ടെങ്കിൽ) */}
+      {contacts.length > 0 && (
+        <section className="section dark-section border-t border-stone-800/80">
+          <p className="eyebrow mb-2">Coordinators</p>
+          <div className="flex flex-wrap justify-center gap-4 text-xs font-serif">
+            {contacts.map((c, i) => (
+              <div key={i} className="px-5 py-2.5 bg-black/40 rounded-full border border-[#c7a36a]/30">
+                <span className="text-stone-300">{c.name}: </span>
+                <a href={`tel:${c.phone}`} className="text-amber-300 font-bold hover:underline">{c.phone}</a>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* 13. ഇന്ററാക്ടീവ് RSVP & ഗസ്റ്റ് ആശംസകൾ */}
       <section className="section dark-section border-t border-stone-800/80">
         <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           
@@ -1125,12 +1196,12 @@ export default function TemplateOne({
         </div>
       </section>
 
-      {/* 13. CLOSING */}
+      {/* 14. CLOSING */}
       <section className="closing section">
         <p className="eyebrow">With love and blessings</p>
         <h2>We can’t wait<br />to celebrate with you.</h2>
         <div className="closing-monogram">{brideInitial} <span>&</span> {groomInitial}</div>
-        <p className="closing-date">{dayOfMonth} · {monthAbbr} · {yearNumber}</p>
+        {dayOfMonth && <p className="closing-date">{dayOfMonth} · {monthAbbr} · {yearNumber}</p>}
       </section>
 
       {/* EQUALIZER MUSIC CONTROL */}
@@ -1149,7 +1220,7 @@ export default function TemplateOne({
       {/* OFFICIAL CARD LIGHTBOX MODAL */}
       {showCardModal && invitation?.wedding_card_photo && (
         <div className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="relative max-w-xl w-full bg-[#1e070c] border border-[#c7a36a]/60 rounded-2xl p-4 shadow-2xl text-center">
+          <div className="relative max-w-xl w-full bg-[#1e070c] border border-[#c7a36a]/70 rounded-2xl p-4 shadow-2xl text-center">
             <button 
               onClick={() => setShowCardModal(false)} 
               className="absolute top-3 right-3 p-2 bg-black/60 rounded-full text-stone-300 hover:text-white"
