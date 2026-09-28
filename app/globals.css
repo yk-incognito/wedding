@@ -1,3 +1,34 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ടെക്സ്റ്റുകൾ വിറയ്ക്കുന്നതും ചാഞ്ചാടുന്നതും പൂർണ്ണമായി തടയുന്നു */
+h1, h2, h3, h4, h5, h6, p, span, em, strong, a, button {
+  animation: none !important;
+  transform: none !important;
+}
+
+/* സുഗമമായ സ്ക്രോളിംഗ് */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* കസ്റ്റം സ്ക്രോൾബാർ */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #150508;
+}
+::-webkit-scrollbar-thumb {
+  background: #c7a36a;
+  border-radius: 99px;
+}
