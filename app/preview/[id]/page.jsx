@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "../../../lib/supabaseClient";
 import TemplateOne from "../../../components/templates/TemplateOne";
-import { Sparkles, CheckCircle, Copy, AlertTriangle, ArrowLeft, ExternalLink } from "lucide-react";
+import { Sparkles, CheckCircle, Copy, AlertTriangle, ArrowLeft } from "lucide-react";
 
 export default function PreviewPage() {
   const params = useParams();
@@ -19,16 +19,10 @@ export default function PreviewPage() {
 
   useEffect(() => {
     if (!id) return;
-
     const localData = typeof window !== "undefined" ? sessionStorage.getItem(`preview_session_${id}`) : null;
 
     async function fetchFromDb() {
-      const { data } = await supabase
-        .from("invitations")
-        .select("*")
-        .eq("id", id)
-        .single();
-
+      const { data } = await supabase.from("invitations").select("*").eq("id", id).single();
       if (data) {
         if (data.is_paid) setIsPaid(true);
         setInvitation(data);
@@ -43,7 +37,6 @@ export default function PreviewPage() {
     }
   }, [id]);
 
-  // തൽക്കാലത്തേക്ക് ഡയറക്റ്റ് സക്സസ് പേയ്‌മെന്റ് ഫ്ലോ
   const handleInstantPayment = async () => {
     const confirmed = window.confirm(
       "പ്രധാന അറിയിപ്പ്:\n\nപേയ്‌മെന്റ് വിജയകരമായാൽ പിന്നീട് ഈ വെബ്സൈറ്റിലെ വിവരങ്ങളിൽ മാറ്റങ്ങൾ വരുത്താൻ സാധിക്കില്ല.\n\nനൽകിയിരിക്കുന്ന എല്ലാ വിവരങ്ങളും ഫോട്ടോകളും കൃത്യമാണെന്ന് ഉറപ്പുവരുത്തിയോ?"
@@ -52,18 +45,13 @@ export default function PreviewPage() {
 
     setPaying(true);
     try {
-      // ഡയറക്റ്റ് സിമുലേഷൻ: Supabase-ൽ പേയ്മെന്റ് പൂർത്തിയായതായി അടയാളപ്പെടുത്തുന്നു
       const mockPaymentId = `pay_mock_${Date.now()}`;
       const { error: updateError } = await supabase
         .from("invitations")
-        .update({
-          is_paid: true,
-          payment_id: mockPaymentId
-        })
+        .update({ is_paid: true, payment_id: mockPaymentId })
         .eq("id", id);
 
       if (updateError) throw updateError;
-
       setIsPaid(true);
       alert("ഓർഡർ വിജയകരമായി സക്സസ് ആയിരിക്കുന്നു! നിങ്ങളുടെ പബ്ലിക് ഇൻവിറ്റേഷൻ ലിങ്കും പ്രൈവറ്റ് ഡാഷ്‌ബോർഡും അൺലോക്ക് ആയി.");
     } catch (err) {
@@ -89,7 +77,7 @@ export default function PreviewPage() {
         </p>
         <button
           onClick={() => router.push("/")}
-          className="px-6 py-2.5 bg-[#c7a36a] text-black font-sans font-bold text-xs rounded-full hover:bg-amber-300 cursor-pointer"
+          className="px-6 py-2.5 bg-[#c7a36a] text-black font-sans font-bold text-xs rounded-full hover:bg-amber-300"
         >
           ബിൽഡറിലേക്ക് മടങ്ങുക
         </button>
@@ -103,15 +91,15 @@ export default function PreviewPage() {
 
   return (
     <div className="relative">
-      {/* മുകളിലെ ആക്ഷൻ ബാർ */}
       <div className="sticky top-0 z-50 bg-[#16090c]/95 border-b border-[#c7a36a]/40 backdrop-blur-md py-3.5 px-4 shadow-2xl">
         <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
+            {/* 1. മുൻപ് ടൈപ്പ് ചെയ്ത ഒരു സാധനവും നഷ്ടപ്പെടാതെ തിരികെ എഡിറ്റിലേക്ക് പോകുന്നു */}
             <button
-              onClick={() => router.push("/")}
-              className="p-1.5 bg-white/10 hover:bg-white/20 text-white rounded-lg transition text-xs flex items-center gap-1 cursor-pointer"
+              onClick={() => router.push(`/?edit=${id}`)}
+              className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-xl transition text-xs flex items-center gap-1.5 cursor-pointer font-sans font-semibold"
             >
-              <ArrowLeft className="w-3.5 h-3.5" /> Edit Form
+              <ArrowLeft className="w-4 h-4 text-amber-300" /> Edit Form
             </button>
             <span className="text-xs uppercase font-mono px-2.5 py-1 bg-amber-500/20 text-amber-300 border border-amber-500/30 rounded-full font-bold">
               {isPaid ? "✨ Permanent Active" : "👀 Live Preview Mode"}
@@ -123,22 +111,21 @@ export default function PreviewPage() {
               <button
                 onClick={handleInstantPayment}
                 disabled={paying}
-                className="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-700 hover:brightness-110 text-white font-bold text-xs sm:text-sm rounded-xl shadow-lg transition flex items-center gap-2 cursor-pointer"
+                className="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-700 hover:brightness-110 text-white font-bold text-xs sm:text-sm rounded-xl shadow-lg transition flex items-center gap-2 cursor-pointer font-sans"
               >
                 <Sparkles className="w-4 h-4 text-amber-300" />
                 {paying ? "പ്രോസസ്സിംഗ്..." : "Unlock Forever (Click to Activate)"}
               </button>
             ) : (
-              <span className="text-xs text-emerald-400 font-bold flex items-center gap-1">
+              <span className="text-xs text-emerald-400 font-bold flex items-center gap-1 font-sans">
                 <CheckCircle className="w-4 h-4" /> ലിങ്കുകൾ ലൈവ് ആണ്
               </span>
             )}
           </div>
         </div>
 
-        {/* ആക്ടിവേറ്റ് ആയ ശേഷം കാണിക്കുന്ന പബ്ലിക് / പ്രൈവറ്റ് ലിങ്കുകൾ */}
         {isPaid && (
-          <div className="mt-3 p-4 bg-[#230f14] border border-[#c7a36a] rounded-2xl max-w-4xl mx-auto text-white space-y-3 shadow-xl">
+          <div className="mt-3 p-4 bg-[#230f14] border border-[#c7a36a] rounded-2xl max-w-4xl mx-auto text-white space-y-3 shadow-xl font-sans">
             <p className="text-xs text-amber-200 font-bold flex items-center gap-1.5">
               <CheckCircle className="w-4 h-4 text-emerald-400" /> നിങ്ങളുടെ സ്ഥിര ലിങ്കുകൾ ഇതാ (സേവ് ചെയ്തുവെക്കുക):
             </p>
@@ -157,7 +144,7 @@ export default function PreviewPage() {
 
               <div className="flex-1 bg-black/50 p-3 rounded-xl border border-white/15 flex items-center justify-between">
                 <div className="truncate mr-2">
-                  <p className="text-[10px] text-stone-400 font-mono">2. പ്രൈവറ്റ് ഡാഷ്‌ബോർഡ് (RSVP & ആശംസകൾ കാണാൻ)</p>
+                  <p className="text-[10px] text-stone-400 font-mono">2. പ്രൈവറ്റ് ഡാഷ്‌ബോർഡ് (RSVP & ആശംസകൾ മോഡറേറ്റ് ചെയ്യാൻ)</p>
                   <a href={privateDashUrl} target="_blank" rel="noreferrer" className="text-xs text-teal-300 font-mono underline truncate block">
                     {privateDashUrl}
                   </a>
@@ -171,15 +158,13 @@ export default function PreviewPage() {
         )}
       </div>
 
-      {/* ടെംപ്ലേറ്റ് വ്യൂ */}
       <TemplateOne invitation={invitation} isPreviewMode={true} />
 
-      {/* താഴെയുള്ള ആക്ടിവേഷൻ ബാർ */}
       {!isPaid && (
-        <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-xl bg-gradient-to-r from-[#54101a] via-[#751c2e] to-[#c7a36a] p-4 rounded-3xl shadow-2xl text-white flex items-center justify-between border border-amber-300/40">
+        <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-xl bg-gradient-to-r from-[#54101a] via-[#751c2e] to-[#c7a36a] p-4 rounded-3xl shadow-2xl text-white flex items-center justify-between border border-amber-300/40 font-sans">
           <div>
             <h4 className="text-sm font-bold font-serif">ഇഷ്ടപ്പെട്ടോ? വെബ്സൈറ്റ് ലൈവ് ആക്കാം!</h4>
-            <p className="text-[11px] text-amber-100">സൗജന്യമായി ആക്റ്റീവ് ചെയ്ത് ലിങ്കുകൾ സ്വന്തമാക്കൂ.</p>
+            <p className="text-[11px] text-amber-100">സൗജന്യമായി ആക്റ്റീവ് ചെയ്ത് സ്ഥിര ലിങ്കുകൾ സ്വന്തമാക്കൂ.</p>
           </div>
           <button
             onClick={handleInstantPayment}
