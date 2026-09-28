@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "../../../lib/supabaseClient";
 import TemplateOne from "../../../components/templates/TemplateOne";
+import { Lock, AlertCircle } from "lucide-react";
 
 export default function InviteViewPage() {
   const params = useParams();
@@ -20,6 +21,7 @@ export default function InviteViewPage() {
 
     if (isSampleDemo) {
       setInvitation({
+        is_paid: true,
         template_id: "template1",
         bride_name: "Merin",
         bride_profession: "Architect & Spatial Designer",
@@ -142,6 +144,19 @@ export default function InviteViewPage() {
     );
   }
 
+  // പേയ്‌മെന്റ് പൂർത്തിയാക്കാത്ത ലിങ്ക് ആണെങ്കിൽ അതിഥികൾക്ക് ലോക്ക് ആകും
+  if (!invitation.is_paid) {
+    return (
+      <div className="min-h-screen bg-[#16090c] flex flex-col items-center justify-center text-center p-6 text-white font-serif">
+        <Lock className="w-12 h-12 text-[#c7a36a] mb-4" />
+        <h2 className="text-2xl font-bold text-[#eed0a0] mb-2">Invitation Under Final Activation</h2>
+        <p className="text-stone-400 text-sm max-w-md font-sans">
+          ഈ ഡിജിറ്റൽ ഇൻവിറ്റേഷൻ പേജ് ഉടൻ ലൈവ് ആകുന്നതാണ്. ദയവായി അല്പം കഴിഞ്ഞ് വീണ്ടും സന്ദർശിക്കുക.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <TemplateOne
       invitation={invitation}
@@ -150,6 +165,7 @@ export default function InviteViewPage() {
       wishes={wishes}
       wishLoading={wishLoading}
       isSampleDemo={isSampleDemo}
+      isPreviewMode={false}
     />
   );
 }
