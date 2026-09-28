@@ -75,7 +75,7 @@ function BuilderContent() {
   const [customAudioFile, setCustomAudioFile] = useState(null);
   const [selectedEffect, setSelectedEffect] = useState("petals");
 
-  // Cropped Images Base64/URLs for saving
+  // Cropped Images
   const [coverPhotoUrl, setCoverPhotoUrl] = useState("");
   const [cardPhotoUrl, setCardPhotoUrl] = useState("");
   const [bridePhotoUrl, setBridePhotoUrl] = useState("");
@@ -124,7 +124,7 @@ function BuilderContent() {
   const [contacts, setContacts] = useState([{ name: "Family Coordinator", phone: "" }]);
   const [customSections, setCustomSections] = useState([]);
 
-  // എഡിറ്റ് ചെയ്യുമ്പോൾ മുൻപ് അടിച്ച ഡാറ്റ തിരികെ റീസ്റ്റോർ ചെയ്യുന്നു
+  // 1. എഡിറ്റ് ചെയ്യുമ്പോൾ മുൻപ് ടൈപ്പ് ചെയ്ത ഡാറ്റയും ഫോട്ടോകളും പൂർണ്ണമായി റീസ്റ്റോർ ചെയ്യുന്നു
   useEffect(() => {
     const activeId = editId || sessionStorage.getItem("last_active_edit_id");
     if (activeId) {
@@ -212,7 +212,7 @@ function BuilderContent() {
     }
   };
 
-  // ക്രോപ്പർ ഫംഗ്ഷനുകൾ
+  // 2. ഇമേജ് ക്രോപ്പർ ഫംഗ്ഷനുകൾ (Inbuilt Canvas Cropper)
   const triggerCropModal = (file, target, ratio) => {
     if (!file) return;
     const reader = new FileReader();
@@ -966,11 +966,11 @@ function BuilderContent() {
   );
 }
 
-// Next.js useSearchParams()-നുള്ള സുരക്ഷിതമായ Suspense Wrapper
+// സുരക്ഷിതമായ Suspense Wrapper എക്സ്പോർട്ട് (Next.js Build Fix)
 export default function BuilderPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen bg-[#faf8f5] flex items-center justify-center text-[#54101a] font-serif text-lg">
+      <div className="min-h-screen bg-[#faf8f5] flex items-center justify-center text-[#54101a] font-serif text-lg tracking-wider">
         Loading Wedding Studio...
       </div>
     }>
