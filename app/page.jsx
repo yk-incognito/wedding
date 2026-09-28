@@ -1,8 +1,7 @@
 "use client";
-export const dynamic = "force-dynamic";
 
-import React, { useState, useRef, useEffect, useCallback, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { supabase } from "../lib/supabaseClient";
 import { 
   Sparkles, Heart, Upload, Music, Eye, Plus, Trash2, 
@@ -47,48 +46,28 @@ const MUSIC_TRACKS = [
   { id: "symphony", title: "Royal Orchestral Celebration", url: "https://cdn.pixabay.com/download/audio/2022/10/14/audio_9939f792cb.mp3?filename=wedding-celebration-12345.mp3" }
 ];
 
-const ANIMATION_EFFECTS = [
-  { id: "petals", name: "🌸 Rose Petals", icon: "🌸" },
-  { id: "leaves", name: "🍁 Autumn Leaves", icon: "🍁" },
-  { id: "sparkles", name: "✨ Golden Sparkles", icon: "✨" },
-  { id: "hearts", name: "💖 Floating Hearts", icon: "💖" },
-  { id: "fireflies", name: "💫 Gentle Fireflies", icon: "💫" },
-  { id: "confetti", name: "🎉 Festive Confetti", icon: "🎉" },
-  { id: "snow", name: "❄️ Gentle Snowfall", icon: "❄️" },
-  { id: "stars", name: "⭐ Twinkling Stars", icon: "⭐" },
-  { id: "butterflies", name: "🦋 Butterflies", icon: "🦋" },
-  { id: "jasmines", name: "🌼 Jasmine Blossoms", icon: "🌼" }
-];
-
-function BuilderContent() {
+export default function BuilderPage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const editId = searchParams?.get("edit");
   const formRef = useRef(null);
   const [loading, setLoading] = useState(false);
 
-  // Audio Playback
   const [playingTrack, setPlayingTrack] = useState(null);
   const audioPlayerRef = useRef(null);
 
-  // Selections
   const [selectedTemplate, setSelectedTemplate] = useState("template1");
   const [selectedMusic, setSelectedMusic] = useState(MUSIC_TRACKS[0].url);
-  const [customAudioFile, setCustomAudioFile] = useState(null);
   const [selectedEffect, setSelectedEffect] = useState("petals");
 
-  // Cropped Images
   const [coverPhotoUrl, setCoverPhotoUrl] = useState("");
   const [cardPhotoUrl, setCardPhotoUrl] = useState("");
   const [bridePhotoUrl, setBridePhotoUrl] = useState("");
   const [groomPhotoUrl, setGroomPhotoUrl] = useState("");
   const [galleryUrls, setGalleryUrls] = useState([]);
 
-  // Existing Unique ID if editing
   const [existingId, setExistingId] = useState(null);
   const [existingDashId, setExistingDashId] = useState(null);
 
-  // Cropper Modal States
+  // ഇമേജ് ക്രോപ്പർ മോഡൽ സ്റ്റേറ്റുകൾ
   const [cropperOpen, setCropperOpen] = useState(false);
   const [imageToCrop, setImageToCrop] = useState(null);
   const [cropTarget, setCropTarget] = useState("");
@@ -126,10 +105,15 @@ function BuilderContent() {
   const [contacts, setContacts] = useState([{ name: "Family Coordinator", phone: "" }]);
   const [customSections, setCustomSections] = useState([]);
 
-  // എഡിറ്റ് ചെയ്യുമ്പോൾ മുൻപ് ടൈപ്പ് ചെയ്ത ഡാറ്റയും ഫോട്ടോകളും തിരികെ റീസ്റ്റോർ ചെയ്യുന്നു
+  // എഡിറ്റ് ചെയ്യുമ്പോൾ മുൻപ് അടിച്ച ഡാറ്റ തിരികെ റീസ്റ്റോർ ചെയ്യുന്നു
   useEffect(() => {
-    const activeId = editId || (typeof window !== "undefined" ? sessionStorage.getItem("last_active_edit_id") : null);
-    if (activeId && typeof window !== "undefined") {
+    if (typeof window === "undefined") return;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const editId = urlParams.get("edit");
+    const activeId = editId || sessionStorage.getItem("last_active_edit_id");
+
+    if (activeId) {
       const savedSession = sessionStorage.getItem(`preview_session_${activeId}`);
       if (savedSession) {
         try {
@@ -166,7 +150,7 @@ function BuilderContent() {
             journeyStory: data.journey_story || "",
             email: data.email || "",
             whatsappNumber: data.whatsapp_number || "",
-            liveStreamUrl: data.liveStreamUrl || "",
+            liveStreamUrl: data.live_stream_url || "",
             upiId: data.upi_id || ""
           });
 
@@ -181,7 +165,7 @@ function BuilderContent() {
         }
       }
     }
-  }, [editId]);
+  }, []);
 
   useEffect(() => {
     return () => {
@@ -214,7 +198,7 @@ function BuilderContent() {
     }
   };
 
-  // ക്രോപ്പർ ഫംഗ്ഷനുകൾ
+  // ക്രോപ്പർ കാൻവാസ് ഡ്രോയിങ്
   const triggerCropModal = (file, target, ratio) => {
     if (!file) return;
     const reader = new FileReader();
@@ -240,17 +224,17 @@ function BuilderContent() {
       const cHeight = canvas.height;
       ctx.clearRect(0, 0, cWidth, cHeight);
 
-      let boxW = cWidth - 40;
+      let boxW = cWidth - 20;
       let boxH = boxW / aspectRatio;
-      if (boxH > cHeight - 40) {
-        boxH = cHeight - 40;
+      if (boxH > cHeight - 20) {
+        boxH = cHeight - 20;
         boxW = boxH * aspectRatio;
       }
       const boxX = (cWidth - boxW) / 2;
       const boxY = (cHeight - boxH) / 2;
 
       ctx.save();
-      ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
+      ctx.fillStyle = "rgba(0, 0, 0, 0.78)";
       ctx.fillRect(0, 0, cWidth, cHeight);
 
       ctx.beginPath();
@@ -267,7 +251,7 @@ function BuilderContent() {
       ctx.restore();
 
       ctx.strokeStyle = "#c7a36a";
-      ctx.lineWidth = 2.5;
+      ctx.lineWidth = 2;
       ctx.strokeRect(boxX, boxY, boxW, boxH);
     };
   }, [imageToCrop, aspectRatio, zoomLevel, panOffset]);
@@ -282,10 +266,10 @@ function BuilderContent() {
     const canvas = canvasRef.current;
     if (!canvas || !imageToCrop) return;
 
-    let boxW = canvas.width - 40;
+    let boxW = canvas.width - 20;
     let boxH = boxW / aspectRatio;
-    if (boxH > canvas.height - 40) {
-      boxH = canvas.height - 40;
+    if (boxH > canvas.height - 20) {
+      boxH = canvas.height - 20;
       boxW = boxH * aspectRatio;
     }
     const boxX = (canvas.width - boxW) / 2;
@@ -473,7 +457,7 @@ function BuilderContent() {
             Design Your Forever Story
           </h1>
           <p className="text-stone-600 max-w-2xl mx-auto text-sm sm:text-base leading-relaxed font-serif">
-            Create an enchanting, high-fashion wedding invitation website. Crop and fit your photos perfectly, preview live, and publish in minutes.
+            Create an enchanting wedding invitation website with high-fashion aesthetics.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4 pt-4">
@@ -500,12 +484,9 @@ function BuilderContent() {
 
           {/* 1. മ്യൂസിക് */}
           <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#e4d7c0] shadow-sm space-y-6">
-            <div>
-              <h2 className="text-xl font-serif font-bold text-[#54101a] flex items-center gap-2">
-                <Music className="w-5 h-5 text-[#c7a36a]" /> 1. Background Music
-              </h2>
-              <p className="text-xs text-stone-500 mt-1 font-serif">ഇഷ്ടപ്പെട്ട പാട്ട് തിരഞ്ഞെടുക്കുക</p>
-            </div>
+            <h2 className="text-xl font-serif font-bold text-[#54101a] flex items-center gap-2">
+              <Music className="w-5 h-5 text-[#c7a36a]" /> 1. Background Music
+            </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {MUSIC_TRACKS.map((t) => (
                 <div
@@ -530,16 +511,12 @@ function BuilderContent() {
             </div>
           </div>
 
-          {/* 2. ഫോട്ടോ അപ്‌ലോഡ് & ക്രോപ്പർ */}
+          {/* 2. ബാനർ & ഒഫീഷ്യൽ കാർഡ് അപ്‌ലോഡ് */}
           <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#e4d7c0] shadow-sm space-y-6">
-            <h2 className="text-xl font-serif font-bold text-[#54101a]">2. Main Banner & Official Wedding Card (With Cropper)</h2>
+            <h2 className="text-xl font-serif font-bold text-[#54101a]">2. Main Banner & Official Wedding Card</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              
               <div className="space-y-2">
-                <label className="block text-xs font-semibold text-stone-700 flex items-center justify-between">
-                  <span>Couple Cover Photo (16:9 Landscape)</span>
-                  <span className="text-[10px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Auto Crop 16:9</span>
-                </label>
+                <label className="block text-xs font-semibold text-stone-700">Couple Cover Photo (16:9)</label>
                 <input
                   type="file"
                   accept="image/*"
@@ -549,7 +526,7 @@ function BuilderContent() {
                   className="w-full p-2.5 bg-[#fcfbf9] border border-stone-200 rounded-xl text-xs text-stone-600"
                 />
                 {coverPhotoUrl && (
-                  <div className="relative aspect-video rounded-xl overflow-hidden border border-[#c7a36a] mt-2 shadow-sm">
+                  <div className="relative aspect-video rounded-xl overflow-hidden border border-[#c7a36a] mt-2">
                     <img src={coverPhotoUrl} alt="Cover Preview" className="w-full h-full object-cover" />
                     <button type="button" onClick={() => setCoverPhotoUrl("")} className="absolute top-2 right-2 p-1 bg-rose-600 text-white rounded-full">
                       <X className="w-3.5 h-3.5" />
@@ -559,10 +536,7 @@ function BuilderContent() {
               </div>
 
               <div className="space-y-2">
-                <label className="block text-xs font-semibold text-stone-700 flex items-center justify-between">
-                  <span>Official Wedding Card (Vertical / Portrait)</span>
-                  <span className="text-[10px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Auto Crop 3:4</span>
-                </label>
+                <label className="block text-xs font-semibold text-stone-700">Official Wedding Card (Vertical)</label>
                 <input
                   type="file"
                   accept="image/*"
@@ -572,7 +546,7 @@ function BuilderContent() {
                   className="w-full p-2.5 bg-[#fcfbf9] border border-stone-200 rounded-xl text-xs text-stone-600"
                 />
                 {cardPhotoUrl && (
-                  <div className="relative aspect-[3/4] max-h-48 rounded-xl overflow-hidden border border-[#c7a36a] mt-2 shadow-sm">
+                  <div className="relative aspect-[3/4] max-h-48 rounded-xl overflow-hidden border border-[#c7a36a] mt-2">
                     <img src={cardPhotoUrl} alt="Card Preview" className="w-full h-full object-cover" />
                     <button type="button" onClick={() => setCardPhotoUrl("")} className="absolute top-2 right-2 p-1 bg-rose-600 text-white rounded-full">
                       <X className="w-3.5 h-3.5" />
@@ -580,185 +554,74 @@ function BuilderContent() {
                   </div>
                 )}
               </div>
-
             </div>
           </div>
 
-          {/* 3. ബ്രൈഡ് & ഗ്രൂം പ്രൊഫൈലുകൾ */}
+          {/* 3. വരന്റെയും വധുവിന്റെയും വിവരങ്ങൾ */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            
-            {/* Bride */}
             <div className="bg-white p-6 sm:p-8 rounded-3xl border border-rose-200 shadow-sm space-y-4">
-              <h3 className="text-lg font-serif font-bold text-rose-800">Bride Profile (മണവാട്ടി)</h3>
-              <div>
-                <label className="text-xs font-semibold text-stone-600">Bride's Full Name *</label>
-                <input required name="brideName" value={formData.brideName} onChange={handleChange} placeholder="Merin" className="w-full mt-1 p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl outline-none focus:border-rose-400 text-sm" />
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-stone-600 flex items-center justify-between">
-                  <span>Bride's Portrait Photo</span>
-                  <span className="text-[10px] text-rose-700 bg-rose-50 px-2 py-0.5 rounded border border-rose-200">Square Crop 1:1</span>
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    if (e.target.files?.[0]) triggerCropModal(e.target.files[0], "bride", 1);
-                  }}
-                  className="w-full mt-1 p-2 bg-[#fcfbf9] border border-stone-200 rounded-xl text-xs text-stone-600"
-                />
-                {bridePhotoUrl && (
-                  <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-rose-400 mt-2 mx-auto shadow-sm">
-                    <img src={bridePhotoUrl} alt="Bride" className="w-full h-full object-cover" />
-                    <button type="button" onClick={() => setBridePhotoUrl("")} className="absolute top-1 right-1 p-1 bg-rose-600 text-white rounded-full">
-                      <X className="w-3 h-3" />
-                    </button>
-                  </div>
-                )}
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-stone-600">Profession / Title</label>
-                <input name="brideProfession" value={formData.brideProfession} onChange={handleChange} placeholder="Architect" className="w-full mt-1 p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl outline-none text-sm" />
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-stone-600">Bride's Parents</label>
-                <input name="brideParents" value={formData.brideParents} onChange={handleChange} placeholder="K. V. Thomas & Susan Thomas" className="w-full mt-1 p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl outline-none text-sm" />
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-stone-600">About Bride / Bio</label>
-                <textarea rows={2} name="brideBio" value={formData.brideBio} onChange={handleChange} placeholder="A few words about her..." className="w-full mt-1 p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl outline-none text-sm" />
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-stone-600">Siblings & Family</label>
-                <input name="brideFamily" value={formData.brideFamily} onChange={handleChange} placeholder="Elder brother Kevin..." className="w-full mt-1 p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl outline-none text-sm" />
-              </div>
+              <h3 className="text-lg font-serif font-bold text-rose-800">Bride Profile</h3>
+              <input required name="brideName" value={formData.brideName} onChange={handleChange} placeholder="Bride's Name *" className="w-full p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl text-sm" />
+              <input type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && triggerCropModal(e.target.files[0], "bride", 1)} className="w-full text-xs" />
+              {bridePhotoUrl && (
+                <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-rose-400 mx-auto">
+                  <img src={bridePhotoUrl} alt="Bride" className="w-full h-full object-cover" />
+                </div>
+              )}
+              <input name="brideProfession" value={formData.brideProfession} onChange={handleChange} placeholder="Profession" className="w-full p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl text-sm" />
+              <input name="brideParents" value={formData.brideParents} onChange={handleChange} placeholder="Parents" className="w-full p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl text-sm" />
+              <textarea rows={2} name="brideBio" value={formData.brideBio} onChange={handleChange} placeholder="Bio" className="w-full p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl text-sm" />
+              <input name="brideFamily" value={formData.brideFamily} onChange={handleChange} placeholder="Family / Siblings" className="w-full p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl text-sm" />
             </div>
 
-            {/* Groom */}
             <div className="bg-white p-6 sm:p-8 rounded-3xl border border-amber-200 shadow-sm space-y-4">
-              <h3 className="text-lg font-serif font-bold text-[#7a5716]">Groom Profile (വരൻ)</h3>
-              <div>
-                <label className="text-xs font-semibold text-stone-600">Groom's Full Name *</label>
-                <input required name="groomName" value={formData.groomName} onChange={handleChange} placeholder="Joel" className="w-full mt-1 p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl outline-none focus:border-amber-400 text-sm" />
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-stone-600 flex items-center justify-between">
-                  <span>Groom's Portrait Photo</span>
-                  <span className="text-[10px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Square Crop 1:1</span>
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    if (e.target.files?.[0]) triggerCropModal(e.target.files[0], "groom", 1);
-                  }}
-                  className="w-full mt-1 p-2 bg-[#fcfbf9] border border-stone-200 rounded-xl text-xs text-stone-600"
-                />
-                {groomPhotoUrl && (
-                  <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-amber-400 mt-2 mx-auto shadow-sm">
-                    <img src={groomPhotoUrl} alt="Groom" className="w-full h-full object-cover" />
-                    <button type="button" onClick={() => setGroomPhotoUrl("")} className="absolute top-1 right-1 p-1 bg-rose-600 text-white rounded-full">
-                      <X className="w-3 h-3" />
-                    </button>
-                  </div>
-                )}
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-stone-600">Profession / Title</label>
-                <input name="groomProfession" value={formData.groomProfession} onChange={handleChange} placeholder="Cloud Specialist" className="w-full mt-1 p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl outline-none text-sm" />
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-stone-600">Groom's Parents</label>
-                <input name="groomParents" value={formData.groomParents} onChange={handleChange} placeholder="Pastor Thomas Joseph & Mrs. Mincy Thomas" className="w-full mt-1 p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl outline-none text-sm" />
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-stone-600">About Groom / Bio</label>
-                <textarea rows={2} name="groomBio" value={formData.groomBio} onChange={handleChange} placeholder="A few words about him..." className="w-full mt-1 p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl outline-none text-sm" />
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-stone-600">Siblings & Family</label>
-                <input name="groomFamily" value={formData.groomFamily} onChange={handleChange} placeholder="Younger sister Sharon..." className="w-full mt-1 p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl outline-none text-sm" />
-              </div>
+              <h3 className="text-lg font-serif font-bold text-[#7a5716]">Groom Profile</h3>
+              <input required name="groomName" value={formData.groomName} onChange={handleChange} placeholder="Groom's Name *" className="w-full p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl text-sm" />
+              <input type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && triggerCropModal(e.target.files[0], "groom", 1)} className="w-full text-xs" />
+              {groomPhotoUrl && (
+                <div className="relative w-24 h-24 rounded-full overflow-hidden border-2 border-amber-400 mx-auto">
+                  <img src={groomPhotoUrl} alt="Groom" className="w-full h-full object-cover" />
+                </div>
+              )}
+              <input name="groomProfession" value={formData.groomProfession} onChange={handleChange} placeholder="Profession" className="w-full p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl text-sm" />
+              <input name="groomParents" value={formData.groomParents} onChange={handleChange} placeholder="Parents" className="w-full p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl text-sm" />
+              <textarea rows={2} name="groomBio" value={formData.groomBio} onChange={handleChange} placeholder="Bio" className="w-full p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl text-sm" />
+              <input name="groomFamily" value={formData.groomFamily} onChange={handleChange} placeholder="Family / Siblings" className="w-full p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl text-sm" />
             </div>
-
           </div>
 
-          {/* 4. സെറിമണി, തീയതി & വേദി */}
+          {/* 4. സെറിമണി & വേദി */}
           <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#e4d7c0] shadow-sm space-y-6">
-            <h2 className="text-xl font-serif font-bold text-[#54101a]">4. Ceremony, Muhurtham & Venue</h2>
-            <div>
-              <label className="text-xs font-semibold text-stone-600">Together With Families Header</label>
-              <input name="parentsText" value={formData.parentsText} onChange={handleChange} placeholder="Together with their families" className="w-full mt-1 p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl outline-none text-sm" />
-            </div>
+            <h2 className="text-xl font-serif font-bold text-[#54101a]">3. Ceremony & Venue</h2>
+            <input name="parentsText" value={formData.parentsText} onChange={handleChange} placeholder="Together with their families" className="w-full p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl text-sm" />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs font-semibold text-stone-600">Muhurtham Date & Time</label>
-                <input type="datetime-local" name="weddingDate" value={formData.weddingDate} onChange={handleChange} className="w-full mt-1 p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl outline-none text-sm text-stone-800" />
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-stone-600">Venue Name</label>
-                <input name="venueName" value={formData.venueName} onChange={handleChange} placeholder="Jacobs Entertainments" className="w-full mt-1 p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl outline-none text-sm" />
-              </div>
+              <input type="datetime-local" name="weddingDate" value={formData.weddingDate} onChange={handleChange} className="w-full p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl text-sm" />
+              <input name="venueName" value={formData.venueName} onChange={handleChange} placeholder="Venue Name" className="w-full p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl text-sm" />
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="text-xs font-semibold text-stone-600">Venue Full Address</label>
-                <input name="venueAddress" value={formData.venueAddress} onChange={handleChange} placeholder="Pandappilly, Muvattupuzha, Ernakulam, Kerala" className="w-full mt-1 p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl outline-none text-sm" />
-              </div>
-              <div>
-                <label className="text-xs font-semibold text-stone-600 flex items-center gap-1">
-                  <MapPin className="w-3 h-3 text-rose-600" /> Google Maps Link (Auto QR Code Generated)
-                </label>
-                <input name="mapUrl" value={formData.mapUrl} onChange={handleChange} placeholder="https://maps.google.com/?q=..." className="w-full mt-1 p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl outline-none text-sm" />
-              </div>
-            </div>
+            <input name="venueAddress" value={formData.venueAddress} onChange={handleChange} placeholder="Venue Full Address" className="w-full p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl text-sm" />
+            <input name="mapUrl" value={formData.mapUrl} onChange={handleChange} placeholder="Google Maps URL" className="w-full p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl text-sm" />
           </div>
 
-          {/* 5. സ്റ്റോറി & വേഴ്സ് */}
+          {/* 5. സ്റ്റോറി & പ്രോമിസ് */}
           <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#e4d7c0] shadow-sm space-y-4">
-            <h2 className="text-xl font-serif font-bold text-[#54101a]">5. Promise & Love Story</h2>
-            <div>
-              <label className="text-xs font-semibold text-stone-600">Bible Verse / Special Quote / First Met</label>
-              <textarea rows={2} name="firstMetStory" value={formData.firstMetStory} onChange={handleChange} placeholder="This is the Lord’s doing; it is marvellous in our eyes." className="w-full mt-1 p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl outline-none text-sm" />
-            </div>
-            <div>
-              <label className="text-xs font-semibold text-stone-600">Welcome Intro / Journey Summary</label>
-              <textarea rows={2} name="journeyStory" value={formData.journeyStory} onChange={handleChange} placeholder="With hearts full of gratitude, we invite you to witness the beginning of our forever." className="w-full mt-1 p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl outline-none text-sm" />
-            </div>
+            <h2 className="text-xl font-serif font-bold text-[#54101a]">4. Story & Promise</h2>
+            <textarea rows={2} name="firstMetStory" value={formData.firstMetStory} onChange={handleChange} placeholder="Verse or Quote" className="w-full p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl text-sm" />
+            <textarea rows={2} name="journeyStory" value={formData.journeyStory} onChange={handleChange} placeholder="Journey / Intro Story" className="w-full p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl text-sm" />
           </div>
 
-          {/* 6. ഗാലറി ഫോട്ടോകൾ */}
+          {/* 6. ഗാലറി */}
           <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#e4d7c0] shadow-sm space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xl font-serif font-bold text-[#54101a] flex items-center gap-2">
-                <ImageIcon className="w-5 h-5 text-[#c7a36a]" /> 6. Story Gallery (With Cropper)
-              </h2>
-              <span className="text-[10px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Portrait Crop 4:5</span>
-            </div>
-            <div className="p-4 bg-[#fcfbf9] rounded-2xl border border-dashed border-[#d9caa9] text-center">
-              <label className="cursor-pointer inline-flex items-center justify-center gap-2 text-xs font-semibold text-[#7a5716] py-2.5 px-5 rounded-xl bg-[#f3ede2] border border-[#d9caa9] hover:bg-[#e8decd] shadow-sm">
-                <Plus className="w-4 h-4" /> Add & Crop Photo (+ ഫോട്ടോ ചേർക്കുക)
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => {
-                    if (e.target.files?.[0]) triggerCropModal(e.target.files[0], "gallery", 4 / 5);
-                  }}
-                  className="hidden"
-                />
-              </label>
-            </div>
-
+            <h2 className="text-xl font-serif font-bold text-[#54101a]">5. Gallery (4:5 Crop)</h2>
+            <label className="cursor-pointer inline-flex items-center justify-center gap-2 text-xs font-semibold text-[#7a5716] py-2.5 px-5 rounded-xl bg-[#f3ede2] border border-[#d9caa9]">
+              <Plus className="w-4 h-4" /> Add & Crop Photo
+              <input type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && triggerCropModal(e.target.files[0], "gallery", 4 / 5)} className="hidden" />
+            </label>
             {galleryUrls.length > 0 && (
               <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3 pt-2">
                 {galleryUrls.map((url, idx) => (
-                  <div key={idx} className="relative aspect-[4/5] rounded-xl overflow-hidden border border-stone-300 shadow">
-                    <img src={url} alt={`Gallery ${idx}`} className="w-full h-full object-cover" />
-                    <button
-                      type="button"
-                      onClick={() => setGalleryUrls(galleryUrls.filter((_, i) => i !== idx))}
-                      className="absolute top-1.5 right-1.5 p-1 bg-rose-600 text-white rounded-full"
-                    >
+                  <div key={idx} className="relative aspect-[4/5] rounded-xl overflow-hidden border">
+                    <img src={url} alt={`Gal ${idx}`} className="w-full h-full object-cover" />
+                    <button type="button" onClick={() => setGalleryUrls(galleryUrls.filter((_, i) => i !== idx))} className="absolute top-1.5 right-1.5 p-1 bg-rose-600 text-white rounded-full">
                       <X className="w-3.5 h-3.5" />
                     </button>
                   </div>
@@ -767,25 +630,36 @@ function BuilderContent() {
             )}
           </div>
 
-          {/* 7. കോൺടാക്റ്റ് & വാട്ട്‌സ്ആപ്പ് */}
-          <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#e4d7c0] shadow-sm space-y-6">
-            <h2 className="text-xl font-serif font-bold text-[#54101a]">7. Contacts & WhatsApp Wishes</h2>
+          {/* 7. ലൈവ് സ്ട്രീം & UPI ഗിഫ്റ്റിങ് */}
+          <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#e4d7c0] shadow-sm space-y-4">
+            <h2 className="text-xl font-serif font-bold text-[#54101a]">6. Live Streaming & UPI Gifting (Optional)</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="text-xs font-semibold text-stone-600 flex items-center gap-1">
-                  <Phone className="w-3 h-3 text-emerald-600" /> WhatsApp Number
-                </label>
-                <input name="whatsappNumber" value={formData.whatsappNumber} onChange={handleChange} placeholder="+91 00000 00000" className="w-full mt-1 p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl outline-none text-sm" />
+                <label className="text-xs font-semibold text-stone-700">YouTube Live Stream URL</label>
+                <input name="liveStreamUrl" value={formData.liveStreamUrl} onChange={handleChange} placeholder="https://youtube.com/live/..." className="w-full mt-1 p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl text-sm" />
               </div>
               <div>
-                <label className="text-xs font-semibold text-stone-600 flex items-center gap-1">
-                  <Mail className="w-3 h-3 text-sky-600" /> Contact Email
-                </label>
-                <input name="email" value={formData.email} onChange={handleChange} placeholder="couple@wedding.xyz" className="w-full mt-1 p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl outline-none text-sm" />
+                <label className="text-xs font-semibold text-stone-700">UPI ID for Gifting (Generates QR Code)</label>
+                <input name="upiId" value={formData.upiId} onChange={handleChange} placeholder="yourname@okhdfcbank" className="w-full mt-1 p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl text-sm" />
+              </div>
+            </div>
+          </div>
+
+          {/* 8. കോൺടാക്റ്റുകൾ */}
+          <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#e4d7c0] shadow-sm space-y-4">
+            <h2 className="text-xl font-serif font-bold text-[#54101a]">7. Event Coordinators & Contacts</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="text-xs font-semibold text-stone-700">WhatsApp Number</label>
+                <input name="whatsappNumber" value={formData.whatsappNumber} onChange={handleChange} placeholder="+91 00000 00000" className="w-full mt-1 p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl text-sm" />
+              </div>
+              <div>
+                <label className="text-xs font-semibold text-stone-700">Email Address</label>
+                <input name="email" value={formData.email} onChange={handleChange} placeholder="couple@wedding.xyz" className="w-full mt-1 p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl text-sm" />
               </div>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-3 pt-2">
               <label className="text-xs font-semibold text-stone-600">Family Coordinators</label>
               {contacts.map((c, idx) => (
                 <div key={idx} className="flex gap-2 items-center">
@@ -828,73 +702,36 @@ function BuilderContent() {
             </div>
           </div>
 
-          {/* 8. കസ്റ്റം സെക്ഷനുകൾ */}
+          {/* 9. കസ്റ്റം സെക്ഷനുകൾ */}
           <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#e4d7c0] shadow-sm space-y-4">
             <h2 className="text-xl font-serif font-bold text-[#54101a]">8. Extra Custom Sections</h2>
-            <p className="text-xs text-stone-500">സംഗീത്, ഡ്രസ്സ് കോഡ് തുടങ്ങിയ വിവരങ്ങൾ നൽകാം.</p>
             {customSections.map((sec, idx) => (
-              <div key={idx} className="p-5 bg-[#fcfbf9] rounded-2xl border border-stone-200 space-y-3 relative">
-                <button
-                  type="button"
-                  onClick={() => setCustomSections(customSections.filter((_, i) => i !== idx))}
-                  className="absolute top-4 right-4 text-rose-600"
-                >
+              <div key={idx} className="p-4 bg-[#fcfbf9] rounded-2xl border border-stone-200 space-y-2 relative">
+                <button type="button" onClick={() => setCustomSections(customSections.filter((_, i) => i !== idx))} className="absolute top-3 right-3 text-rose-600">
                   <Trash2 className="w-4 h-4" />
                 </button>
-                <div>
-                  <label className="text-[11px] text-[#7a5716] uppercase tracking-wider font-semibold">Section Heading</label>
-                  <input
-                    value={sec.title}
-                    placeholder="e.g. Traditional Sangeeth & Henna"
-                    onChange={(e) => {
-                      const up = [...customSections];
-                      up[idx].title = e.target.value;
-                      setCustomSections(up);
-                    }}
-                    className="w-full mt-1 p-2.5 bg-white border border-stone-200 rounded-xl text-sm font-semibold outline-none"
-                  />
-                </div>
-                <div>
-                  <label className="text-[11px] text-stone-500 uppercase tracking-wider font-semibold">Details</label>
-                  <textarea
-                    rows={2}
-                    value={sec.content}
-                    placeholder="Write details..."
-                    onChange={(e) => {
-                      const up = [...customSections];
-                      up[idx].content = e.target.value;
-                      setCustomSections(up);
-                    }}
-                    className="w-full mt-1 p-2.5 bg-white border border-stone-200 rounded-xl text-xs outline-none"
-                  />
-                </div>
+                <input value={sec.title} placeholder="Title (e.g. Traditional Sangeeth)" onChange={(e) => {
+                  const up = [...customSections];
+                  up[idx].title = e.target.value;
+                  setCustomSections(up);
+                }} className="w-full p-2 bg-white border border-stone-200 rounded-xl text-sm font-semibold" />
+                <textarea rows={2} value={sec.content} placeholder="Details..." onChange={(e) => {
+                  const up = [...customSections];
+                  up[idx].content = e.target.value;
+                  setCustomSections(up);
+                }} className="w-full p-2 bg-white border border-stone-200 rounded-xl text-xs" />
               </div>
             ))}
-            <button
-              type="button"
-              onClick={() => setCustomSections([...customSections, { title: "", content: "" }])}
-              className="text-xs text-[#7a5716] font-semibold hover:underline flex items-center gap-1"
-            >
-              <Plus className="w-4 h-4" /> + Add Another Custom Section
+            <button type="button" onClick={() => setCustomSections([...customSections, { title: "", content: "" }])} className="text-xs text-[#7a5716] font-semibold hover:underline flex items-center gap-1">
+              <Plus className="w-3.5 h-3.5" /> + Add Section
             </button>
           </div>
 
-          {/* 9. ലൈവ് സ്ട്രീം & UPI */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="bg-white p-5 rounded-2xl border border-[#e4d7c0]">
-              <label className="text-xs font-semibold text-stone-600">YouTube Live Stream URL</label>
-              <input name="liveStreamUrl" value={formData.liveStreamUrl} onChange={handleChange} placeholder="https://youtube.com/live/..." className="w-full mt-1 p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl text-sm outline-none" />
-            </div>
-            <div className="bg-white p-5 rounded-2xl border border-[#e4d7c0]">
-              <label className="text-xs font-semibold text-stone-600">UPI ID for Gifting</label>
-              <input name="upiId" value={formData.upiId} onChange={handleChange} placeholder="name@upi" className="w-full mt-1 p-3 bg-[#fcfbf9] border border-stone-200 rounded-xl text-sm outline-none" />
-            </div>
-          </div>
-
+          {/* സബ്മിറ്റ് ബട്ടൺ */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-5 bg-gradient-to-r from-[#54101a] via-[#8d2740] to-[#c7a36a] hover:brightness-110 text-white font-serif font-bold text-lg rounded-2xl shadow-xl transition-all transform active:scale-95 flex items-center justify-center gap-3 cursor-pointer"
+            className="w-full py-5 bg-gradient-to-r from-[#54101a] via-[#8d2740] to-[#c7a36a] text-white font-serif font-bold text-lg rounded-2xl shadow-xl transition-all flex items-center justify-center gap-3 cursor-pointer"
           >
             <Sparkles className="w-6 h-6 text-amber-200" />
             {loading ? "Generating Live Preview..." : "Save & Preview Wedding Website"}
@@ -902,83 +739,83 @@ function BuilderContent() {
         </form>
       </div>
 
-      {/* ഇമേജ് ക്രോപ്പർ മോഡൽ */}
+      {/* ======================================================== */}
+      {/* PERFECT CROP MODAL: 100% ZOOM LAPTOP FRIENDLY (NO CUT-OFF) */}
+      {/* ======================================================== */}
       {cropperOpen && (
-        <div className="fixed inset-0 z-[250] bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
-          <div className="bg-[#1c0a0f] border border-[#c7a36a] rounded-3xl p-5 max-w-lg w-full text-white space-y-4 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
-              <h3 className="font-serif font-bold text-amber-200 flex items-center gap-2 text-sm sm:text-base">
+        <div className="fixed inset-0 z-[250] bg-black/85 backdrop-blur-md flex items-center justify-center p-3">
+          <div className="bg-[#1c0a0f] border border-[#c7a36a] rounded-2xl p-4 max-w-sm w-full text-white shadow-2xl flex flex-col max-h-[82vh]">
+            
+            {/* Header: എപ്പോഴും വ്യക്തമായി കാണാം */}
+            <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-2 shrink-0">
+              <h3 className="font-serif font-bold text-amber-200 flex items-center gap-2 text-sm">
                 <Crop className="w-4 h-4 text-[#c7a36a]" /> Crop & Adjust Photo
               </h3>
-              <button onClick={() => setCropperOpen(false)} className="p-1 rounded-full hover:bg-white/10 text-stone-400">
-                <X className="w-5 h-5" />
+              <button 
+                type="button" 
+                onClick={() => setCropperOpen(false)} 
+                className="p-1 rounded-full text-stone-400 hover:text-white"
+              >
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <p className="text-[11px] text-stone-400">
-              ഫോട്ടോ മൗസ് ഉപയോഗിച്ച് ഡ്രാഗ് ചെയ്ത് അഡ്ജസ്റ്റ് ചെയ്യാം. സൂം ചെയ്യാൻ സ്ലൈഡർ ഉപയോഗിക്കുക.
-            </p>
+            {/* മധ്യഭാഗത്തെ കാൻവാസും സ്ലൈഡറും */}
+            <div className="overflow-y-auto pr-1 space-y-2">
+              <p className="text-[11px] text-stone-400">
+                ഫോട്ടോ മൗസ് ഉപയോഗിച്ച് ഡ്രാഗ് ചെയ്ത് അഡ്ജസ്റ്റ് ചെയ്യുക.
+              </p>
 
-            <div className="relative w-full aspect-square bg-black rounded-2xl overflow-hidden flex items-center justify-center cursor-move select-none border border-white/15">
-              <canvas
-                ref={canvasRef}
-                width={450}
-                height={450}
-                onMouseDown={handleMouseDown}
-                onMouseMove={handleMouseMove}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseUp}
-                className="w-full h-full object-contain"
-              />
+              <div className="relative w-full h-[200px] bg-black rounded-xl overflow-hidden flex items-center justify-center cursor-move border border-white/15">
+                <canvas
+                  ref={canvasRef}
+                  width={340}
+                  height={340}
+                  onMouseDown={handleMouseDown}
+                  onMouseMove={handleMouseMove}
+                  onMouseUp={handleMouseUp}
+                  onMouseLeave={handleMouseUp}
+                  className="w-full h-full object-contain"
+                />
+              </div>
+
+              {/* Zoom Slider */}
+              <div className="flex items-center gap-2 py-1">
+                <ZoomOut className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+                <input 
+                  type="range" 
+                  min="0.8" 
+                  max="3" 
+                  step="0.05" 
+                  value={zoomLevel} 
+                  onChange={(e) => setZoomLevel(parseFloat(e.target.value))} 
+                  className="w-full accent-[#c7a36a] cursor-pointer h-1.5" 
+                />
+                <ZoomIn className="w-3.5 h-3.5 text-amber-300 shrink-0" />
+              </div>
             </div>
 
-            <div className="flex items-center gap-3 pt-1">
-              <ZoomOut className="w-4 h-4 text-stone-400" />
-              <input
-                type="range"
-                min="0.8"
-                max="3"
-                step="0.05"
-                value={zoomLevel}
-                onChange={(e) => setZoomLevel(parseFloat(e.target.value))}
-                className="w-full accent-[#c7a36a] cursor-pointer"
-              />
-              <ZoomIn className="w-4 h-4 text-amber-300" />
-            </div>
-
-            <div className="flex gap-3 pt-2">
-              <button
-                type="button"
-                onClick={() => setCropperOpen(false)}
-                className="w-1/2 py-2.5 bg-white/10 hover:bg-white/20 text-stone-300 font-semibold rounded-xl text-xs transition"
+            {/* എപ്പോഴും സ്ക്രീനിനുള്ളിൽ നിൽക്കുന്ന ബട്ടണുകൾ */}
+            <div className="flex gap-2 pt-3 border-t border-white/10 shrink-0 mt-2">
+              <button 
+                type="button" 
+                onClick={() => setCropperOpen(false)} 
+                className="w-1/2 py-2 bg-white/10 hover:bg-white/20 text-stone-300 rounded-xl text-xs font-semibold cursor-pointer"
               >
                 Cancel
               </button>
-              <button
-                type="button"
-                onClick={handleSaveCrop}
-                className="w-1/2 py-2.5 bg-[#c7a36a] hover:bg-amber-300 text-black font-bold rounded-xl text-xs transition shadow-md"
+              <button 
+                type="button" 
+                onClick={handleSaveCrop} 
+                className="w-1/2 py-2 bg-[#c7a36a] hover:bg-amber-300 text-black font-bold rounded-xl text-xs shadow-md cursor-pointer"
               >
                 Apply & Save Crop
               </button>
             </div>
+
           </div>
         </div>
       )}
-
     </main>
-  );
-}
-
-// Suspense Wrapper എക്സ്പോർട്ട്
-export default function BuilderPage() {
-  return (
-    <Suspense fallback={
-      <div className="min-h-screen bg-[#faf8f5] flex items-center justify-center text-[#54101a] font-serif text-lg tracking-wider">
-        Loading Wedding Studio...
-      </div>
-    }>
-      <BuilderContent />
-    </Suspense>
   );
 }
