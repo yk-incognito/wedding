@@ -106,7 +106,57 @@ export default function BuilderPage() {
   const [contacts, setContacts] = useState([{ name: "Family Coordinator", phone: "" }]);
   const [customSections, setCustomSections] = useState([]);
 
-  // ഡാറ്റ റീസ്റ്റോർ ചെയ്യുന്നു (Edit ചെയ്യുമ്പോൾ ലഭിക്കാൻ)
+  // ഡാറ്റ സുരക്ഷിതമായി ഫോമിലേക്ക് റീ-ഫിൽ ചെയ്യൽ (Supabase + LocalSession fallback)
+  const applyDataToForm = (data) => {
+    setExistingId(data.id);
+    setExistingDashId(data.dashboard_id);
+    setSelectedTemplate(data.template_id || "template1");
+    setSelectedEffect(data.background_effect || "petals");
+    if (data.music_url) {
+      setSelectedMusic(data.music_url);
+      if (!MUSIC_TRACKS.some(t => t.url === data.music_url)) {
+        setCustomAudioName("Custom Audio Track");
+      }
+    }
+
+    setCoverPhotoUrl(data.cover_photo || "");
+    setCardPhotoUrl(data.wedding_card_photo || "");
+    setBridePhotoUrl(data.bride_photo || "");
+    setGroomPhotoUrl(data.groom_photo || "");
+    setGalleryUrls(data.gallery_photos || []);
+
+    setFormData({
+      brideName: data.bride_name || "",
+      brideProfession: data.bride_profession || "",
+      brideBio: data.bride_bio || "",
+      brideFamily: data.bride_family || "",
+      brideParents: data.bride_parents || "",
+      groomName: data.groom_name || "",
+      groomProfession: data.groom_profession || "",
+      groomBio: data.groom_bio || "",
+      groomFamily: data.groom_family || "",
+      groomParents: data.groom_parents || "",
+      parentsText: data.parents_text || "",
+      weddingDate: data.wedding_date || "",
+      venueName: data.venue_name || "",
+      venueAddress: data.venue_address || "",
+      mapUrl: data.map_url || "",
+      firstMetStory: data.first_met_story || "",
+      journeyStory: data.journey_story || "",
+      email: data.email || "",
+      whatsappNumber: data.whatsapp_number || "",
+      liveStreamUrl: data.live_stream_url || "",
+      upiId: data.upi_id || ""
+    });
+
+    if (data.contact_numbers && data.contact_numbers.length > 0) {
+      setContacts(data.contact_numbers);
+    }
+    if (data.custom_sections && data.custom_sections.length > 0) {
+      setCustomSections(data.custom_sections);
+    }
+  };
+
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -115,61 +165,27 @@ export default function BuilderPage() {
     const activeId = editId || sessionStorage.getItem("last_active_edit_id");
 
     if (activeId) {
-      const savedSession = sessionStorage.getItem(`preview_session_${activeId}`);
-      if (savedSession) {
-        try {
-          const data = JSON.parse(savedSession);
-          setExistingId(data.id);
-          setExistingDashId(data.dashboard_id);
-          setSelectedTemplate(data.template_id || "template1");
-          setSelectedEffect(data.background_effect || "petals");
-          if (data.music_url) {
-            setSelectedMusic(data.music_url);
-            if (!MUSIC_TRACKS.some(t => t.url === data.music_url)) {
-              setCustomAudioName("Custom Uploaded Track");
+      // 1. ആദ്യം Supabase-ൽ നിന്ന് ഡാറ്റ എടുക്കാൻ ശ്രമിക്കുന്നു (Quota limit ബാധിക്കില്ല)
+      supabase
+        .from("invitations")
+        .select("*")
+        .eq("id", activeId)
+        .single()
+        .then(({ data, error }) => {
+          if (data && !error) {
+            applyDataToForm(data);
+          } else {
+            // ബാക്കപ്പായി sessionStorage പരിശോധിക്കുന്നു
+            const savedSession = sessionStorage.getItem(`preview_session_${activeId}`);
+            if (savedSession) {
+              try {
+                applyDataToForm(JSON.parse(savedSession));
+              } catch (e) {
+                console.warn(e);
+              }
             }
           }
-
-          setCoverPhotoUrl(data.cover_photo || "");
-          setCardPhotoUrl(data.wedding_card_photo || "");
-          setBridePhotoUrl(data.bride_photo || "");
-          setGroomPhotoUrl(data.groom_photo || "");
-          setGalleryUrls(data.gallery_photos || []);
-
-          setFormData({
-            brideName: data.bride_name || "",
-            brideProfession: data.bride_profession || "",
-            brideBio: data.bride_bio || "",
-            brideFamily: data.bride_family || "",
-            brideParents: data.bride_parents || "",
-            groomName: data.groom_name || "",
-            groomProfession: data.groom_profession || "",
-            groomBio: data.groom_bio || "",
-            groomFamily: data.groom_family || "",
-            groomParents: data.groom_parents || "",
-            parentsText: data.parents_text || "",
-            weddingDate: data.wedding_date || "",
-            venueName: data.venue_name || "",
-            venueAddress: data.venue_address || "",
-            mapUrl: data.map_url || "",
-            firstMetStory: data.first_met_story || "",
-            journeyStory: data.journey_story || "",
-            email: data.email || "",
-            whatsappNumber: data.whatsapp_number || "",
-            liveStreamUrl: data.live_stream_url || "",
-            upiId: data.upi_id || ""
-          });
-
-          if (data.contact_numbers && data.contact_numbers.length > 0) {
-            setContacts(data.contact_numbers);
-          }
-          if (data.custom_sections && data.custom_sections.length > 0) {
-            setCustomSections(data.custom_sections);
-          }
-        } catch (e) {
-          console.error("Session restore error:", e);
-        }
-      }
+        });
     }
   }, []);
 
@@ -204,7 +220,7 @@ export default function BuilderPage() {
     }
   };
 
-  // 1. സ്വന്തം ഓഡിയോ ഫയൽ അപ്‌ലോഡ് ചെയ്യാനുള്ള ഫംഗ്ഷൻ
+  // സ്വന്തം ഓഡിയോ അപ്‌ലോഡ്
   const handleCustomAudioUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -214,7 +230,6 @@ export default function BuilderPage() {
     reader.onload = (uploadEvent) => {
       const audioDataUrl = uploadEvent.target.result;
       setSelectedMusic(audioDataUrl);
-      // അപ്‌ലോഡ് ചെയ്ത ഉടൻ തന്നെ പുതിയ പാട്ട് പ്ലേ ചെയ്തു കേൾപ്പിക്കുന്നു
       handleTogglePreviewAudio(audioDataUrl);
     };
     reader.readAsDataURL(file);
@@ -303,7 +318,7 @@ export default function BuilderPage() {
     const outCtx = outCanvas.getContext("2d");
 
     outCtx.drawImage(canvas, boxX, boxY, boxW, boxH, 0, 0, outCanvas.width, outCanvas.height);
-    const croppedDataUrl = outCanvas.toDataURL("image/jpeg", 0.9);
+    const croppedDataUrl = outCanvas.toDataURL("image/jpeg", 0.85);
 
     if (cropTarget === "cover") setCoverPhotoUrl(croppedDataUrl);
     if (cropTarget === "card") setCardPhotoUrl(croppedDataUrl);
@@ -453,12 +468,25 @@ export default function BuilderPage() {
         custom_sections: customSections.filter(s => s.title?.trim() || s.content?.trim())
       };
 
+      // 1. Supabase-ലേക്ക് പൂർണ്ണ ഡാറ്റ സേവ് ചെയ്യുന്നു (No Quota Limit here)
       const { error: upsertError } = await supabase.from("invitations").upsert([invitationData]);
       if (upsertError) throw upsertError;
 
+      // 2. QuotaExceededError പൂർണ്ണമായി തടയുന്ന സേഫ് സെഷൻ സ്റ്റോറേജ്
       if (typeof window !== "undefined") {
-        sessionStorage.setItem(`preview_session_${publicId}`, JSON.stringify(invitationData));
-        sessionStorage.setItem("last_active_edit_id", publicId);
+        try {
+          sessionStorage.setItem("last_active_edit_id", publicId);
+          sessionStorage.setItem(`preview_session_${publicId}`, JSON.stringify(invitationData));
+        } catch (quotaErr) {
+          console.warn("Storage Quota reached for base64 images. Saving essentials only:", quotaErr);
+          // ക്വോട്ട തീർന്നാൽ വലിയ ഇമേജ് സ്ട്രിംഗുകൾ ഒഴിവാക്കി ബാക്കി സുരക്ഷിതമായി സൂക്ഷിക്കുന്നു
+          try {
+            const lightData = { ...invitationData, cover_photo: null, wedding_card_photo: null, bride_photo: null, groom_photo: null, gallery_photos: [] };
+            sessionStorage.setItem(`preview_session_${publicId}`, JSON.stringify(lightData));
+          } catch (e) {
+            // ഇതും കഴിഞ്ഞാൽ ഒന്നും ചെയ്യാതെ Supabase-നെ ആശ്രയിക്കുന്നു
+          }
+        }
       }
 
       router.push(`/preview/${publicId}?auth_dash=${dashboardId}`);
@@ -558,7 +586,6 @@ export default function BuilderPage() {
                 </label>
               </div>
 
-              {/* അപ്‌ലോഡ് ചെയ്ത പാട്ടിന്റെ പ്രിവ്യൂ & പ്ലേ ബട്ടൺ */}
               {customAudioName && (
                 <div className="flex items-center justify-between p-3 bg-[#faf4ea] border border-[#c7a36a] rounded-xl text-xs font-semibold text-[#54101a]">
                   <span className="truncate pr-2">🎵 {customAudioName} (Selected)</span>
@@ -806,14 +833,11 @@ export default function BuilderPage() {
         </form>
       </div>
 
-      {/* ======================================================== */}
-      {/* PERFECT CROP MODAL: 100% ZOOM LAPTOP FRIENDLY (NO CUT-OFF) */}
-      {/* ======================================================== */}
+      {/* ക്രോപ്പർ മോഡൽ */}
       {cropperOpen && (
         <div className="fixed inset-0 z-[250] bg-black/85 backdrop-blur-md flex items-center justify-center p-3">
           <div className="bg-[#1c0a0f] border border-[#c7a36a] rounded-2xl p-4 max-w-sm w-full text-white shadow-2xl flex flex-col max-h-[82vh]">
             
-            {/* Header: എപ്പോഴും വ്യക്തമായി കാണാം */}
             <div className="flex items-center justify-between border-b border-white/10 pb-2 mb-2 shrink-0">
               <h3 className="font-serif font-bold text-amber-200 flex items-center gap-2 text-sm">
                 <Crop className="w-4 h-4 text-[#c7a36a]" /> Crop & Adjust Photo
@@ -827,7 +851,6 @@ export default function BuilderPage() {
               </button>
             </div>
 
-            {/* മധ്യഭാഗത്തെ കാൻവാസും സ്ലൈഡറും */}
             <div className="overflow-y-auto pr-1 space-y-2">
               <p className="text-[11px] text-stone-400">
                 ഫോട്ടോ മൗസ് ഉപയോഗിച്ച് ഡ്രാഗ് ചെയ്ത് അഡ്ജസ്റ്റ് ചെയ്യുക.
@@ -846,7 +869,6 @@ export default function BuilderPage() {
                 />
               </div>
 
-              {/* Zoom Slider */}
               <div className="flex items-center gap-2 py-1">
                 <ZoomOut className="w-3.5 h-3.5 text-stone-400 shrink-0" />
                 <input 
@@ -862,7 +884,6 @@ export default function BuilderPage() {
               </div>
             </div>
 
-            {/* എപ്പോഴും സ്ക്രീനിനുള്ളിൽ നിൽക്കുന്ന ബട്ടണുകൾ */}
             <div className="flex gap-2 pt-3 border-t border-white/10 shrink-0 mt-2">
               <button 
                 type="button" 
