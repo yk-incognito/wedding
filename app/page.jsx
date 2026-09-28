@@ -56,6 +56,7 @@ export default function BuilderPage() {
 
   const [selectedTemplate, setSelectedTemplate] = useState("template1");
   const [selectedMusic, setSelectedMusic] = useState(MUSIC_TRACKS[0].url);
+  const [customAudioName, setCustomAudioName] = useState("");
   const [selectedEffect, setSelectedEffect] = useState("petals");
 
   const [coverPhotoUrl, setCoverPhotoUrl] = useState("");
@@ -67,7 +68,7 @@ export default function BuilderPage() {
   const [existingId, setExistingId] = useState(null);
   const [existingDashId, setExistingDashId] = useState(null);
 
-  // ഇമേജ് ക്രോപ്പർ മോഡൽ സ്റ്റേറ്റുകൾ
+  // ക്രോപ്പർ മോഡൽ സ്റ്റേറ്റുകൾ
   const [cropperOpen, setCropperOpen] = useState(false);
   const [imageToCrop, setImageToCrop] = useState(null);
   const [cropTarget, setCropTarget] = useState("");
@@ -105,7 +106,7 @@ export default function BuilderPage() {
   const [contacts, setContacts] = useState([{ name: "Family Coordinator", phone: "" }]);
   const [customSections, setCustomSections] = useState([]);
 
-  // എഡിറ്റ് ചെയ്യുമ്പോൾ മുൻപ് അടിച്ച ഡാറ്റ തിരികെ റീസ്റ്റോർ ചെയ്യുന്നു
+  // ഡാറ്റ റീസ്റ്റോർ ചെയ്യുന്നു (Edit ചെയ്യുമ്പോൾ ലഭിക്കാൻ)
   useEffect(() => {
     if (typeof window === "undefined") return;
 
@@ -122,7 +123,12 @@ export default function BuilderPage() {
           setExistingDashId(data.dashboard_id);
           setSelectedTemplate(data.template_id || "template1");
           setSelectedEffect(data.background_effect || "petals");
-          if (data.music_url) setSelectedMusic(data.music_url);
+          if (data.music_url) {
+            setSelectedMusic(data.music_url);
+            if (!MUSIC_TRACKS.some(t => t.url === data.music_url)) {
+              setCustomAudioName("Custom Uploaded Track");
+            }
+          }
 
           setCoverPhotoUrl(data.cover_photo || "");
           setCardPhotoUrl(data.wedding_card_photo || "");
@@ -193,12 +199,28 @@ export default function BuilderPage() {
       audioPlayerRef.current = newAudio;
       setPlayingTrack(url);
       setSelectedMusic(url);
-      newAudio.play().catch((e) => console.warn("Audio error:", e));
+      newAudio.play().catch((e) => console.warn("Audio play error:", e));
       newAudio.onended = () => setPlayingTrack(null);
     }
   };
 
-  // ക്രോപ്പർ കാൻവാസ് ഡ്രോയിങ്
+  // 1. സ്വന്തം ഓഡിയോ ഫയൽ അപ്‌ലോഡ് ചെയ്യാനുള്ള ഫംഗ്ഷൻ
+  const handleCustomAudioUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setCustomAudioName(file.name);
+    const reader = new FileReader();
+    reader.onload = (uploadEvent) => {
+      const audioDataUrl = uploadEvent.target.result;
+      setSelectedMusic(audioDataUrl);
+      // അപ്‌ലോഡ് ചെയ്ത ഉടൻ തന്നെ പുതിയ പാട്ട് പ്ലേ ചെയ്തു കേൾപ്പിക്കുന്നു
+      handleTogglePreviewAudio(audioDataUrl);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // ഇമേജ് ക്രോപ്പർ ട്രിഗർ
   const triggerCropModal = (file, target, ratio) => {
     if (!file) return;
     const reader = new FileReader();
@@ -366,6 +388,7 @@ export default function BuilderPage() {
       setGalleryUrls([]);
       setContacts([{ name: "Family Coordinator", phone: "" }]);
       setCustomSections([]);
+      setCustomAudioName("");
       if (audioPlayerRef.current) audioPlayerRef.current.pause();
       setPlayingTrack(null);
     }
@@ -482,11 +505,15 @@ export default function BuilderPage() {
       <div ref={formRef} className="max-w-4xl mx-auto px-4 mt-12">
         <form onSubmit={handleSubmit} className="space-y-10">
 
-          {/* 1. മ്യൂസിക് */}
+          {/* 1. മ്യൂസിക് & സ്വന്തം ഓഡിയോ അപ്‌ലോഡ് ഓപ്ഷൻ */}
           <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#e4d7c0] shadow-sm space-y-6">
-            <h2 className="text-xl font-serif font-bold text-[#54101a] flex items-center gap-2">
-              <Music className="w-5 h-5 text-[#c7a36a]" /> 1. Background Music
-            </h2>
+            <div>
+              <h2 className="text-xl font-serif font-bold text-[#54101a] flex items-center gap-2">
+                <Music className="w-5 h-5 text-[#c7a36a]" /> 1. Background Music
+              </h2>
+              <p className="text-xs text-stone-500 mt-1 font-serif">താഴെ നൽകിയിരിക്കുന്ന പാട്ടുകളിൽ ഒന്ന് തിരഞ്ഞെടുക്കുക, അല്ലെങ്കിൽ സ്വന്തമായി പാട്ട് അപ്‌ലോഡ് ചെയ്യുക:</p>
+            </div>
+            
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {MUSIC_TRACKS.map((t) => (
                 <div
@@ -508,6 +535,46 @@ export default function BuilderPage() {
                   </button>
                 </div>
               ))}
+            </div>
+
+            {/* സ്വന്തം പാട്ട് അപ്‌ലോഡ് ചെയ്യാനും പ്ലേ ചെയ്യാനുമുള്ള ബോക്സ് */}
+            <div className="p-4 bg-[#fcfbf9] border border-dashed border-[#d9caa9] rounded-2xl space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <label className="text-xs font-bold text-[#7a5716] flex items-center gap-1.5">
+                    <Upload className="w-4 h-4 text-[#c7a36a]" /> Upload Your Own Song / സ്വന്തം പാട്ട് തിരഞ്ഞെടുക്കുക:
+                  </label>
+                  <p className="text-[11px] text-stone-500">നിങ്ങളുടെ ഫോണിലോ കമ്പ്യൂട്ടറിലോ ഉള്ള ഓഡിയോ (MP3) ഫയൽ തിരഞ്ഞെടുക്കാം.</p>
+                </div>
+                
+                <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-white border border-stone-300 hover:border-[#c7a36a] text-xs font-semibold text-[#54101a] rounded-xl shadow-sm transition shrink-0">
+                  <Upload className="w-3.5 h-3.5" /> Choose Audio File
+                  <input
+                    type="file"
+                    accept="audio/*"
+                    onChange={handleCustomAudioUpload}
+                    className="hidden"
+                  />
+                </label>
+              </div>
+
+              {/* അപ്‌ലോഡ് ചെയ്ത പാട്ടിന്റെ പ്രിവ്യൂ & പ്ലേ ബട്ടൺ */}
+              {customAudioName && (
+                <div className="flex items-center justify-between p-3 bg-[#faf4ea] border border-[#c7a36a] rounded-xl text-xs font-semibold text-[#54101a]">
+                  <span className="truncate pr-2">🎵 {customAudioName} (Selected)</span>
+                  <button
+                    type="button"
+                    onClick={() => handleTogglePreviewAudio(selectedMusic)}
+                    className="p-2 bg-white border border-[#c7a36a]/50 rounded-lg text-[#54101a] shadow-sm flex items-center gap-1.5 shrink-0"
+                  >
+                    {playingTrack === selectedMusic ? (
+                      <><Pause className="w-3.5 h-3.5 text-rose-600" /> Pause</>
+                    ) : (
+                      <><Play className="w-3.5 h-3.5 text-emerald-600" /> Play</>
+                    )}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
