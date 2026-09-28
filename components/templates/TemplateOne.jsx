@@ -2,7 +2,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { 
   FileText, X, MapPin, Send, Phone, Calendar, Heart, 
-  MessageCircle, Video, Gift, Copy, Check, Clock, ExternalLink 
+  MessageCircle, Video, Gift, Copy, Check, Clock, QrCode, ExternalLink 
 } from "lucide-react";
 
 export default function TemplateOne({
@@ -32,7 +32,7 @@ export default function TemplateOne({
   const [timeLeft, setTimeLeft] = useState({ days: "00", hours: "00", minutes: "00", seconds: "00" });
   const audioRef = useRef(null);
 
-  // 1. ഓഡിയോ പ്ലെയർ കോൺഫിഗറേഷൻ
+  // 1. ഓഡിയോ പ്ലെയർ സെറ്റപ്പ്
   useEffect(() => {
     if (invitation?.music_url) {
       const audio = new Audio(invitation.music_url);
@@ -47,7 +47,7 @@ export default function TemplateOne({
     };
   }, [invitation?.music_url]);
 
-  // 2. തത്സമയ കൗണ്ട്ഡൗൺ ടൈമർ കാൽക്കുലേഷൻ
+  // 2. തത്സമയ കൗണ്ട്ഡൗൺ ടൈമർ
   useEffect(() => {
     if (!invitation?.wedding_date) return;
     const target = new Date(invitation.wedding_date).getTime();
@@ -70,7 +70,7 @@ export default function TemplateOne({
     return () => clearInterval(interval);
   }, [invitation?.wedding_date]);
 
-  // 3. റോയൽ ഗേറ്റ് തുറക്കലും ഓട്ടോ-ഓഡിയോ പ്ലേയും
+  // 3. റോയൽ ഗേറ്റ് തുറക്കലും മ്യൂസിക് പ്ലേയും
   const handleOpenGate = () => {
     setGateOpened(true);
     if (audioRef.current) {
@@ -78,7 +78,7 @@ export default function TemplateOne({
     }
   };
 
-  // 4. മ്യൂസിക് പ്ലേ/പോസ് ടോഗിൾ
+  // 4. മ്യൂസിക് പ്ലേ / പോസ് കൺട്രോളർ
   const toggleMusic = () => {
     if (!audioRef.current) return;
     if (isPlaying) {
@@ -89,7 +89,7 @@ export default function TemplateOne({
     }
   };
 
-  // 5. ആഡ് ടു കലണ്ടർ (.ics ഫയൽ ഡൗൺലോഡ്)
+  // 5. ആഡ് ടു കലണ്ടർ (.ics കലണ്ടർ ഇൻവിറ്റേഷൻ)
   const handleAddToCalendar = () => {
     const weddingDate = new Date(invitation?.wedding_date || Date.now());
     const year = weddingDate.getUTCFullYear();
@@ -120,7 +120,7 @@ export default function TemplateOne({
     document.body.removeChild(link);
   };
 
-  // 6. UPI ഐഡി കോപ്പി ഫംഗ്ഷൻ
+  // 6. UPI ഐഡി കോപ്പി ചെയ്യൽ
   const handleCopyUpi = () => {
     if (invitation?.upi_id) {
       navigator.clipboard.writeText(invitation.upi_id);
@@ -129,7 +129,7 @@ export default function TemplateOne({
     }
   };
 
-  // 7. ലോക്കൽ RSVP സമർപ്പിക്കൽ
+  // 7. RSVP സബ്മിഷൻ
   const localRsvpSubmit = async (e) => {
     e.preventDefault();
     if (onRsvpSubmit) {
@@ -138,7 +138,7 @@ export default function TemplateOne({
     }
   };
 
-  // 8. ലോക്കൽ ആശംസകൾ സമർപ്പിക്കൽ
+  // 8. ഗസ്റ്റ് ആശംസ സബ്മിഷൻ
   const localWishSubmit = async (e) => {
     e.preventDefault();
     if (!guestName || !guestMessage) return;
@@ -167,8 +167,7 @@ export default function TemplateOne({
     "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=80",
     "https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=1200&q=80",
     "https://images.unsplash.com/photo-1519225421980-715cb0215aed?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=800&q=80",
-    "https://images.unsplash.com/photo-1606800052052-a08af7148866?auto=format&fit=crop&w=800&q=80"
+    "https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=800&q=80"
   ];
 
   const gallery = Array.isArray(invitation?.gallery_photos) && invitation.gallery_photos.length > 0
@@ -183,14 +182,18 @@ export default function TemplateOne({
     ? `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=18&data=${encodeURIComponent(invitation.map_url)}`
     : `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=18&data=${encodeURIComponent("https://maps.google.com")}`;
 
-  // YouTube Embed URL Generator
+  // UPI പേയ്‌മെന്റ് QR കോഡ്
+  const upiQrUrl = invitation?.upi_id
+    ? `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=16&data=${encodeURIComponent(`upi://pay?pa=${invitation.upi_id}&pn=${encodeURIComponent((invitation.groom_name || "Groom") + " and " + (invitation.bride_name || "Bride"))}&cu=INR`)}`
+    : null;
+
+  // YouTube Embed Url Generator
   const getEmbedYoutubeUrl = (url) => {
     if (!url) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|live\/)([^#\&\?]*).*/;
     const match = url.match(regExp);
     return match && match[2].length === 11 ? `https://www.youtube-nocookie.com/embed/${match[2]}` : null;
   };
-
   const youtubeEmbedUrl = getEmbedYoutubeUrl(invitation?.live_stream_url);
 
   return (
@@ -222,8 +225,8 @@ export default function TemplateOne({
           box-sizing: border-box; 
         }
 
-        /* 1. ടെക്സ്റ്റ് ഫ്ലിക്കറിംഗ് / ഷേക്കിംഗ് പൂർണ്ണമായി റദ്ദാക്കുന്ന റോയൽ ടൈപ്പോഗ്രാഫി */
-        h1, h2, h3, h4, h5, h6, p, span, strong, em, .monogram, .eyebrow, .gate-date, .official-card-btn, button {
+        /* 1. എല്ലാ ടെക്സ്റ്റ് ഫ്ലിക്കറിംഗും സൂം ഷേക്കിംഗും പൂർണ്ണമായി റദ്ദാക്കുന്നു */
+        h1, h2, h3, h4, h5, h6, p, span, strong, em, .monogram, .eyebrow, .gate-date, .hero-card-badge-btn, .official-card-btn, button {
           animation: none !important;
           transform: none !important;
           letter-spacing: inherit;
@@ -240,7 +243,7 @@ export default function TemplateOne({
           background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
         }
 
-        /* സ്റ്റേബിൾ പ്യുവർ CSS പൂവിതളുകൾ (DOM റീപെയിന്റ് ഇല്ലാതെ ശാന്തമായി വീഴുന്നു) */
+        /* 2. പ്യുവർ CSS പൂവിതളുകൾ / ഇലകൾ (ടെക്സ്റ്റിനെ ബാധിക്കാതെ ശാന്തമായി വീഴുന്നു) */
         .falling-leaves-css {
           position: fixed;
           inset: 0;
@@ -250,22 +253,22 @@ export default function TemplateOne({
         }
         .css-leaf {
           position: absolute;
-          top: -24px;
-          width: 12px;
-          height: 18px;
+          top: -30px;
+          width: 13px;
+          height: 20px;
           background: linear-gradient(135deg, #a8324a, #4a0f1b);
           border-radius: 80% 20% 75% 25%;
-          opacity: 0.35;
+          opacity: 0.4;
           animation: staticFall 10s linear infinite !important;
         }
-        .css-leaf:nth-child(1) { left: 12vw; animation-delay: 0s; animation-duration: 9.5s; }
-        .css-leaf:nth-child(2) { left: 34vw; animation-delay: 3s; animation-duration: 11.5s; }
-        .css-leaf:nth-child(3) { left: 62vw; animation-delay: 1.5s; animation-duration: 8.5s; }
-        .css-leaf:nth-child(4) { left: 84vw; animation-delay: 5s; animation-duration: 12.5s; }
-        .css-leaf:nth-child(5) { left: 48vw; animation-delay: 2.2s; animation-duration: 10s; }
+        .css-leaf:nth-child(1) { left: 8vw; animation-delay: 0s; animation-duration: 9.5s; }
+        .css-leaf:nth-child(2) { left: 24vw; animation-delay: 3.2s; animation-duration: 11.5s; }
+        .css-leaf:nth-child(3) { left: 45vw; animation-delay: 1.5s; animation-duration: 8.8s; }
+        .css-leaf:nth-child(4) { left: 68vw; animation-delay: 4.5s; animation-duration: 12.2s; }
+        .css-leaf:nth-child(5) { left: 88vw; animation-delay: 2.2s; animation-duration: 10.2s; }
         @keyframes staticFall {
-          0% { transform: translateY(-24px) rotate(0deg); opacity: 0; }
-          20% { opacity: 0.45; }
+          0% { transform: translateY(-30px) rotate(0deg); opacity: 0; }
+          20% { opacity: 0.5; }
           100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
         }
 
@@ -371,7 +374,7 @@ export default function TemplateOne({
           margin-top: 12px;
         }
 
-        /* ഫുൾ-സ്ക്രീൻ ഹീറോ + സിനിമാറ്റിക് റോയൽ ഓവർലേ */
+        /* ഫുൾ-സ്ക്രീൻ ഹീറോ സെക്ഷൻ */
         .hero {
           height: 100svh;
           min-height: 580px;
@@ -402,7 +405,8 @@ export default function TemplateOne({
         }
         .hero-copy h1 {
           font: 500 clamp(2.6rem, 5.5vw, 4.4rem)/1.1 var(--serif);
-          margin: 14px 0 20px;
+          margin: 14px 0 16px;
+          color: #fff4e3;
           text-shadow: 0 2px 15px rgba(0, 0, 0, .7);
         }
         .hero-copy h1 span {
@@ -416,23 +420,32 @@ export default function TemplateOne({
           letter-spacing: .25em;
         }
 
-        .official-card-btn {
+        /* 3. ഹീറോ ടോപ്പിൽ വരുന്ന ഒഫീഷ്യൽ കാർഡ് ബട്ടൺ */
+        .hero-card-badge-btn {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          padding: 12px 28px;
+          margin-top: 18px;
+          padding: 11px 26px;
           border-radius: 99px;
-          background: rgba(34, 7, 12, 0.9);
-          border: 1px solid rgba(199, 163, 106, 0.85);
+          background: rgba(34, 7, 12, 0.88);
+          border: 1.5px solid rgba(199, 163, 106, 0.9);
           color: var(--gold-bright);
           font-size: 0.72rem;
           text-transform: uppercase;
           letter-spacing: 0.18em;
           font-weight: 600;
           cursor: pointer;
-          box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+          backdrop-filter: blur(10px);
+          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+          transition: background 0.3s;
+        }
+        .hero-card-badge-btn:hover {
+          background: rgba(72, 14, 23, 0.95);
+          border-color: var(--gold);
         }
 
+        /* വിഷ്വൽ സ്റ്റോറി ഫ്രെയിം (Chapter 1 & 2) */
         .visual-story { background: #0f0507; }
         .story-frame {
           position: relative;
@@ -523,7 +536,7 @@ export default function TemplateOne({
           text-align: center;
         }
 
-        /* The Couple: ക്രീം ഐവറി ബാക്ക്‌ഗ്രൗണ്ടും ഉള്ളിൽ ഡീപ് വൈൻ കാർഡുകളും */
+        /* 4. THE COUPLE: ക്രീം ഐവറി ബാക്ക്‌ഗ്രൗണ്ടും ഉള്ളിൽ ഡീപ് വൈൻ കാർഡുകളും */
         .the-couple-section {
           background: var(--ivory);
           color: var(--wine);
@@ -722,7 +735,7 @@ export default function TemplateOne({
           object-fit: cover;
         }
 
-        /* കസ്റ്റം സെക്ഷനുകൾ (2 വൃത്തിയുള്ള ലക്ഷ്വറി ബോക്സുകൾ) */
+        /* 5. കസ്റ്റം സെക്ഷനുകൾ (2 വൃത്തിയുള്ള ലക്ഷ്വറി കാർഡുകൾ) */
         .custom-sections-grid {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -857,7 +870,7 @@ export default function TemplateOne({
         <p className="sound-note">Tap to enter with music</p>
       </section>
 
-      {/* 2. ഫുൾ-സ്ക്രീൻ ഹീറോ + സിനിമാറ്റിക് റോയൽ ഓവർലേ */}
+      {/* 2. ഫുൾ-സ്ക്രീൻ ഹീറോ + ടോപ്പിൽ തന്നെ VIEW OFFICIAL CARD ബട്ടൺ */}
       <section className="hero">
         <img 
           className="hero-image" 
@@ -869,6 +882,19 @@ export default function TemplateOne({
           <p className="eyebrow">The wedding of</p>
           <h1>{invitation?.bride_name} <span>&</span> {invitation?.groom_name}</h1>
           {dateFormatted && <p className="hero-date">{dateFormatted}</p>}
+
+          {/* 3. ടോപ്പിൽ വരുന്ന ഒഫീഷ്യൽ വെഡ്ഡിംഗ് കാർഡ് ബട്ടൺ */}
+          {invitation?.wedding_card_photo && (
+            <div>
+              <button
+                type="button"
+                onClick={() => setShowCardModal(true)}
+                className="hero-card-badge-btn"
+              >
+                <FileText className="w-4 h-4 text-[#c7a36a]" /> View Official Wedding Card
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
@@ -892,11 +918,7 @@ export default function TemplateOne({
       {(invitation?.first_met_story || invitation?.journey_story) && (
         <section className="section cream-section">
           {invitation?.first_met_story && (
-            <>
-              <p className="verse">A promise, a prayer, a forever</p>
-              <blockquote>“{invitation.first_met_story}”</blockquote>
-              <div className="gold-rule"><span>✦</span></div>
-            </>
+            <blockquote>“{invitation.first_met_story}”</blockquote>
           )}
           {invitation?.journey_story && (
             <p className="intro">{invitation.journey_story}</p>
@@ -963,24 +985,14 @@ export default function TemplateOne({
         </div>
       </section>
 
-      {/* 6. സ്പെഷ്യൽ കപ്പിൾ പോർട്രെയ്റ്റ് & VIEW OFFICIAL CARD BUTTON */}
-      <section className="p-8 text-center bg-[#17070b]">
-        {gallery[2] && (
-          <div className="max-w-3xl mx-auto rounded-3xl overflow-hidden border border-[#c7a36a]/35 shadow-2xl mb-8">
+      {/* 6. സ്പെഷ്യൽ കപ്പിൾ പോർട്രെയ്റ്റ് */}
+      {gallery[2] && (
+        <section className="p-8 text-center bg-[#17070b]">
+          <div className="max-w-3xl mx-auto rounded-3xl overflow-hidden border border-[#c7a36a]/35 shadow-2xl">
             <img src={gallery[2]} alt="Together" className="w-full max-h-[480px] object-cover" />
           </div>
-        )}
-
-        {invitation?.wedding_card_photo && (
-          <button
-            type="button"
-            onClick={() => setShowCardModal(true)}
-            className="official-card-btn"
-          >
-            <FileText className="w-4 h-4 text-[#c7a36a]" /> View Official Wedding Card
-          </button>
-        )}
-      </section>
+        </section>
+      )}
 
       {/* 7. ടുഗെദർ വിത്ത് ഫാമിലീസ് */}
       {(invitation?.groom_parents || invitation?.bride_parents) && (
@@ -1082,12 +1094,12 @@ export default function TemplateOne({
         </section>
       )}
 
-      {/* 11. YOUTUBE LIVE STREAMING & UPI GIFTING (വിവരങ്ങൾ ഉണ്ടെങ്കിൽ മാത്രം ദൃശ്യമാകുന്നു) */}
+      {/* 11. YOUTUBE LIVE STREAMING & UPI QR CODE GIFTING (കൊടുത്തിട്ടുണ്ടെങ്കിൽ മാത്രം കാണിക്കും) */}
       {(invitation?.live_stream_url || invitation?.upi_id) && (
         <section className="section dark-section border-t border-stone-800/80">
           <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
             
-            {/* YouTube Live Stream Portal */}
+            {/* YouTube Live Stream */}
             {invitation.live_stream_url && (
               <div className="p-6 rounded-3xl bg-[#1e070c] border border-[#c7a36a]/40 text-center space-y-4 shadow-xl">
                 <span className="text-xs uppercase tracking-widest text-rose-400 font-semibold flex items-center justify-center gap-1.5">
@@ -1118,14 +1130,21 @@ export default function TemplateOne({
               </div>
             )}
 
-            {/* UPI Gifting Portal */}
+            {/* 6. UPI പേയ്‌മെന്റ് QR കോഡ് (GPay, PhonePe, Paytm സ്കാൻ ചെയ്യാം) */}
             {invitation.upi_id && (
               <div className="p-6 rounded-3xl bg-[#1e070c] border border-[#c7a36a]/40 text-center space-y-4 shadow-xl">
                 <span className="text-xs uppercase tracking-widest text-amber-400 font-semibold flex items-center justify-center gap-1.5">
                   <Gift className="w-4 h-4 text-[#c7a36a]" /> Wedding Token & Gift
                 </span>
-                <h3 className="text-xl font-serif font-bold text-amber-200">Bless the Newlyweds via UPI</h3>
-                <p className="text-xs text-stone-300 font-serif">നവദമ്പതികൾക്ക് നേരിട്ട് ഉപഹാരം നൽകാൻ താഴെയുള്ള UPI ഐഡി ഉപയോഗിക്കാം:</p>
+                <h3 className="text-xl font-serif font-bold text-amber-200">Scan & Bless via UPI</h3>
+                
+                {/* QR കോഡ് ഡിസ്പ്ലേ */}
+                {upiQrUrl && (
+                  <div className="p-3 bg-white rounded-2xl w-fit mx-auto shadow-2xl border border-amber-300">
+                    <img src={upiQrUrl} alt="UPI Payment QR Code" className="w-40 h-40 object-contain mx-auto" />
+                    <p className="text-[10px] text-stone-800 font-sans font-bold mt-1">Scan with GPay / PhonePe / Paytm</p>
+                  </div>
+                )}
                 
                 <div 
                   onClick={handleCopyUpi}
@@ -1143,7 +1162,7 @@ export default function TemplateOne({
         </section>
       )}
 
-      {/* 12. കസ്റ്റം സെക്ഷനുകൾ (Sangeeth & Guidelines: 2 ബോക്സുകൾ) */}
+      {/* 12. കസ്റ്റം സെക്ഷനുകൾ (2 ബോക്സുകൾ) */}
       {customSecs.length > 0 && (
         <section className="section dark-section">
           <p className="eyebrow">Celebration Notes</p>
@@ -1178,7 +1197,6 @@ export default function TemplateOne({
       <section className="section dark-section border-t border-stone-800/80">
         <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
           
-          {/* RSVP Card */}
           <div className="form-card text-center">
             <p className="eyebrow">Join With Us</p>
             <h3 className="text-2xl font-serif text-rose-200 mt-1 mb-4">RSVP Confirmation</h3>
@@ -1194,26 +1212,24 @@ export default function TemplateOne({
                   <label className="text-[11px] text-stone-400 font-serif uppercase tracking-wider">Number of Guests</label>
                   <input required type="number" min="1" max="10" value={rsvpGuests} onChange={(e) => setRsvpGuests(e.target.value)} className="form-input" />
                 </div>
-                <button type="submit" className="w-full py-3 mt-2 bg-[#c7a36a] text-stone-950 font-bold rounded-xl text-xs uppercase tracking-widest hover:brightness-110 cursor-pointer">
+                <button type="submit" className="w-full py-3 mt-2 bg-[#c7a36a] text-stone-950 font-bold rounded-xl text-xs uppercase tracking-widest cursor-pointer">
                   Confirm Attendance
                 </button>
               </form>
             )}
           </div>
 
-          {/* Wishes Card */}
           <div className="form-card text-center">
             <p className="eyebrow">Warm Wishes</p>
             <h3 className="text-2xl font-serif text-rose-200 mt-1 mb-4">Leave Your Blessings</h3>
             <form onSubmit={localWishSubmit} className="space-y-3 text-left">
               <input required value={guestName} onChange={(e) => setGuestName(e.target.value)} placeholder="Your name..." className="form-input" />
               <textarea required rows={2} value={guestMessage} onChange={(e) => setGuestMessage(e.target.value)} placeholder="Write your blessing..." className="form-input" />
-              <button type="submit" disabled={wishLoading} className="w-full py-3 bg-[#480e17] text-[#faf5ed] font-serif text-xs uppercase tracking-widest border border-[#c7a36a]/50 rounded-xl hover:bg-[#601320] cursor-pointer">
+              <button type="submit" disabled={wishLoading} className="w-full py-3 bg-[#480e17] text-[#faf5ed] font-serif text-xs uppercase tracking-widest border border-[#c7a36a]/50 rounded-xl cursor-pointer">
                 {wishLoading ? "Posting..." : "Post Wedding Wish"}
               </button>
             </form>
 
-            {/* അപ്രൂവ് ചെയ്ത ആശംസകളുടെ മതിൽ */}
             {wishes.length > 0 && (
               <div className="mt-4 space-y-2 max-h-48 overflow-y-auto pr-1 text-left">
                 {wishes.map((w, i) => (
@@ -1250,7 +1266,7 @@ export default function TemplateOne({
         </button>
       )}
 
-      {/* 16. OFFICIAL CARD LIGHTBOX MODAL (ക്ലോസ് ബട്ടൺ എപ്പോഴും വിൻഡോയ്ക്കുള്ളിൽ നിൽക്കുന്ന ഫിക്സ്) */}
+      {/* 16. OFFICIAL CARD LIGHTBOX MODAL (ക്ലോസ് ബട്ടൺ എപ്പോഴും വിൻഡോയ്ക്കുള്ളിൽ ഫിക്സ് ചെയ്തത്) */}
       {showCardModal && invitation?.wedding_card_photo && (
         <div 
           onClick={() => setShowCardModal(false)}
