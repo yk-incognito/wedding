@@ -5,6 +5,7 @@ import { supabase } from "../../../lib/supabaseClient";
 import TemplateOne from "../../../components/templates/TemplateOne";
 import { Lock } from "lucide-react";
 
+
 export default function InviteViewPage() {
   const params = useParams();
   const id = params?.id;
