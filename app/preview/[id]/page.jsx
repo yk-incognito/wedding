@@ -1,11 +1,11 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "../../../lib/supabaseClient";
 import TemplateOne from "../../../components/templates/TemplateOne";
 import { Sparkles, CheckCircle, Copy, AlertTriangle, ArrowLeft } from "lucide-react";
 
-export default function PreviewPage() {
+function PreviewContent() {
   const params = useParams();
   const id = params?.id;
   const searchParams = useSearchParams();
@@ -91,11 +91,9 @@ export default function PreviewPage() {
 
   return (
     <div className="relative">
-      {/* ടോപ്പ് ആക്ഷൻ ബാർ */}
       <div className="sticky top-0 z-50 bg-[#16090c]/95 border-b border-[#c7a36a]/40 backdrop-blur-md py-3.5 px-4 shadow-2xl">
         <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
-            {/* മുൻപ് അടിച്ച ഒരു വിവരവും നഷ്ടപ്പെടാതെ എഡിറ്റിലേക്ക് തിരികെ പോകുന്നു */}
             <button
               onClick={() => router.push(`/?edit=${id}`)}
               className="p-2 bg-white/10 hover:bg-white/20 text-white rounded-xl transition text-xs flex items-center gap-1.5 cursor-pointer font-sans font-semibold"
@@ -125,7 +123,6 @@ export default function PreviewPage() {
           </div>
         </div>
 
-        {/* ആക്റ്റീവ് ആയാൽ മാത്രം കാണിക്കുന്ന സ്ഥിര ലിങ്കുകൾ */}
         {isPaid && (
           <div className="mt-3 p-4 bg-[#230f14] border border-[#c7a36a] rounded-2xl max-w-4xl mx-auto text-white space-y-3 shadow-xl font-sans">
             <p className="text-xs text-amber-200 font-bold flex items-center gap-1.5">
@@ -178,5 +175,17 @@ export default function PreviewPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function PreviewPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#16090c] flex items-center justify-center text-[#c7a36a] font-serif text-lg tracking-widest">
+        LOADING PREVIEW...
+      </div>
+    }>
+      <PreviewContent />
+    </Suspense>
   );
 }
