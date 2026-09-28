@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef, useEffect, useCallback, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "../lib/supabaseClient";
 import { 
@@ -58,7 +58,7 @@ const ANIMATION_EFFECTS = [
   { id: "jasmines", name: "🌼 Jasmine Blossoms", icon: "🌼" }
 ];
 
-export default function BuilderPage() {
+function BuilderContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const editId = searchParams.get("edit");
@@ -89,8 +89,8 @@ export default function BuilderPage() {
   // Cropper Modal States
   const [cropperOpen, setCropperOpen] = useState(false);
   const [imageToCrop, setImageToCrop] = useState(null);
-  const [cropTarget, setCropTarget] = useState(""); // cover, card, bride, groom, gallery
-  const [aspectRatio, setAspectRatio] = useState(1); // 1 for portraits, 16/9 for cover, 3/4 for card
+  const [cropTarget, setCropTarget] = useState("");
+  const [aspectRatio, setAspectRatio] = useState(1);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
@@ -124,7 +124,7 @@ export default function BuilderPage() {
   const [contacts, setContacts] = useState([{ name: "Family Coordinator", phone: "" }]);
   const [customSections, setCustomSections] = useState([]);
 
-  // 1. എഡിറ്റ് ചെയ്യുമ്പോൾ മുൻപ് അടിച്ച ഡാറ്റ തിരികെ റീസ്റ്റോർ ചെയ്യുന്നു
+  // എഡിറ്റ് ചെയ്യുമ്പോൾ മുൻപ് അടിച്ച ഡാറ്റ തിരികെ റീസ്റ്റോർ ചെയ്യുന്നു
   useEffect(() => {
     const activeId = editId || sessionStorage.getItem("last_active_edit_id");
     if (activeId) {
@@ -212,9 +212,7 @@ export default function BuilderPage() {
     }
   };
 
-  // ==========================================
-  // 2. ഇമേജ് ക്രോപ്പർ ഫംഗ്ഷനുകൾ (Inbuilt Canvas)
-  // ==========================================
+  // ക്രോപ്പർ ഫംഗ്ഷനുകൾ
   const triggerCropModal = (file, target, ratio) => {
     if (!file) return;
     const reader = new FileReader();
@@ -229,7 +227,6 @@ export default function BuilderPage() {
     reader.readAsDataURL(file);
   };
 
-  // ഡ്രോ കാൻവാസ്
   const drawCropperCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     if (!canvas || !imageToCrop) return;
@@ -241,7 +238,6 @@ export default function BuilderPage() {
       const cHeight = canvas.height;
       ctx.clearRect(0, 0, cWidth, cHeight);
 
-      // ക്രോപ്പ് ബോക്സ് അളവുകൾ
       let boxW = cWidth - 40;
       let boxH = boxW / aspectRatio;
       if (boxH > cHeight - 40) {
@@ -252,16 +248,13 @@ export default function BuilderPage() {
       const boxY = (cHeight - boxH) / 2;
 
       ctx.save();
-      // ഔട്ട്‌സൈഡ് ഡാർക്ക് ചെയ്യുക
       ctx.fillStyle = "rgba(0, 0, 0, 0.75)";
       ctx.fillRect(0, 0, cWidth, cHeight);
 
-      // ക്രോപ്പ് വിൻഡോ ക്ലിപ്പ് ചെയ്യുക
       ctx.beginPath();
       ctx.rect(boxX, boxY, boxW, boxH);
       ctx.clip();
 
-      // ഇമേജ് വരയ്ക്കുക
       const baseScale = Math.max(boxW / img.width, boxH / img.height);
       const renderW = img.width * baseScale * zoomLevel;
       const renderH = img.height * baseScale * zoomLevel;
@@ -271,7 +264,6 @@ export default function BuilderPage() {
       ctx.drawImage(img, renderX, renderY, renderW, renderH);
       ctx.restore();
 
-      // ക്രോപ്പ് ബോർഡർ
       ctx.strokeStyle = "#c7a36a";
       ctx.lineWidth = 2.5;
       ctx.strokeRect(boxX, boxY, boxW, boxH);
@@ -314,7 +306,6 @@ export default function BuilderPage() {
     setCropperOpen(false);
   };
 
-  // ഡ്രാഗ് ഹാൻഡ്‌ലേഴ്‌സ്
   const handleMouseDown = (e) => {
     setIsDragging(true);
     setDragStart({ x: e.clientX - panOffset.x, y: e.clientY - panOffset.y });
@@ -325,7 +316,6 @@ export default function BuilderPage() {
   };
   const handleMouseUp = () => setIsDragging(false);
 
-  // 1-Click Safe Sample Fill
   const fillSampleData = () => {
     setFormData({
       brideName: "Merin",
@@ -454,11 +444,9 @@ export default function BuilderPage() {
         custom_sections: customSections.filter(s => s.title?.trim() || s.content?.trim())
       };
 
-      // Realtime Supabase Sync
       const { error: upsertError } = await supabase.from("invitations").upsert([invitationData]);
       if (upsertError) throw upsertError;
 
-      // 1. Session Storage-ലേക്ക് സൂക്ഷിക്കുന്നു (എഡിറ്റ് ചെയ്യുമ്പോൾ നഷ്ടപ്പെടാതിരിക്കാൻ)
       sessionStorage.setItem(`preview_session_${publicId}`, JSON.stringify(invitationData));
       sessionStorage.setItem("last_active_edit_id", publicId);
 
@@ -472,8 +460,6 @@ export default function BuilderPage() {
 
   return (
     <main className="min-h-screen bg-[#faf8f5] text-[#2c2416] pb-32 relative font-sans selection:bg-[#c7a36a] selection:text-white">
-
-      {/* ഹീറോ ലാൻഡിംഗ് */}
       <section className="pt-20 pb-16 px-4 bg-gradient-to-b from-white via-[#fcfbf9] to-[#faf8f5] text-center border-b border-[#e9dfce]">
         <div className="max-w-4xl mx-auto space-y-6">
           <div className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-[#f3ede2] border border-[#d9caa9] text-[#7a5716] text-xs sm:text-sm font-semibold tracking-wider uppercase shadow-sm">
@@ -505,11 +491,10 @@ export default function BuilderPage() {
         </div>
       </section>
 
-      {/* ഫോം */}
       <div ref={formRef} className="max-w-4xl mx-auto px-4 mt-12">
         <form onSubmit={handleSubmit} className="space-y-10">
 
-          {/* 1. മ്യൂസിക് സെലക്ഷൻ */}
+          {/* 1. മ്യൂസിക് */}
           <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#e4d7c0] shadow-sm space-y-6">
             <div>
               <h2 className="text-xl font-serif font-bold text-[#54101a] flex items-center gap-2">
@@ -541,12 +526,11 @@ export default function BuilderPage() {
             </div>
           </div>
 
-          {/* 2. ഫോട്ടോ അപ്‌ലോഡ് & ക്രോപ്പർ സെക്ഷൻ (Cover & Official Card) */}
+          {/* 2. ഫോട്ടോ അപ്‌ലോഡ് & ക്രോപ്പർ (Cover & Official Card) */}
           <div className="bg-white p-6 sm:p-8 rounded-3xl border border-[#e4d7c0] shadow-sm space-y-6">
             <h2 className="text-xl font-serif font-bold text-[#54101a]">2. Main Banner & Official Wedding Card (With Cropper)</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               
-              {/* Cover Photo */}
               <div className="space-y-2">
                 <label className="block text-xs font-semibold text-stone-700 flex items-center justify-between">
                   <span>Couple Cover Photo (16:9 Landscape)</span>
@@ -570,7 +554,6 @@ export default function BuilderPage() {
                 )}
               </div>
 
-              {/* Official Wedding Card */}
               <div className="space-y-2">
                 <label className="block text-xs font-semibold text-stone-700 flex items-center justify-between">
                   <span>Official Wedding Card (Vertical / Portrait)</span>
@@ -597,7 +580,7 @@ export default function BuilderPage() {
             </div>
           </div>
 
-          {/* 3. ബ്രൈഡ് & ഗ്രൂം പ്രൊഫൈലുകൾ (With 1:1 Square/Round Cropper) */}
+          {/* 3. ബ്രൈഡ് & ഗ്രൂം പ്രൊഫൈലുകൾ (With 1:1 Square Cropper) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             
             {/* Bride */}
@@ -904,7 +887,6 @@ export default function BuilderPage() {
             </div>
           </div>
 
-          {/* സബ്മിറ്റ് ബട്ടൺ */}
           <button
             type="submit"
             disabled={loading}
@@ -916,9 +898,7 @@ export default function BuilderPage() {
         </form>
       </div>
 
-      {/* ========================================================= */}
-      {/* ഇമേജ് ക്രോപ്പർ മോഡൽ പോപ്പ്-അപ്പ് (Inbuilt HTML5 Canvas) */}
-      {/* ========================================================= */}
+      {/* ഇമേജ് ക്രോപ്പർ മോഡൽ */}
       {cropperOpen && (
         <div className="fixed inset-0 z-[250] bg-black/85 backdrop-blur-md flex items-center justify-center p-4">
           <div className="bg-[#1c0a0f] border border-[#c7a36a] rounded-3xl p-5 max-w-lg w-full text-white space-y-4 shadow-2xl">
@@ -935,7 +915,6 @@ export default function BuilderPage() {
               ഫോട്ടോ മൗസ് ഉപയോഗിച്ച് ഡ്രാഗ് ചെയ്ത് അഡ്ജസ്റ്റ് ചെയ്യാം. സൂം ചെയ്യാൻ സ്ലൈഡർ ഉപയോഗിക്കുക.
             </p>
 
-            {/* കാൻവാസ് ഏരിയ */}
             <div className="relative w-full aspect-square bg-black rounded-2xl overflow-hidden flex items-center justify-center cursor-move select-none border border-white/15">
               <canvas
                 ref={canvasRef}
@@ -949,7 +928,6 @@ export default function BuilderPage() {
               />
             </div>
 
-            {/* സൂം സ്ലൈഡർ */}
             <div className="flex items-center gap-3 pt-1">
               <ZoomOut className="w-4 h-4 text-stone-400" />
               <input
@@ -985,5 +963,18 @@ export default function BuilderPage() {
       )}
 
     </main>
+  );
+}
+
+// Next.js useSearchParams()-നുള്ള സുരക്ഷിതമായ Suspense Wrapper
+export default function BuilderPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-[#faf8f5] flex items-center justify-center text-[#54101a] font-serif text-lg">
+        Loading Wedding Studio...
+      </div>
+    }>
+      <BuilderContent />
+    </Suspense>
   );
 }
