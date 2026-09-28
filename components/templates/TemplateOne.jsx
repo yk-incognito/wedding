@@ -62,20 +62,20 @@ export default function TemplateOne({
     return () => clearInterval(interval);
   }, [invitation?.wedding_date]);
 
-  // പൂവിതളുകൾ
+  // മേലെ നിന്ന് താഴേക്ക് വീഴുന്ന പൂവിതളുകൾ / ഇലകൾ (Falling Petals / Leaves)
   useEffect(() => {
     if (!gateOpened) return;
     const interval = setInterval(() => {
-      const container = document.getElementById("petals");
+      const container = document.getElementById("falling-leaves-container");
       if (!container) return;
-      const petal = document.createElement("div");
-      petal.className = "petal";
-      petal.style.left = Math.random() * 100 + "vw";
-      petal.style.animationDuration = 8 + Math.random() * 6 + "s";
-      petal.style.animationDelay = Math.random() * 1.5 + "s";
-      container.appendChild(petal);
-      setTimeout(() => petal.remove(), 14000);
-    }, 1100);
+      const leaf = document.createElement("div");
+      leaf.className = "falling-leaf";
+      leaf.style.left = Math.random() * 98 + "vw";
+      leaf.style.animationDuration = 7 + Math.random() * 5 + "s";
+      leaf.style.opacity = (0.35 + Math.random() * 0.45).toString();
+      container.appendChild(leaf);
+      setTimeout(() => leaf.remove(), 12000);
+    }, 900);
 
     return () => clearInterval(interval);
   }, [gateOpened]);
@@ -205,11 +205,13 @@ export default function TemplateOne({
 
         .netflix-luxury-container * { box-sizing: border-box; }
 
-        /* 1. എല്ലാത്തരം ഷിവറിങ് / സൂം-ഇൻ-ഔട്ട് ആനിമേഷനുകളും പൂർണ്ണമായി ഒഴിവാക്കി */
-        * {
+        /* ======================================================== */
+        /* 1. അക്ഷരങ്ങൾ ഷേക്ക് ചെയ്യുന്ന ആനിമേഷൻ പൂർണ്ണമായി നിർത്തി */
+        /* ======================================================== */
+        h1, h2, h3, h4, p, span, strong, em, .monogram, .eyebrow, .gate-date {
           animation: none !important;
           transform: none !important;
-          transition: background-color 0.2s ease, border-color 0.2s ease, opacity 0.2s ease;
+          letter-spacing: inherit;
         }
 
         .grain {
@@ -221,29 +223,38 @@ export default function TemplateOne({
           background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
         }
 
-        .petals {
+        /* 2. മേലെ നിന്ന് താഴേക്ക് വീഴുന്ന ഇലകൾ / പൂവിതളുകൾ ആനിമേഷൻ */
+        .falling-leaves-wrapper {
           position: fixed;
           inset: 0;
           pointer-events: none;
           z-index: 70;
           overflow: hidden;
         }
-        .petal {
+        .falling-leaf {
           position: absolute;
-          top: -6vh;
-          width: 9px;
-          height: 15px;
-          border-radius: 80% 20% 70% 30%;
-          background: linear-gradient(135deg, #8d2740, #3d0915);
-          opacity: .4;
-          animation: petalFall linear forwards !important;
+          top: -40px;
+          width: 14px;
+          height: 22px;
+          background: linear-gradient(135deg, #a8324a 0%, #4a0f1b 100%);
+          border-radius: 80% 20% 75% 25%;
+          filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+          animation: fallDownAnimation linear forwards !important;
         }
-        @keyframes petalFall {
-          0% { transform: translateY(-6vh) rotate(0deg) !important; }
-          100% { transform: translateY(105vh) rotate(360deg) !important; opacity: 0; }
+        @keyframes fallDownAnimation {
+          0% {
+            transform: translate3d(0, -40px, 0) rotate(0deg);
+          }
+          50% {
+            transform: translate3d(25px, 50vh, 0) rotate(180deg);
+          }
+          100% {
+            transform: translate3d(-15px, 105vh, 0) rotate(360deg);
+            opacity: 0;
+          }
         }
 
-        /* റോയൽ ഗേറ്റ് */
+        /* റോയൽ ഗേറ്റ് കർട്ടൻ */
         .gate {
           position: fixed;
           z-index: 150;
@@ -253,7 +264,7 @@ export default function TemplateOne({
           text-align: center;
           padding: 24px;
           background: radial-gradient(circle at 50% 38%, #5a1725 0, #27080f 45%, #0f0507 80%);
-          transition: opacity 0.8s ease, visibility 0.8s ease !important;
+          transition: opacity 0.8s ease, visibility 0.8s ease;
         }
         .gate::before, .gate::after {
           content: "";
@@ -277,7 +288,7 @@ export default function TemplateOne({
           height: 380px;
           left: 50%;
           top: 48%;
-          transform: translate(-50%, -50%) !important;
+          transform: translate(-50%, -50%);
           border-radius: 50%;
           background: rgba(199, 163, 106, .1);
           filter: blur(55px);
@@ -345,7 +356,7 @@ export default function TemplateOne({
           margin-top: 12px;
         }
 
-        /* ഹീറോ */
+        /* 3. ഫുൾ-സ്ക്രീൻ ഹീറോ + സിനിമാറ്റിക് റോയൽ ഓവർലേ */
         .hero {
           height: 100svh;
           min-height: 580px;
@@ -361,12 +372,14 @@ export default function TemplateOne({
           height: 100%;
           object-fit: cover;
           object-position: center;
-          filter: grayscale(75%) contrast(1.05);
+          filter: contrast(1.05);
         }
+        /* റോയൽ സിനിമാറ്റിക് വിഗ്നറ്റ് ഓവർലേ */
         .hero-shade {
           position: absolute;
           inset: 0;
-          background: linear-gradient(180deg, rgba(14, 5, 8, .2), rgba(14, 5, 8, .25) 45%, rgba(14, 5, 8, .95) 100%);
+          background: radial-gradient(circle at 50% 40%, rgba(14, 5, 8, 0.15) 0%, rgba(14, 5, 8, 0.55) 60%, rgba(14, 5, 8, 0.95) 100%),
+                      linear-gradient(180deg, rgba(20, 7, 10, 0.4) 0%, transparent 40%, rgba(14, 5, 8, 0.98) 100%);
         }
         .hero-copy {
           position: relative;
@@ -376,7 +389,7 @@ export default function TemplateOne({
         .hero-copy h1 {
           font: 500 clamp(2.6rem, 5.5vw, 4.4rem)/1.1 var(--serif);
           margin: 14px 0 20px;
-          text-shadow: 0 2px 15px rgba(0, 0, 0, .6);
+          text-shadow: 0 2px 15px rgba(0, 0, 0, .7);
         }
         .hero-copy h1 span {
           font-size: .65em;
@@ -505,7 +518,7 @@ export default function TemplateOne({
           text-align: center;
         }
 
-        /* 2. THE COUPLE സെക്ഷൻ: പുറത്ത് പ്രീമിയം ഐവറി ക്രീം ബാക്ക്ഗ്രൗണ്ട്, ഉള്ളിൽ റോയൽ വൈൻ കാർഡുകൾ */
+        /* 4. THE COUPLE സെക്ഷൻ: ക്രീം ഐവറി ബാക്ക്ഗ്രൗണ്ട്, ഉള്ളിൽ ആഡംബര റോയൽ വൈൻ കാർഡുകൾ */
         .the-couple-section {
           background: var(--ivory);
           color: var(--wine);
@@ -756,7 +769,7 @@ export default function TemplateOne({
           object-fit: cover;
         }
 
-        /* 4. കസ്റ്റം സെക്ഷനുകൾ (Sangeeth, Guidelines): ആകർഷകമായ പ്രീമിയം ലക്ഷ്വറി കാർഡുകൾ */
+        /* 5. കസ്റ്റം സെക്ഷനുകൾ (Sangeeth & Guidelines): ഇരുവശത്തുമായി 2 ബോക്സുകൾ */
         .custom-sections-grid {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -894,7 +907,9 @@ export default function TemplateOne({
       ` }} />
 
       <div className="grain" aria-hidden="true"></div>
-      <div className="petals" id="petals" aria-hidden="true"></div>
+      
+      {/* താഴേക്ക് വീഴുന്ന പൂവിതളുകൾ / ഇലകൾ */}
+      <div className="falling-leaves-wrapper" id="falling-leaves-container" aria-hidden="true"></div>
 
       {/* 1. GATE CURTAIN */}
       <section className={`gate ${gateOpened ? "opened" : ""}`}>
@@ -910,14 +925,16 @@ export default function TemplateOne({
         <p className="sound-note">Tap to enter with music</p>
       </section>
 
-      {/* 2. HERO */}
+      {/* 2. HERO + സിനിമാറ്റിക് റോയൽ ഓവർലേ */}
       <section className="hero">
         <img 
           className="hero-image" 
           src={invitation?.cover_photo || "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1400&q=80"} 
           alt="Couple Portrait" 
         />
+        {/* റോയൽ സിനിമാറ്റിക് ഓവർലേ */}
         <div className="hero-shade"></div>
+        
         <div className="hero-copy">
           <p className="eyebrow">The wedding of</p>
           <h1>{invitation?.bride_name} <span>&</span> {invitation?.groom_name}</h1>
@@ -957,7 +974,7 @@ export default function TemplateOne({
         </section>
       )}
 
-      {/* 5. BRIDE & GROOM PROFILES (ബാക്ക്ഗ്രൗണ്ട് ക്രീം, കാർഡുകൾ ഡീപ് റോയൽ വൈൻ) */}
+      {/* 5. THE COUPLE സെക്ഷൻ (ക്രീം ഐവറി ബാക്ക്ഗ്രൗണ്ട്, ഉള്ളിൽ ആഡംബര റോയൽ വൈൻ കാർഡുകൾ) */}
       <section className="the-couple-section">
         <span className="couple-eyebrow">Two Souls, One Heart</span>
         <h2 className="couple-main-title">The Couple</h2>
@@ -1026,7 +1043,7 @@ export default function TemplateOne({
           />
         </div>
 
-        {/* VIEW OFFICIAL CARD BUTTON (കാർഡ് ഉണ്ടെങ്കിൽ മാത്രം ഫോട്ടോയ്ക്ക് താഴെ വൃത്തിയായി വരുന്നു) */}
+        {/* VIEW OFFICIAL CARD BUTTON (കാർഡ് ഉണ്ടെങ്കിൽ മാത്രം കാണിക്കുന്നു) */}
         {invitation?.wedding_card_photo && (
           <div className="text-center mt-8">
             <button
@@ -1140,7 +1157,7 @@ export default function TemplateOne({
         </section>
       )}
 
-      {/* 11. കസ്റ്റം സെക്ഷനുകൾ (SANGEETH & GUIDELINES: പ്രീമിയം ലക്ഷ്വറി കാർഡുകൾ) */}
+      {/* 11. കസ്റ്റം സെക്ഷനുകൾ (Sangeeth & Guidelines: ഇരുവശത്തുമായി 2 ബോക്സുകൾ) */}
       {customSecs.length > 0 && (
         <section className="section dark-section">
           <p className="eyebrow">Celebration Notes</p>
