@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import { supabase } from "../../../lib/supabaseClient";
 import { Users, Heart, ExternalLink, CheckCircle2, Trash2, Check, ShieldCheck } from "lucide-react";
 
+
 export default function CoupleDashboardPage() {
   const params = useParams();
   const dashboardId = params?.dashboard_id;
