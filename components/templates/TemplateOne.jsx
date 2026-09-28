@@ -32,7 +32,7 @@ export default function TemplateOne({
   const [timeLeft, setTimeLeft] = useState({ days: "00", hours: "00", minutes: "00", seconds: "00" });
   const audioRef = useRef(null);
 
-  // 1. ഓഡിയോ പ്ലെയർ സെറ്റപ്പ്
+  // ഓഡിയോ പ്ലെയർ സെറ്റപ്പ്
   useEffect(() => {
     if (invitation?.music_url) {
       const audio = new Audio(invitation.music_url);
@@ -47,7 +47,7 @@ export default function TemplateOne({
     };
   }, [invitation?.music_url]);
 
-  // 2. തത്സമയ കൗണ്ട്ഡൗൺ ടൈമർ
+  // തത്സമയ കൗണ്ട്ഡൗൺ ടൈമർ
   useEffect(() => {
     if (!invitation?.wedding_date) return;
     const target = new Date(invitation.wedding_date).getTime();
@@ -70,7 +70,6 @@ export default function TemplateOne({
     return () => clearInterval(interval);
   }, [invitation?.wedding_date]);
 
-  // 3. റോയൽ ഗേറ്റ് തുറക്കലും മ്യൂസിക് പ്ലേയും
   const handleOpenGate = () => {
     setGateOpened(true);
     if (audioRef.current) {
@@ -78,7 +77,6 @@ export default function TemplateOne({
     }
   };
 
-  // 4. മ്യൂസിക് പ്ലേ / പോസ് കൺട്രോളർ
   const toggleMusic = () => {
     if (!audioRef.current) return;
     if (isPlaying) {
@@ -89,7 +87,6 @@ export default function TemplateOne({
     }
   };
 
-  // 5. ആഡ് ടു കലണ്ടർ (.ics കലണ്ടർ ഇൻവിറ്റേഷൻ)
   const handleAddToCalendar = () => {
     const weddingDate = new Date(invitation?.wedding_date || Date.now());
     const year = weddingDate.getUTCFullYear();
@@ -120,7 +117,6 @@ export default function TemplateOne({
     document.body.removeChild(link);
   };
 
-  // 6. UPI ഐഡി കോപ്പി ചെയ്യൽ
   const handleCopyUpi = () => {
     if (invitation?.upi_id) {
       navigator.clipboard.writeText(invitation.upi_id);
@@ -129,7 +125,6 @@ export default function TemplateOne({
     }
   };
 
-  // 7. RSVP സബ്മിഷൻ
   const localRsvpSubmit = async (e) => {
     e.preventDefault();
     if (onRsvpSubmit) {
@@ -138,7 +133,6 @@ export default function TemplateOne({
     }
   };
 
-  // 8. ഗസ്റ്റ് ആശംസ സബ്മിഷൻ
   const localWishSubmit = async (e) => {
     e.preventDefault();
     if (!guestName || !guestMessage) return;
@@ -161,7 +155,6 @@ export default function TemplateOne({
   const yearNumber = dateObj ? dateObj.getFullYear() : "";
   const muhurthamTime = dateObj ? dateObj.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" }) : "";
 
-  // ഗാലറി ഇമേജുകൾ
   const defaultGallery = [
     invitation?.cover_photo || "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1400&q=80",
     "https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=1200&q=80",
@@ -177,17 +170,14 @@ export default function TemplateOne({
   const contacts = Array.isArray(invitation?.contact_numbers) ? invitation.contact_numbers.filter(c => c.name || c.phone) : [];
   const customSecs = Array.isArray(invitation?.custom_sections) ? invitation.custom_sections.filter(s => s.title || s.content) : [];
 
-  // Google Maps Dynamic QR Code
   const qrDataUrl = invitation?.map_url 
     ? `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=18&data=${encodeURIComponent(invitation.map_url)}`
     : `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=18&data=${encodeURIComponent("https://maps.google.com")}`;
 
-  // UPI പേയ്‌മെന്റ് QR കോഡ്
   const upiQrUrl = invitation?.upi_id
     ? `https://api.qrserver.com/v1/create-qr-code/?size=320x320&margin=16&data=${encodeURIComponent(`upi://pay?pa=${invitation.upi_id}&pn=${encodeURIComponent((invitation.groom_name || "Groom") + " and " + (invitation.bride_name || "Bride"))}&cu=INR`)}`
     : null;
 
-  // YouTube Embed Url Generator
   const getEmbedYoutubeUrl = (url) => {
     if (!url) return null;
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=|live\/)([^#\&\?]*).*/;
@@ -199,8 +189,6 @@ export default function TemplateOne({
   return (
     <div className="netflix-luxury-container">
       <style dangerouslySetInnerHTML={{ __html: `
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
-
         .netflix-luxury-container {
           --ink: #14070a;
           --wine: #480e17;
@@ -225,13 +213,14 @@ export default function TemplateOne({
           box-sizing: border-box; 
         }
 
-        /* 1. എല്ലാ ടെക്സ്റ്റ് ഫ്ലിക്കറിംഗും സൂം ഷേക്കിംഗും പൂർണ്ണമായി റദ്ദാക്കുന്നു */
+        /* ഫ്ലിക്കറിംഗും ടെക്സ്റ്റ് വിറയലും പൂർണ്ണമായി തടയുന്നു */
         h1, h2, h3, h4, h5, h6, p, span, strong, em, .monogram, .eyebrow, .gate-date, .hero-card-badge-btn, .official-card-btn, button {
           animation: none !important;
           transform: none !important;
           letter-spacing: inherit;
           -webkit-font-smoothing: antialiased;
           text-rendering: optimizeLegibility;
+          will-change: auto;
         }
 
         .grain {
@@ -243,7 +232,7 @@ export default function TemplateOne({
           background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 140 140' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
         }
 
-        /* 2. പ്യുവർ CSS പൂവിതളുകൾ / ഇലകൾ (ടെക്സ്റ്റിനെ ബാധിക്കാതെ ശാന്തമായി വീഴുന്നു) */
+        /* സ്ഥിരമായി താഴേക്ക് വീഴുന്ന ഇലകൾ */
         .falling-leaves-css {
           position: fixed;
           inset: 0;
@@ -272,7 +261,6 @@ export default function TemplateOne({
           100% { transform: translateY(105vh) rotate(360deg); opacity: 0; }
         }
 
-        /* റോയൽ ഗേറ്റ് കർട്ടൻ */
         .gate {
           position: fixed;
           z-index: 150;
@@ -374,7 +362,6 @@ export default function TemplateOne({
           margin-top: 12px;
         }
 
-        /* ഫുൾ-സ്ക്രീൻ ഹീറോ സെക്ഷൻ */
         .hero {
           height: 100svh;
           min-height: 580px;
@@ -420,7 +407,7 @@ export default function TemplateOne({
           letter-spacing: .25em;
         }
 
-        /* ഹീറോ ടോപ്പിൽ വരുന്ന ഒഫീഷ്യൽ കാർഡ് ബട്ടൺ */
+        /* ടോപ്പ് ഒഫീഷ്യൽ കാർഡ് ബട്ടൺ */
         .hero-card-badge-btn {
           display: inline-flex;
           align-items: center;
@@ -445,7 +432,6 @@ export default function TemplateOne({
           border-color: var(--gold);
         }
 
-        /* വിഷ്വൽ സ്റ്റോറി ഫ്രെയിം (Chapter 1 & 2) */
         .visual-story { background: #0f0507; }
         .story-frame {
           position: relative;
@@ -536,7 +522,7 @@ export default function TemplateOne({
           text-align: center;
         }
 
-        /* The Couple: ക്രീം ഐവറി ബാക്ക്‌ഗ്രൗണ്ടും ഉള്ളിൽ ഡീപ് വൈൻ കാർഡുകളും */
+        /* The Couple */
         .the-couple-section {
           background: var(--ivory);
           color: var(--wine);
@@ -735,7 +721,7 @@ export default function TemplateOne({
           object-fit: cover;
         }
 
-        /* കസ്റ്റം സെക്ഷനുകൾ (2 വൃത്തിയുള്ള ലക്ഷ്വറി കാർഡുകൾ) */
+        /* കസ്റ്റം സെക്ഷനുകൾ (2 കാർഡുകൾ) */
         .custom-sections-grid {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -870,7 +856,7 @@ export default function TemplateOne({
         <p className="sound-note">Tap to enter with music</p>
       </section>
 
-      {/* 2. ഫുൾ-സ്ക്രീൻ ഹീറോ + ടോപ്പിൽ തന്നെ VIEW OFFICIAL CARD ബട്ടൺ */}
+      {/* 2. ഫുൾ-സ്ക്രീൻ ഹീറോ + ടോപ്പിൽ വരുന്ന VIEW OFFICIAL CARD ബട്ടൺ */}
       <section className="hero">
         <img 
           className="hero-image" 
@@ -883,7 +869,7 @@ export default function TemplateOne({
           <h1>{invitation?.bride_name} <span>&</span> {invitation?.groom_name}</h1>
           {dateFormatted && <p className="hero-date">{dateFormatted}</p>}
 
-          {/* 3. ടോപ്പിൽ വരുന്ന ഒഫീഷ്യൽ വെഡ്ഡിംഗ് കാർഡ് ബട്ടൺ */}
+          {/* ടോപ്പിൽ വരുന്ന ഒഫീഷ്യൽ കാർഡ് ബട്ടൺ */}
           {invitation?.wedding_card_photo && (
             <div>
               <button
@@ -898,7 +884,7 @@ export default function TemplateOne({
         </div>
       </section>
 
-      {/* 3. വിഷ്വൽ സ്റ്റോറി ഫ്രെയിം (Chapter 1 & Chapter 2) */}
+      {/* 3. വിഷ്വൽ സ്റ്റോറി ഫ്രെയിം (Chapter 1 & 2) */}
       {gallery.length >= 2 && (
         <section className="visual-story">
           {gallery.slice(0, 2).map((imgUrl, i) => (
@@ -1292,7 +1278,7 @@ export default function TemplateOne({
               </button>
             </div>
 
-            {/* കാർഡ് ഫോട്ടോ സ്ക്രീനിൽ ഒതുങ്ങിനിൽക്കാൻ max-h കൺട്രോൾ ചെയ്തു */}
+            {/* കാർഡ് ഫോട്ടോ സ്ക്രീനിൽ പൂർണ്ണമായി ഒതുങ്ങാൻ max-h കൺട്രോൾ ചെയ്തു */}
             <div className="w-full overflow-y-auto max-h-[68vh] rounded-xl flex items-center justify-center bg-black/40 p-1">
               <img 
                 src={invitation.wedding_card_photo} 
