@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { supabase } from "../../../lib/supabaseClient";
 import TemplateOne from "../../../components/templates/TemplateOne";
-import { Lock, AlertCircle } from "lucide-react";
+import { Lock } from "lucide-react";
 
 export default function InviteViewPage() {
   const params = useParams();
@@ -62,6 +62,9 @@ export default function InviteViewPage() {
           { title: "Traditional Sangeeth & Henna Soirée", content: "Join us on the eve of the wedding, October 20th at 6:30 PM with ethnic festive attire and musical merriment." }
         ]
       });
+      setWishes([
+        { id: "demo-1", guest_name: "Rahul & Sneha", message: "Wishing you both a lifetime of love and happiness!", created_at: new Date().toISOString() }
+      ]);
       setLoading(false);
       return;
     }
@@ -77,11 +80,12 @@ export default function InviteViewPage() {
         if (error) throw error;
         if (data) setInvitation(data);
 
-        // Load Wishes
+        // അപ്രൂവ് ചെയ്ത ആശംസകൾ മാത്രം പബ്ലിക് പേജിൽ കാണിക്കുന്നു
         const { data: wishesData } = await supabase
           .from("guest_wishes")
           .select("*")
           .eq("invitation_id", id)
+          .eq("is_approved", true)
           .order("created_at", { ascending: false });
 
         if (wishesData) setWishes(wishesData);
@@ -95,7 +99,7 @@ export default function InviteViewPage() {
     loadData();
   }, [id, isSampleDemo]);
 
-  // RSVP Handler
+  // RSVP സമർപ്പിക്കൽ
   const handleRsvpSubmit = async (rsvpName, rsvpGuests) => {
     if (isSampleDemo) return { success: true };
     const { error } = await supabase.from("rsvps").insert([
@@ -108,24 +112,27 @@ export default function InviteViewPage() {
     return { success: true };
   };
 
-  // Wishes Handler
+  // അതിഥികൾ ആശംസകൾ അയക്കുമ്പോൾ അൺ-അപ്രൂവ്ഡ് (is_approved: false) ആയി രജിസ്റ്റർ ചെയ്യുന്നു
   const handleWishSubmit = async (name, message) => {
     setWishLoading(true);
     if (isSampleDemo) {
-      setWishes([{ guest_name: name, message: message, created_at: new Date().toISOString() }, ...wishes]);
+      setWishes([{ id: Date.now(), guest_name: name, message: message, created_at: new Date().toISOString() }, ...wishes]);
       setWishLoading(false);
       return { success: true };
     }
 
     const { error } = await supabase.from("guest_wishes").insert([
-      { invitation_id: id, guest_name: name, message: message }
+      { invitation_id: id, guest_name: name, message: message, is_approved: false }
     ]);
 
-    if (!error) {
-      setWishes([{ guest_name: name, message: message, created_at: new Date().toISOString() }, ...wishes]);
-    }
     setWishLoading(false);
-    return { success: !error };
+    if (!error) {
+      alert("നിങ്ങളുടെ ആശംസകൾ ലഭിച്ചു! വധൂവരന്മാർ പരിശോധിച്ച് അംഗീകരിച്ച ശേഷം ഇത് വെബ്സൈറ്റിൽ കാണാവുന്നതാണ്. നന്ദി!");
+      return { success: true };
+    } else {
+      alert("Error sending wish: " + error.message);
+      return { success: false };
+    }
   };
 
   if (loading) {
@@ -144,7 +151,6 @@ export default function InviteViewPage() {
     );
   }
 
-  // പേയ്‌മെന്റ് പൂർത്തിയാക്കാത്ത ലിങ്ക് ആണെങ്കിൽ അതിഥികൾക്ക് ലോക്ക് ആകും
   if (!invitation.is_paid) {
     return (
       <div className="min-h-screen bg-[#16090c] flex flex-col items-center justify-center text-center p-6 text-white font-serif">
