@@ -420,7 +420,7 @@ export default function TemplateOne({
           letter-spacing: .25em;
         }
 
-        /* 3. ഹീറോ ടോപ്പിൽ വരുന്ന ഒഫീഷ്യൽ കാർഡ് ബട്ടൺ */
+        /* ഹീറോ ടോപ്പിൽ വരുന്ന ഒഫീഷ്യൽ കാർഡ് ബട്ടൺ */
         .hero-card-badge-btn {
           display: inline-flex;
           align-items: center;
@@ -536,7 +536,7 @@ export default function TemplateOne({
           text-align: center;
         }
 
-        /* 4. THE COUPLE: ക്രീം ഐവറി ബാക്ക്‌ഗ്രൗണ്ടും ഉള്ളിൽ ഡീപ് വൈൻ കാർഡുകളും */
+        /* The Couple: ക്രീം ഐവറി ബാക്ക്‌ഗ്രൗണ്ടും ഉള്ളിൽ ഡീപ് വൈൻ കാർഡുകളും */
         .the-couple-section {
           background: var(--ivory);
           color: var(--wine);
@@ -735,7 +735,7 @@ export default function TemplateOne({
           object-fit: cover;
         }
 
-        /* 5. കസ്റ്റം സെക്ഷനുകൾ (2 വൃത്തിയുള്ള ലക്ഷ്വറി കാർഡുകൾ) */
+        /* കസ്റ്റം സെക്ഷനുകൾ (2 വൃത്തിയുള്ള ലക്ഷ്വറി കാർഡുകൾ) */
         .custom-sections-grid {
           display: grid;
           grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -1094,7 +1094,7 @@ export default function TemplateOne({
         </section>
       )}
 
-      {/* 11. YOUTUBE LIVE STREAMING & UPI QR CODE GIFTING (കൊടുത്തിട്ടുണ്ടെങ്കിൽ മാത്രം കാണിക്കും) */}
+      {/* 11. YOUTUBE LIVE STREAMING & UPI QR CODE GIFTING */}
       {(invitation?.live_stream_url || invitation?.upi_id) && (
         <section className="section dark-section border-t border-stone-800/80">
           <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
@@ -1130,7 +1130,7 @@ export default function TemplateOne({
               </div>
             )}
 
-            {/* 6. UPI പേയ്‌മെന്റ് QR കോഡ് (GPay, PhonePe, Paytm സ്കാൻ ചെയ്യാം) */}
+            {/* UPI പേയ്‌മെന്റ് QR കോഡ് */}
             {invitation.upi_id && (
               <div className="p-6 rounded-3xl bg-[#1e070c] border border-[#c7a36a]/40 text-center space-y-4 shadow-xl">
                 <span className="text-xs uppercase tracking-widest text-amber-400 font-semibold flex items-center justify-center gap-1.5">
@@ -1230,6 +1230,7 @@ export default function TemplateOne({
               </button>
             </form>
 
+            {/* അപ്രൂവ് ചെയ്ത ആശംസകൾ */}
             {wishes.length > 0 && (
               <div className="mt-4 space-y-2 max-h-48 overflow-y-auto pr-1 text-left">
                 {wishes.map((w, i) => (
@@ -1266,37 +1267,37 @@ export default function TemplateOne({
         </button>
       )}
 
-      {/* 16. OFFICIAL CARD LIGHTBOX MODAL (ക്ലോസ് ബട്ടൺ എപ്പോഴും വിൻഡോയ്ക്കുള്ളിൽ ഫിക്സ് ചെയ്തത്) */}
+      {/* 16. OFFICIAL CARD LIGHTBOX MODAL (എപ്പോഴും ഹെഡിംഗും ക്ലോസ് ബട്ടണും സ്ക്രീനിനുള്ളിൽ നിൽക്കുന്ന ഫിക്സ്) */}
       {showCardModal && invitation?.wedding_card_photo && (
         <div 
           onClick={() => setShowCardModal(false)}
-          className="fixed inset-0 z-[350] bg-black/95 backdrop-blur-md flex items-center justify-center p-3 sm:p-5 cursor-pointer"
+          className="fixed inset-0 z-[400] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 cursor-pointer"
         >
           <div 
             onClick={(e) => e.stopPropagation()} 
-            className="relative max-w-xl w-full bg-[#1e070c] border border-[#c7a36a] rounded-2xl p-4 sm:p-5 shadow-2xl text-center cursor-default flex flex-col items-center max-h-[88vh]"
+            className="relative max-w-md sm:max-w-lg w-full bg-[#1c070b] border border-[#c7a36a] rounded-2xl p-4 shadow-[0_20px_60px_rgba(0,0,0,0.9)] flex flex-col items-center cursor-default max-h-[82vh]"
           >
-            {/* മോഡലിന്റെ മുകൾഭാഗത്തുള്ള ഫിക്സഡ് ഹെഡറും ക്ലോസ് ബട്ടണും */}
-            <div className="w-full flex items-center justify-between pb-3 mb-2 border-b border-white/10 shrink-0">
-              <h3 className="text-xs font-serif font-bold text-[#c7a36a] uppercase tracking-widest text-left">
+            {/* ടോപ്പ് ഹെഡറും ക്ലോസ് ബട്ടണും */}
+            <div className="w-full flex items-center justify-between pb-2.5 mb-2 border-b border-white/10 shrink-0">
+              <h3 className="text-xs font-serif font-bold text-[#c7a36a] uppercase tracking-widest text-left truncate pr-2">
                 Official Wedding Invitation Card
               </h3>
               <button 
                 type="button"
                 onClick={() => setShowCardModal(false)} 
-                className="p-1.5 bg-[#c7a36a] hover:bg-amber-300 text-black font-bold rounded-full shadow-lg transition cursor-pointer"
+                className="p-1.5 bg-[#c7a36a] hover:bg-amber-300 text-black font-bold rounded-full shadow-lg transition cursor-pointer shrink-0"
                 title="Close Card"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            {/* കാർഡ് കാണിക്കുന്ന സ്ക്രോൾ ചെയ്യാവുന്ന ഏരിയ */}
-            <div className="w-full overflow-y-auto max-h-[72vh] rounded-xl border border-white/10">
+            {/* കാർഡ് ഫോട്ടോ സ്ക്രീനിൽ ഒതുങ്ങിനിൽക്കാൻ max-h കൺട്രോൾ ചെയ്തു */}
+            <div className="w-full overflow-y-auto max-h-[68vh] rounded-xl flex items-center justify-center bg-black/40 p-1">
               <img 
                 src={invitation.wedding_card_photo} 
                 alt="Official Wedding Invitation Card" 
-                className="w-full h-auto object-contain mx-auto" 
+                className="max-h-[66vh] w-auto max-w-full object-contain mx-auto rounded-lg shadow-md" 
               />
             </div>
           </div>
